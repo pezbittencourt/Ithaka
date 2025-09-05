@@ -4,10 +4,8 @@
 # Exceções específicas
 !IthakaJogo/
 !IthakaJogo/Ithaka/
-!IthakaJogo/Ithaka/personagens/
-!IthakaJogo/Ithaka/personagens/**
-!IthakaJogo/Ithaka/cenarios/
-!IthakaJogo/Ithaka/cenarios/**
+!IthakaJogo/Ithaka/imagensJogo/
+!IthakaJogo/Ithaka/imagensJogo/**
 !IthakaJogo/Ithaka/main.c
 
 # Não ignorar a solução e configurações da solução

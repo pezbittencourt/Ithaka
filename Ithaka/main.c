@@ -23,8 +23,8 @@ int main(void) {
     if (!disp) { printf("Falha ao criar display.\n"); return -1; }
 
     // Sprite sheet com 5 frames
-    ALLEGRO_BITMAP* odisseu = al_load_bitmap("./personagens/Odisseu/odiParado.png");
-    ALLEGRO_BITMAP* fundo = al_load_bitmap("./cenarios/submundoProfeta.png");
+    ALLEGRO_BITMAP* odisseu = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParado.png");
+    ALLEGRO_BITMAP* fundo = al_load_bitmap("./imagensJogo/cenarios/submundoProfeta.png");
 
     if (!odisseu) { printf("Erro ao carregar odisseu\n"); return -1; }
     if (!fundo) { printf("Erro ao carregar fundo\n"); return -1; }
