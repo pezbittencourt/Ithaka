@@ -1,119 +1,220 @@
-#include <allegro5/allegro.h>
+﻿#include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
 
-static float clampf(float v, float lo, float hi) {
-    if (v < lo) return lo;
-    if (v > hi) return hi;
-    return v;
+// Estrutura para armazenar informações de resolução
+typedef struct {
+    int largura;
+    int altura;
+} InformacoesTela;
+
+// Função para detectar a resolução do monitor principal
+InformacoesTela obter_resolucao_tela_atual() {
+    InformacoesTela tela;
+    ALLEGRO_MONITOR_INFO informacoes_monitor;
+    al_get_monitor_info(0, &informacoes_monitor);
+
+    tela.largura = informacoes_monitor.x2 - informacoes_monitor.x1;
+    tela.altura = informacoes_monitor.y2 - informacoes_monitor.y1;
+
+    printf("Resolução detectada: %dx%d\n", tela.largura, tela.altura);
+    return tela;
 }
 
+// Função para criar display em full screen com a resolução detectada
+ALLEGRO_DISPLAY* criar_tela_cheia(InformacoesTela tela) {
+    al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+    ALLEGRO_DISPLAY* tela_jogo = al_create_display(tela.largura, tela.altura);
+
+    if (tela_jogo) return tela_jogo;
+
+    printf("Falha no true fullscreen. Tentando fullscreen window...\n");
+    al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
+    tela_jogo = al_create_display(tela.largura, tela.altura);
+
+    if (tela_jogo) return tela_jogo;
+
+    printf("Falha no fullscreen. Tentando modo janela...\n");
+    al_set_new_display_flags(ALLEGRO_WINDOWED);
+    tela_jogo = al_create_display(1024, 576); // fallback 16:9
+    return tela_jogo;
+}
+
+// Função para limitar um valor entre um mínimo e máximo
+static float limitar_valor(float valor, float minimo, float maximo) {
+    if (valor < minimo) return minimo;
+    if (valor > maximo) return maximo;
+    return valor;
+}
+
+// Função principal do programa
 int main(void) {
+    // Inicialização do Allegro
     if (!al_init()) return -1;
     if (!al_install_keyboard()) return -1;
-
     al_init_image_addon();
 
-    const int LARGURA = 1920, ALTURA = 1080;
-    const int alturaOdisseu = 300, larguraOdisseu = 300;
+    // Obter resolução do monitor
+    InformacoesTela tela = obter_resolucao_tela_atual();
+    const int LARGURA_TELA = tela.largura;
+    const int ALTURA_TELA = tela.altura;
+    const int ALTURA_PERSONAGEM = 250, LARGURA_PERSONAGEM = 250;
 
-    ALLEGRO_DISPLAY* disp = al_create_display(LARGURA, ALTURA);
-    if (!disp) { printf("Falha ao criar display.\n"); return -1; }
+    // Criar display em full screen
+    ALLEGRO_DISPLAY* tela_jogo = criar_tela_cheia(tela);
+    if (!tela_jogo) {
+        printf("Falha ao criar display.\n");
+        return -1;
+    }
 
-    // Sprite sheet com 5 frames
-    ALLEGRO_BITMAP* odisseu = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParado.png");
-    ALLEGRO_BITMAP* fundo = al_load_bitmap("./imagensJogo/cenarios/submundoProfeta.png");
+    // Carregar imagens
+    ALLEGRO_BITMAP* sprite_parado = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParado.png");
+    ALLEGRO_BITMAP* sprite_andando = al_load_bitmap("./imagensJogo/personagens/Odisseu/andandoSemEspada.png");
+    ALLEGRO_BITMAP* imagem_fundo = al_load_bitmap("./imagensJogo/cenarios/submundoProfeta.png");
 
-    if (!odisseu) { printf("Erro ao carregar odisseu\n"); return -1; }
-    if (!fundo) { printf("Erro ao carregar fundo\n"); return -1; }
+    if (!sprite_parado || !sprite_andando || !imagem_fundo) {
+        printf("Erro ao carregar imagens.\n");
+        return -1;
+    }
 
-    int numFrames = 5;
-    int larguraFrame = al_get_bitmap_width(odisseu) / numFrames;
-    int alturaFrame = al_get_bitmap_height(odisseu);
-    int frameAtual = 0;
-    int contador = 0;
+    // Configurações de animação do sprite parado
+    int total_frames_parado = 5;
+    int largura_frame_parado = al_get_bitmap_width(sprite_parado) / total_frames_parado;
+    int altura_frame_parado = al_get_bitmap_height(sprite_parado);
 
-    int x = 200, y = 700;
+    // Configurações de animação do sprite andando
+    int total_frames_andando = 6;
+    int largura_frame_andando = al_get_bitmap_width(sprite_andando) / total_frames_andando;
+    int altura_frame_andando = al_get_bitmap_height(sprite_andando);
 
-    ALLEGRO_EVENT_QUEUE* fila = al_create_event_queue();
-    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0);
+    int frame_atual = 0;
+    int contador_animacao = 0;
 
-    al_register_event_source(fila, al_get_display_event_source(disp));
-    al_register_event_source(fila, al_get_keyboard_event_source());
-    al_register_event_source(fila, al_get_timer_event_source(timer));
+    // Estado do personagem
+    int posicao_x = 200;
+    int posicao_y = 700;
+    bool olhando_para_direita = true;
+    bool personagem_andando = false;
 
-    al_start_timer(timer);
+    // Sistema de eventos
+    ALLEGRO_EVENT_QUEUE* fila_eventos = al_create_event_queue();
+    ALLEGRO_TIMER* temporizador = al_create_timer(1.0 / 60.0);
 
-    bool sair = false;
-    bool redraw = false;
+    al_register_event_source(fila_eventos, al_get_display_event_source(tela_jogo));
+    al_register_event_source(fila_eventos, al_get_keyboard_event_source());
+    al_register_event_source(fila_eventos, al_get_timer_event_source(temporizador));
 
-    while (!sair) {
-        ALLEGRO_EVENT ev;
-        al_wait_for_event(fila, &ev);
+    al_start_timer(temporizador);
 
-        if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-            sair = true;
+    // Loop principal do jogo
+    bool jogo_rodando = true;
+    bool redesenhar_tela = false;
+
+    while (jogo_rodando) {
+        ALLEGRO_EVENT evento;
+        al_wait_for_event(fila_eventos, &evento);
+
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+            jogo_rodando = false;
         }
-        else if (ev.type == ALLEGRO_EVENT_KEY_DOWN) {
-            if (ev.keyboard.keycode == ALLEGRO_KEY_ESCAPE) sair = true;
+        else if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
+            if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) jogo_rodando = false;
         }
-        else if (ev.type == ALLEGRO_EVENT_TIMER) {
-            ALLEGRO_KEYBOARD_STATE ks;
-            al_get_keyboard_state(&ks);
+        else if (evento.type == ALLEGRO_EVENT_TIMER) {
+            ALLEGRO_KEYBOARD_STATE estado_teclado;
+            al_get_keyboard_state(&estado_teclado);
 
-            float dx = 0.0f;
-            if (al_key_down(&ks, ALLEGRO_KEY_A) || al_key_down(&ks, ALLEGRO_KEY_LEFT))  dx -= 0.1f;
-            if (al_key_down(&ks, ALLEGRO_KEY_D) || al_key_down(&ks, ALLEGRO_KEY_RIGHT)) dx += 0.1f;
+            float direcao_x = 0.0f;
 
-            if (dx != 0.0f) {
-                float len = sqrtf(dx * dx);
-                dx /= len;
+            // Movimento para esquerda
+            if (al_key_down(&estado_teclado, ALLEGRO_KEY_A) ||
+                al_key_down(&estado_teclado, ALLEGRO_KEY_LEFT)) {
+                direcao_x -= 0.1f;
+                olhando_para_direita = false;
+            }
+            // Movimento para direita
+            if (al_key_down(&estado_teclado, ALLEGRO_KEY_D) ||
+                al_key_down(&estado_teclado, ALLEGRO_KEY_RIGHT)) {
+                direcao_x += 0.1f;
+                olhando_para_direita = true;
             }
 
-            const int SPEED = 150 / 60;
-            x += dx * SPEED;
+            // Normaliza direção
+            if (direcao_x != 0.0f) {
+                float comprimento = sqrtf(direcao_x * direcao_x);
+                direcao_x /= comprimento;
+            }
 
-            x = clampf(x, 0, LARGURA - larguraOdisseu);
-            y = clampf(y, 0, ALTURA - alturaOdisseu);
+            // Atualiza posição
+            const int VELOCIDADE_PERSONAGEM = 250 / 60;
+            posicao_x += direcao_x * VELOCIDADE_PERSONAGEM;
 
-            // Atualiza anima��o s� se parado
-            if (dx == 0.0f) {
-                contador++;
-                if (contador >= 10) {
-                    frameAtual = (frameAtual + 1) % numFrames;
-                    contador = 0;
+            /*posicao_x = limitar_valor(posicao_x, 0, LARGURA_TELA - LARGURA_PERSONAGEM);*/
+            posicao_y = limitar_valor(posicao_y, 0, ALTURA_TELA - ALTURA_PERSONAGEM);
+
+            // Define estado parado/andando
+            personagem_andando = (direcao_x != 0.0f);
+
+            // Atualiza animação
+            contador_animacao++;
+            if (contador_animacao >= 10) {
+                frame_atual++;
+                if (personagem_andando) {
+                    frame_atual %= total_frames_andando;
                 }
+                else {
+                    frame_atual %= total_frames_parado;
+                }
+                contador_animacao = 0;
             }
 
-            redraw = true;
+            redesenhar_tela = true;
         }
 
-        if (redraw && al_is_event_queue_empty(fila)) {
+        // Redesenhar tela
+        if (redesenhar_tela && al_is_event_queue_empty(fila_eventos)) {
             al_clear_to_color(al_map_rgb(0, 0, 0));
-            al_draw_bitmap(fundo, 0, 0, 0);
 
+            // Fundo
             al_draw_scaled_bitmap(
-                odisseu,
-                frameAtual * larguraFrame, 0,
-                larguraFrame, alturaFrame,
-                x, y,
-                larguraOdisseu, alturaOdisseu,
-                0
+                imagem_fundo, 0, 0,
+                al_get_bitmap_width(imagem_fundo),
+                al_get_bitmap_height(imagem_fundo),
+                0, 0, LARGURA_TELA, ALTURA_TELA, 0
+            );
+
+            // Determina sprite e frame
+            ALLEGRO_BITMAP* sprite_atual = personagem_andando ? sprite_andando : sprite_parado;
+            int largura_frame = personagem_andando ? largura_frame_andando : largura_frame_parado;
+            int altura_frame = personagem_andando ? altura_frame_andando : altura_frame_parado;
+
+            // Flip horizontal se necessário
+            int flags = olhando_para_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+
+            // Personagem
+            al_draw_scaled_bitmap(
+                sprite_atual,
+                frame_atual * largura_frame, 0,
+                largura_frame, altura_frame,
+                posicao_x, posicao_y,
+                LARGURA_PERSONAGEM, ALTURA_PERSONAGEM,
+                flags
             );
 
             al_flip_display();
-
-            redraw = false;
+            redesenhar_tela = false;
         }
     }
 
-    al_destroy_bitmap(odisseu);
-    al_destroy_bitmap(fundo);
-    al_destroy_timer(timer);
-    al_destroy_event_queue(fila);
-    al_destroy_display(disp);
+    // Limpeza
+    al_destroy_bitmap(sprite_parado);
+    al_destroy_bitmap(sprite_andando);
+    al_destroy_bitmap(imagem_fundo);
+    al_destroy_timer(temporizador);
+    al_destroy_event_queue(fila_eventos);
+    al_destroy_display(tela_jogo);
 
     return 0;
 }
