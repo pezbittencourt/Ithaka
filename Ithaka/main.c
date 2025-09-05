@@ -22,20 +22,23 @@ int main(void) {
     ALLEGRO_DISPLAY* disp = al_create_display(LARGURA, ALTURA);
     if (!disp) { printf("Falha ao criar display.\n"); return -1; }
 
-    // Carregar apenas o frame parado
-    ALLEGRO_BITMAP* odisseu = al_load_bitmap("./Odisseu/odiparado1.png");
+    // Sprite sheet com 5 frames
+    ALLEGRO_BITMAP* odisseu = al_load_bitmap("./Odisseu/odiParado.png");
     ALLEGRO_BITMAP* fundo = al_load_bitmap("./cenarios/submundoProfeta.png");
 
     if (!odisseu) { printf("Erro ao carregar odisseu\n"); return -1; }
     if (!fundo) { printf("Erro ao carregar fundo\n"); return -1; }
 
-    int pw = al_get_bitmap_width(odisseu);
-    int ph = al_get_bitmap_height(odisseu);
+    int numFrames = 5;
+    int larguraFrame = al_get_bitmap_width(odisseu) / numFrames;
+    int alturaFrame = al_get_bitmap_height(odisseu);
+    int frameAtual = 0;
+    int contador = 0;
 
     int x = 200, y = 700;
 
     ALLEGRO_EVENT_QUEUE* fila = al_create_event_queue();
-    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0); // 60 FPS
+    ALLEGRO_TIMER* timer = al_create_timer(1.0 / 60.0);
 
     al_register_event_source(fila, al_get_display_event_source(disp));
     al_register_event_source(fila, al_get_keyboard_event_source());
@@ -44,7 +47,7 @@ int main(void) {
     al_start_timer(timer);
 
     bool sair = false;
-    bool redraw = false;        
+    bool redraw = false;
 
     while (!sair) {
         ALLEGRO_EVENT ev;
@@ -72,7 +75,17 @@ int main(void) {
             const int SPEED = 150 / 60;
             x += dx * SPEED;
 
+            x = clampf(x, 0, LARGURA - larguraOdisseu);
             y = clampf(y, 0, ALTURA - alturaOdisseu);
+
+            // Atualiza animação só se parado
+            if (dx == 0.0f) {
+                contador++;
+                if (contador >= 10) {
+                    frameAtual = (frameAtual + 1) % numFrames;
+                    contador = 0;
+                }
+            }
 
             redraw = true;
         }
@@ -81,21 +94,21 @@ int main(void) {
             al_clear_to_color(al_map_rgb(0, 0, 0));
             al_draw_bitmap(fundo, 0, 0, 0);
 
-            // Desenha o Odisseu parado
             al_draw_scaled_bitmap(
                 odisseu,
-                0, 0, pw, ph,
+                frameAtual * larguraFrame, 0,
+                larguraFrame, alturaFrame,
                 x, y,
                 larguraOdisseu, alturaOdisseu,
                 0
             );
 
             al_flip_display();
+
             redraw = false;
         }
     }
 
-    // Limpeza
     al_destroy_bitmap(odisseu);
     al_destroy_bitmap(fundo);
     al_destroy_timer(timer);
