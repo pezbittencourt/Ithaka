@@ -1,51 +1,16 @@
-# Arquivos de compilação
-*.o
-*.obj
-*.exe
-*.dll
-*.so
-*.dylib
-*.a
-*.lib
+# Ignorar tudo
+*
 
-# Diretórios de build
-Debug/
-Release/
-x64/
-x86/
-build/
-bin/
-obj/
+# Exceções específicas
+!IthakaJogo/
+!IthakaJogo/Ithaka/
+!IthakaJogo/Ithaka/Odisseu/
+!IthakaJogo/Ithaka/Odisseu/**
+!IthakaJogo/Ithaka/cenarios/
+!IthakaJogo/Ithaka/cenarios/**
+!IthakaJogo/Ithaka/main.c
 
-# Bibliotecas externas (Allegro)
-packages/
-lib/
-libs/
-external/
-third-party/
-allegro/
-allegro-*/
-
-# Arquivos do Visual Studio
-*.vcxproj.user
-*.vcxproj.filters
-*.sln.docstates
-*.suo
-*.user
-.vs/
-
-# Arquivos temporários
-*.tmp
-*.temp
-*~
-.DS_Store
-Thumbs.db
-
-# Logs e arquivos de debug
-*.log
-*.pdb
-*.ilk
-
-# Arquivos específicos do projeto (se aplicável)
-*.sln.cache
-ipch/
+# Não ignorar a solução e configurações da solução
+!/IthakaJogo.sln
+!IthakaJogo/Ithaka.vcxproj.filters
+!IthakaJogo/Ithaka.vcxproj
