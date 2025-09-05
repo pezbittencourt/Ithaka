@@ -4,8 +4,8 @@
 # Exceções específicas
 !IthakaJogo/
 !IthakaJogo/Ithaka/
-!IthakaJogo/Ithaka/Odisseu/
-!IthakaJogo/Ithaka/Odisseu/**
+!IthakaJogo/Ithaka/personagens/
+!IthakaJogo/Ithaka/personagens/**
 !IthakaJogo/Ithaka/cenarios/
 !IthakaJogo/Ithaka/cenarios/**
 !IthakaJogo/Ithaka/main.c
