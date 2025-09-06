@@ -72,9 +72,10 @@ int main(void) {
     // Carregar imagens
     ALLEGRO_BITMAP* sprite_parado = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParado.png");
     ALLEGRO_BITMAP* sprite_andando = al_load_bitmap("./imagensJogo/personagens/Odisseu/andandoSemEspada.png");
+    ALLEGRO_BITMAP* sprite_desembainhar = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiDesembainhar.png");
     ALLEGRO_BITMAP* imagem_fundo = al_load_bitmap("./imagensJogo/cenarios/submundoProfeta.png");
 
-    if (!sprite_parado || !sprite_andando || !imagem_fundo) {
+    if (!sprite_parado || !sprite_andando || !sprite_desembainhar || !imagem_fundo) {
         printf("Erro ao carregar imagens.\n");
         return -1;
     }
@@ -89,6 +90,11 @@ int main(void) {
     int largura_frame_andando = al_get_bitmap_width(sprite_andando) / total_frames_andando;
     int altura_frame_andando = al_get_bitmap_height(sprite_andando);
 
+    // Configurações da animação de desembainhar
+    int total_frames_desembainhar = 7;
+    int largura_frame_desembainhar = al_get_bitmap_width(sprite_desembainhar) / total_frames_desembainhar;
+    int altura_frame_desembainhar = al_get_bitmap_height(sprite_desembainhar);
+
     int frame_atual = 0;
     int contador_animacao = 0;
 
@@ -97,6 +103,7 @@ int main(void) {
     int posicao_y = 700;
     bool olhando_para_direita = true;
     bool personagem_andando = false;
+    bool animando_transicao = false;
 
     // Sistema de eventos
     ALLEGRO_EVENT_QUEUE* fila_eventos = al_create_event_queue();
@@ -121,6 +128,12 @@ int main(void) {
         }
         else if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
             if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) jogo_rodando = false;
+
+            // Tecla "E" ativa animação de desembainhar (só se parado e não estiver animando)
+            if (evento.keyboard.keycode == ALLEGRO_KEY_E && !personagem_andando && !animando_transicao) {
+                animando_transicao = true;
+                frame_atual = 0;
+            }
         }
         else if (evento.type == ALLEGRO_EVENT_TIMER) {
             ALLEGRO_KEYBOARD_STATE estado_teclado;
@@ -128,52 +141,56 @@ int main(void) {
 
             float direcao_x = 0.0f;
 
-            // Movimento para esquerda
-            if (al_key_down(&estado_teclado, ALLEGRO_KEY_A) ||
-                al_key_down(&estado_teclado, ALLEGRO_KEY_LEFT)) {
-                direcao_x -= 0.1f;
-                olhando_para_direita = false;
-            }
-            // Movimento para direita
-            if (al_key_down(&estado_teclado, ALLEGRO_KEY_D) ||
-                al_key_down(&estado_teclado, ALLEGRO_KEY_RIGHT)) {
-                direcao_x += 0.1f;
-                olhando_para_direita = true;
+            // Só pode se mover se não estiver animando a transição
+            if (!animando_transicao) {
+                if (al_key_down(&estado_teclado, ALLEGRO_KEY_A) ||
+                    al_key_down(&estado_teclado, ALLEGRO_KEY_LEFT)) {
+                    direcao_x -= 0.1f;
+                    olhando_para_direita = false;
+                }
+                if (al_key_down(&estado_teclado, ALLEGRO_KEY_D) ||
+                    al_key_down(&estado_teclado, ALLEGRO_KEY_RIGHT)) {
+                    direcao_x += 0.1f;
+                    olhando_para_direita = true;
+                }
             }
 
-            // Normaliza direção
             if (direcao_x != 0.0f) {
                 float comprimento = sqrtf(direcao_x * direcao_x);
                 direcao_x /= comprimento;
             }
 
-            // Atualiza posição
             const int VELOCIDADE_PERSONAGEM = 250 / 60;
             posicao_x += direcao_x * VELOCIDADE_PERSONAGEM;
 
-            /*posicao_x = limitar_valor(posicao_x, 0, LARGURA_TELA - LARGURA_PERSONAGEM);*/
             posicao_y = limitar_valor(posicao_y, 0, ALTURA_TELA - ALTURA_PERSONAGEM);
 
-            // Define estado parado/andando
             personagem_andando = (direcao_x != 0.0f);
 
             // Atualiza animação
             contador_animacao++;
             if (contador_animacao >= 10) {
                 frame_atual++;
-                if (personagem_andando) {
+
+                if (animando_transicao) {
+                    if (frame_atual >= total_frames_desembainhar) {
+                        animando_transicao = false; // terminou a animação
+                        frame_atual = 0;            // volta para parado
+                    }
+                }
+                else if (personagem_andando) {
                     frame_atual %= total_frames_andando;
                 }
                 else {
                     frame_atual %= total_frames_parado;
                 }
+
                 contador_animacao = 0;
             }
 
             redesenhar_tela = true;
         }
 
-        // Redesenhar tela
         if (redesenhar_tela && al_is_event_queue_empty(fila_eventos)) {
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
@@ -185,15 +202,28 @@ int main(void) {
                 0, 0, LARGURA_TELA, ALTURA_TELA, 0
             );
 
-            // Determina sprite e frame
-            ALLEGRO_BITMAP* sprite_atual = personagem_andando ? sprite_andando : sprite_parado;
-            int largura_frame = personagem_andando ? largura_frame_andando : largura_frame_parado;
-            int altura_frame = personagem_andando ? altura_frame_andando : altura_frame_parado;
+            // Seleciona o sprite a ser usado
+            ALLEGRO_BITMAP* sprite_atual;
+            int largura_frame, altura_frame;
 
-            // Flip horizontal se necessário
+            if (animando_transicao) {
+                sprite_atual = sprite_desembainhar;
+                largura_frame = largura_frame_desembainhar;
+                altura_frame = altura_frame_desembainhar;
+            }
+            else if (personagem_andando) {
+                sprite_atual = sprite_andando;
+                largura_frame = largura_frame_andando;
+                altura_frame = altura_frame_andando;
+            }
+            else {
+                sprite_atual = sprite_parado;
+                largura_frame = largura_frame_parado;
+                altura_frame = altura_frame_parado;
+            }
+
             int flags = olhando_para_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
 
-            // Personagem
             al_draw_scaled_bitmap(
                 sprite_atual,
                 frame_atual * largura_frame, 0,
@@ -211,6 +241,7 @@ int main(void) {
     // Limpeza
     al_destroy_bitmap(sprite_parado);
     al_destroy_bitmap(sprite_andando);
+    al_destroy_bitmap(sprite_desembainhar);
     al_destroy_bitmap(imagem_fundo);
     al_destroy_timer(temporizador);
     al_destroy_event_queue(fila_eventos);
