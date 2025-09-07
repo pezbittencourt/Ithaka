@@ -70,40 +70,61 @@ int main(void) {
     }
 
     // Carregar imagens
-    ALLEGRO_BITMAP* sprite_parado = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParado.png");
-    ALLEGRO_BITMAP* sprite_andando = al_load_bitmap("./imagensJogo/personagens/Odisseu/andandoSemEspada.png");
-    ALLEGRO_BITMAP* sprite_desembainhar = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiDesembainhar.png");
+    ALLEGRO_BITMAP* sprite_odisseuParado = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParado.png");
+    ALLEGRO_BITMAP* sprite_odisseuAndando = al_load_bitmap("./imagensJogo/personagens/Odisseu/andandoSemEspada.png");
+    ALLEGRO_BITMAP* sprite_odisseuDesembainhar = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiDesembainhar.png");
     ALLEGRO_BITMAP* imagem_fundo = al_load_bitmap("./imagensJogo/cenarios/submundoProfeta.png");
+    ALLEGRO_BITMAP* sprite_circeparada = al_load_bitmap("./imagensJogo/personagens/Circe/circeparada.png");
+    ALLEGRO_BITMAP* sprite_circeDano = al_load_bitmap("./imagensJogo/personagens/Circe/circeDano.png");
 
-    if (!sprite_parado || !sprite_andando || !sprite_desembainhar || !imagem_fundo) {
+    if (!sprite_odisseuParado || !sprite_odisseuAndando || !sprite_odisseuDesembainhar || !imagem_fundo) {
         printf("Erro ao carregar imagens.\n");
         return -1;
     }
 
     // Configurações de animação do sprite parado
+  
+    //Odisseu
     int total_frames_parado = 5;
-    int largura_frame_parado = al_get_bitmap_width(sprite_parado) / total_frames_parado;
-    int altura_frame_parado = al_get_bitmap_height(sprite_parado);
+    int largura_frame_parado = al_get_bitmap_width(sprite_odisseuParado) / total_frames_parado;
+    int altura_frame_parado = al_get_bitmap_height(sprite_odisseuParado);
 
-    // Configurações de animação do sprite andando
+    //Circe
+    int total_frames_circeparada = 5;
+    int largura_frame_circeparada = al_get_bitmap_width(sprite_circeparada) / total_frames_circeparada;
+    int altura_frame_circeparada = al_get_bitmap_height(sprite_circeparada);
+
+
+
+    // Configurações de animação do sprite  do andando
     int total_frames_andando = 6;
-    int largura_frame_andando = al_get_bitmap_width(sprite_andando) / total_frames_andando;
-    int altura_frame_andando = al_get_bitmap_height(sprite_andando);
+    int largura_frame_andando = al_get_bitmap_width(sprite_odisseuAndando) / total_frames_andando;
+    int altura_frame_andando = al_get_bitmap_height(sprite_odisseuAndando);
+
+
 
     // Configurações da animação de desembainhar
     int total_frames_desembainhar = 7;
-    int largura_frame_desembainhar = al_get_bitmap_width(sprite_desembainhar) / total_frames_desembainhar;
-    int altura_frame_desembainhar = al_get_bitmap_height(sprite_desembainhar);
+    int largura_frame_desembainhar = al_get_bitmap_width(sprite_odisseuDesembainhar) / total_frames_desembainhar;
+    int altura_frame_desembainhar = al_get_bitmap_height(sprite_odisseuDesembainhar);
 
     int frame_atual = 0;
     int contador_animacao = 0;
 
-    // Estado do personagem
-    int posicao_x = 200;
-    int posicao_y = 700;
-    bool olhando_para_direita = true;
-    bool personagem_andando = false;
-    bool animando_transicao = false;
+   
+
+    // Estado indo  personagem
+    float posicaoOdisseu_x = (LARGURA_TELA/2) - (LARGURA_TELA/2.5) ; //largura de tela spawna na direita, tirando vai pra esquerda
+    int posicaoOdisseu_y = 700;
+    bool odisseuOlhando_direita = true;
+    bool odisseu_andando = false;
+    bool odisseuAnimando_transicao = false;
+
+
+    //Circe
+    float posicaoCirce_x = LARGURA_TELA - (LARGURA_TELA/5.25) ; // lado direito
+    int posicaoCirce_y = 700;
+
 
     // Sistema de eventos
     ALLEGRO_EVENT_QUEUE* fila_eventos = al_create_event_queue();
@@ -130,8 +151,8 @@ int main(void) {
             if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) jogo_rodando = false;
 
             // Tecla "E" ativa animação de desembainhar (só se parado e não estiver animando)
-            if (evento.keyboard.keycode == ALLEGRO_KEY_E && !personagem_andando && !animando_transicao) {
-                animando_transicao = true;
+            if (evento.keyboard.keycode == ALLEGRO_KEY_E && !odisseu_andando && !odisseuAnimando_transicao) {
+                odisseuAnimando_transicao = true;
                 frame_atual = 0;
             }
         }
@@ -139,46 +160,45 @@ int main(void) {
             ALLEGRO_KEYBOARD_STATE estado_teclado;
             al_get_keyboard_state(&estado_teclado);
 
-            float direcao_x = 0.0f;
+            float odisseu_direcao_x = 0.0f;
 
             // Só pode se mover se não estiver animando a transição
-            if (!animando_transicao) {
+            if (!odisseuAnimando_transicao) {
                 if (al_key_down(&estado_teclado, ALLEGRO_KEY_A) ||
                     al_key_down(&estado_teclado, ALLEGRO_KEY_LEFT)) {
-                    direcao_x -= 0.1f;
-                    olhando_para_direita = false;
+                    odisseu_direcao_x -= 0.1f;
+                    odisseuOlhando_direita = false;
                 }
                 if (al_key_down(&estado_teclado, ALLEGRO_KEY_D) ||
                     al_key_down(&estado_teclado, ALLEGRO_KEY_RIGHT)) {
-                    direcao_x += 0.1f;
-                    olhando_para_direita = true;
+                    odisseu_direcao_x += 0.1f;
+                    odisseuOlhando_direita = true;
                 }
             }
 
-            if (direcao_x != 0.0f) {
-                float comprimento = sqrtf(direcao_x * direcao_x);
-                direcao_x /= comprimento;
+            if (odisseu_direcao_x != 0.0f) {
+                float comprimento = sqrtf(odisseu_direcao_x * odisseu_direcao_x);
+                odisseu_direcao_x /= comprimento;
             }
 
             const int VELOCIDADE_PERSONAGEM = 250 / 60;
-            posicao_x += direcao_x * VELOCIDADE_PERSONAGEM;
 
-            posicao_y = limitar_valor(posicao_y, 0, ALTURA_TELA - ALTURA_PERSONAGEM);
-
-            personagem_andando = (direcao_x != 0.0f);
+            posicaoOdisseu_x += odisseu_direcao_x * VELOCIDADE_PERSONAGEM;
+            posicaoOdisseu_y = limitar_valor(posicaoOdisseu_y, 0, ALTURA_TELA - ALTURA_PERSONAGEM);
+            odisseu_andando = (odisseu_direcao_x != 0.0f);
 
             // Atualiza animação
             contador_animacao++;
             if (contador_animacao >= 10) {
                 frame_atual++;
 
-                if (animando_transicao) {
+                if (odisseuAnimando_transicao) {
                     if (frame_atual >= total_frames_desembainhar) {
-                        animando_transicao = false; // terminou a animação
+                        odisseuAnimando_transicao = false; // terminou a animação
                         frame_atual = 0;            // volta para parado
                     }
                 }
-                else if (personagem_andando) {
+                else if (odisseu_andando) {
                     frame_atual %= total_frames_andando;
                 }
                 else {
@@ -206,31 +226,43 @@ int main(void) {
             ALLEGRO_BITMAP* sprite_atual;
             int largura_frame, altura_frame;
 
-            if (animando_transicao) {
-                sprite_atual = sprite_desembainhar;
+            if (odisseuAnimando_transicao) {
+                sprite_atual = sprite_odisseuDesembainhar;
                 largura_frame = largura_frame_desembainhar;
                 altura_frame = altura_frame_desembainhar;
             }
-            else if (personagem_andando) {
-                sprite_atual = sprite_andando;
+            else if (odisseu_andando) {
+                sprite_atual = sprite_odisseuAndando;
                 largura_frame = largura_frame_andando;
                 altura_frame = altura_frame_andando;
             }
             else {
-                sprite_atual = sprite_parado;
+                sprite_atual = sprite_odisseuParado;
                 largura_frame = largura_frame_parado;
                 altura_frame = altura_frame_parado;
             }
 
-            int flags = olhando_para_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
 
+            //Desenha Odisseu
+            int flagsOdisseu = odisseuOlhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
             al_draw_scaled_bitmap(
                 sprite_atual,
                 frame_atual * largura_frame, 0,
                 largura_frame, altura_frame,
-                posicao_x, posicao_y,
+                posicaoOdisseu_x, posicaoOdisseu_y,
                 LARGURA_PERSONAGEM, ALTURA_PERSONAGEM,
-                flags
+                flagsOdisseu
+            );
+
+            // Desenha Circe
+            int frameCirce = frame_atual % total_frames_circeparada;
+            al_draw_scaled_bitmap(
+                sprite_circeparada,
+                frameCirce* largura_frame_circeparada, 0,
+                largura_frame_circeparada, altura_frame_circeparada,
+                posicaoCirce_x, posicaoCirce_y,
+                LARGURA_PERSONAGEM, ALTURA_PERSONAGEM,
+                0
             );
 
             al_flip_display();
@@ -239,9 +271,11 @@ int main(void) {
     }
 
     // Limpeza
-    al_destroy_bitmap(sprite_parado);
-    al_destroy_bitmap(sprite_andando);
-    al_destroy_bitmap(sprite_desembainhar);
+    al_destroy_bitmap(sprite_odisseuParado);
+    al_destroy_bitmap(sprite_odisseuAndando);
+    al_destroy_bitmap(sprite_odisseuDesembainhar);
+	al_destroy_bitmap(sprite_circeparada);
+	al_destroy_bitmap(sprite_circeDano);
     al_destroy_bitmap(imagem_fundo);
     al_destroy_timer(temporizador);
     al_destroy_event_queue(fila_eventos);
