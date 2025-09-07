@@ -1,0 +1,3 @@
+﻿  main.c
+C:\Users\zefer\source\repos\Ithaka\Ithaka\main.c(46,1): warning C4715: 'criar_tela_cheia': nem todos os caminhos de controle retornam um valor
+  Ithaka.vcxproj -> C:\Users\zefer\source\repos\Ithaka\x64\Debug\Ithaka.exe

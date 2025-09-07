@@ -17,8 +17,11 @@ typedef struct {
     bool olhando_direita;
     bool olhando_esquerda;
     bool andando;
-    bool animando_transicao;
+    bool desembainhando;
     bool sofrendo_dano;
+    bool guardando_espada;
+    bool atacando;
+    bool tem_espada;
     int frame_atual;
     int contador_animacao;
 } Personagem;
@@ -28,10 +31,8 @@ InformacoesTela obter_resolucao_tela_atual() {
     InformacoesTela tela;
     ALLEGRO_MONITOR_INFO informacoes_monitor;
     al_get_monitor_info(0, &informacoes_monitor);
-
     tela.largura = informacoes_monitor.x2 - informacoes_monitor.x1;
     tela.altura = informacoes_monitor.y2 - informacoes_monitor.y1;
-
     return tela;
 }
 
@@ -39,11 +40,9 @@ InformacoesTela obter_resolucao_tela_atual() {
 ALLEGRO_DISPLAY* criar_tela_cheia(InformacoesTela tela) {
     al_set_new_display_flags(ALLEGRO_FULLSCREEN);
     ALLEGRO_DISPLAY* tela_jogo = al_create_display(tela.largura, tela.altura);
-
     if (tela_jogo) return tela_jogo;
     al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
     tela_jogo = al_create_display(tela.largura, tela.altura);
-
 }
 
 // limita um valor entre um mínimo e máximo
@@ -96,11 +95,16 @@ int main(void) {
     ALLEGRO_BITMAP* sprite_odisseuParado = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParado.png");
     ALLEGRO_BITMAP* sprite_odisseuAndando = al_load_bitmap("./imagensJogo/personagens/Odisseu/andandoSemEspada.png");
     ALLEGRO_BITMAP* sprite_odisseuDesembainhar = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiDesembainhar.png");
+    ALLEGRO_BITMAP* sprite_odisseuAtacando = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiAtacando.png");
+    ALLEGRO_BITMAP* sprite_odisseuParadoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParadoEspada.png");
+    ALLEGRO_BITMAP* sprite_odisseuAndandoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiAndandoEspada.png");
     ALLEGRO_BITMAP* imagem_fundo = al_load_bitmap("./imagensJogo/cenarios/submundoProfeta.png");
     ALLEGRO_BITMAP* sprite_circeparada = al_load_bitmap("./imagensJogo/personagens/Circe/circeparada.png");
     ALLEGRO_BITMAP* sprite_circeDano = al_load_bitmap("./imagensJogo/personagens/Circe/circeDano.png");
 
-    if (!sprite_odisseuParado || !sprite_odisseuAndando || !sprite_odisseuDesembainhar || !imagem_fundo || !sprite_circeparada || !sprite_circeDano) {
+    if (!sprite_odisseuParado || !sprite_odisseuAndando || !sprite_odisseuDesembainhar ||
+        !sprite_odisseuAtacando || !sprite_odisseuParadoEspada || !sprite_odisseuAndandoEspada ||
+        !imagem_fundo || !sprite_circeparada || !sprite_circeDano) {
         printf("Erro ao carregar imagens.\n");
         return -1;
     }
@@ -110,6 +114,11 @@ int main(void) {
     int total_frames_parado = 5;
     int largura_frame_parado = al_get_bitmap_width(sprite_odisseuParado) / total_frames_parado;
     int altura_frame_parado = al_get_bitmap_height(sprite_odisseuParado);
+
+    // Configurações de animação do sprite parado com espada
+    int total_frames_parado_espada = 5;
+    int largura_frame_parado_espada = al_get_bitmap_width(sprite_odisseuParadoEspada) / total_frames_parado_espada;
+    int altura_frame_parado_espada = al_get_bitmap_height(sprite_odisseuParadoEspada);
 
     // Circe
     int total_frames_circeparada = 5;
@@ -126,10 +135,23 @@ int main(void) {
     int largura_frame_andando = al_get_bitmap_width(sprite_odisseuAndando) / total_frames_andando;
     int altura_frame_andando = al_get_bitmap_height(sprite_odisseuAndando);
 
+    // Configurações de animação do sprite andando com espada
+    int total_frames_andando_espada = 6;
+    int largura_frame_andando_espada = al_get_bitmap_width(sprite_odisseuAndandoEspada) / total_frames_andando_espada;
+    int altura_frame_andando_espada = al_get_bitmap_height(sprite_odisseuAndandoEspada);
+
     // Configurações da animação de desembainhar
     int total_frames_desembainhar = 7;
     int largura_frame_desembainhar = al_get_bitmap_width(sprite_odisseuDesembainhar) / total_frames_desembainhar;
     int altura_frame_desembainhar = al_get_bitmap_height(sprite_odisseuDesembainhar);
+
+    // Configurações da animação de atacar
+    int total_frames_atacando = 6;
+    int largura_frame_atacando = al_get_bitmap_width(sprite_odisseuAtacando) / total_frames_atacando;
+    int altura_frame_atacando = al_get_bitmap_height(sprite_odisseuAtacando);
+
+    // Velocidade específica da animação de desembainhar
+    const int VELOCIDADE_ANIMACAO_DESEMBAINHAR = 6; // menor = mais rápida, maior = mais lenta
 
     // Inicializar personagens
     Personagem odisseu = {
@@ -140,8 +162,10 @@ int main(void) {
         .olhando_direita = true,
         .olhando_esquerda = false,
         .andando = false,
-        .animando_transicao = false,
+        .desembainhando = false,
         .sofrendo_dano = false,
+        .atacando = false,
+        .tem_espada = false,
         .frame_atual = 0,
         .contador_animacao = 0
     };
@@ -154,8 +178,10 @@ int main(void) {
         .olhando_direita = true,
         .olhando_esquerda = false,
         .andando = false,
-        .animando_transicao = false,
+        .desembainhando = false,
         .sofrendo_dano = false,
+        .atacando = false,
+        .tem_espada = false,
         .frame_atual = 0,
         .contador_animacao = 0
     };
@@ -163,16 +189,14 @@ int main(void) {
     // Variáveis para controle de ataque
     bool ataque_ativado = false;
     int duracao_ataque = 0;
-    const int DURACAO_MAXIMA_ATAQUE = 30; // frames que o ataque fica ativo
+    const int DURACAO_MAXIMA_ATAQUE = 15; // frames que o ataque fica ativo
 
     // Sistema de eventos
     ALLEGRO_EVENT_QUEUE* fila_eventos = al_create_event_queue();
     ALLEGRO_TIMER* temporizador = al_create_timer(1.0 / 60.0);
-
     al_register_event_source(fila_eventos, al_get_display_event_source(tela_jogo));
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
     al_register_event_source(fila_eventos, al_get_timer_event_source(temporizador));
-
     al_start_timer(temporizador);
 
     // Loop principal do jogo
@@ -187,11 +211,30 @@ int main(void) {
             jogo_rodando = false;
         }
         else if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
-            if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) jogo_rodando = false;
+            if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+                jogo_rodando = false;
 
-            // Tecla "E" ativa animação de desembainhar (só se parado e não estiver animando)
-            if (evento.keyboard.keycode == ALLEGRO_KEY_E && !odisseu.andando && !odisseu.animando_transicao) {
-                odisseu.animando_transicao = true;
+            // Tecla "E" ativa animação de desembainhar (só se parado, não tem espada e não estiver animando)
+            if (evento.keyboard.keycode == ALLEGRO_KEY_E && !odisseu.andando &&
+                !odisseu.desembainhando && !odisseu.atacando && !odisseu.tem_espada) {
+                odisseu.desembainhando = true;
+                odisseu.frame_atual = 0;
+                odisseu.contador_animacao = 0; // reinicia contador
+            }
+
+            // Tecla "E" ativa animação de embainhar (só se parado, não tem espada e não estiver animando)
+            if (evento.keyboard.keycode == ALLEGRO_KEY_E && !odisseu.andando &&
+                !odisseu.desembainhando && !odisseu.atacando && odisseu.tem_espada) {
+                odisseu.guardando_espada = true;
+                odisseu.frame_atual = total_frames_desembainhar -1;
+                odisseu.contador_animacao = 0; // reinicia contador
+            }
+
+
+            // Tecla "ESPAÇO" ativa ataque (só se tem espada, parado e não estiver animando)
+            if (evento.keyboard.keycode == ALLEGRO_KEY_SPACE && odisseu.tem_espada &&
+                !odisseu.andando && !odisseu.desembainhando && !odisseu.atacando) {
+                odisseu.atacando = true;
                 odisseu.frame_atual = 0;
                 ataque_ativado = true;
                 duracao_ataque = 0;
@@ -203,15 +246,13 @@ int main(void) {
 
             float odisseu_direcao_x = 0.0f;
 
-            // Só pode se mover se não estiver animando a transição
-            if (!odisseu.animando_transicao) {
-                if (al_key_down(&estado_teclado, ALLEGRO_KEY_A) ||
-                    al_key_down(&estado_teclado, ALLEGRO_KEY_LEFT)) {
+            // Só pode se mover se não estiver animando transição ou atacando
+            if (!odisseu.desembainhando && !odisseu.atacando) {
+                if (al_key_down(&estado_teclado, ALLEGRO_KEY_A) || al_key_down(&estado_teclado, ALLEGRO_KEY_LEFT)) {
                     odisseu_direcao_x -= 0.1f;
                     odisseu.olhando_direita = false;
                 }
-                if (al_key_down(&estado_teclado, ALLEGRO_KEY_D) ||
-                    al_key_down(&estado_teclado, ALLEGRO_KEY_RIGHT)) {
+                if (al_key_down(&estado_teclado, ALLEGRO_KEY_D) || al_key_down(&estado_teclado, ALLEGRO_KEY_RIGHT)) {
                     odisseu_direcao_x += 0.1f;
                     odisseu.olhando_direita = true;
                 }
@@ -223,36 +264,68 @@ int main(void) {
             }
 
             const int VELOCIDADE_PERSONAGEM = 250 / 60;
-
             odisseu.x += odisseu_direcao_x * VELOCIDADE_PERSONAGEM;
             odisseu.y = limitar_valor(odisseu.y, 0, ALTURA_TELA - odisseu.altura);
             odisseu.andando = (odisseu_direcao_x != 0.0f);
 
-            // Atualiza animação do Odisseu
-            odisseu.contador_animacao++;
-            if (odisseu.contador_animacao >= 10) {
-                odisseu.frame_atual++;
-
-                if (odisseu.animando_transicao) {
+            // Puxando a espada
+            if (odisseu.desembainhando) {
+                odisseu.contador_animacao++;
+                if (odisseu.contador_animacao >= VELOCIDADE_ANIMACAO_DESEMBAINHAR) {
+                    odisseu.frame_atual++;
                     if (odisseu.frame_atual >= total_frames_desembainhar) {
-                        odisseu.animando_transicao = false;
+                        odisseu.desembainhando = false;
                         odisseu.frame_atual = 0;
-                        ataque_ativado = false;
+                        odisseu.tem_espada = true; // Agora tem espada permanentemente
                     }
+                    odisseu.contador_animacao = 0;
                 }
-                else if (odisseu.andando) {
-                    odisseu.frame_atual %= total_frames_andando;
+            }
+            // Guardar espada (frames invertidos)
+            else if (odisseu.guardando_espada) {
+                odisseu.contador_animacao++;
+                if (odisseu.contador_animacao >= VELOCIDADE_ANIMACAO_DESEMBAINHAR) {
+                    odisseu.frame_atual--; // <- diferente do desembainhar, decrementa
+                    if (odisseu.frame_atual < 0) {
+                        odisseu.guardando_espada = false;
+                        odisseu.frame_atual = 0;
+                        odisseu.tem_espada = false; // terminou guardando
+                    }
+                    odisseu.contador_animacao = 0;
                 }
-                else {
-                    odisseu.frame_atual %= total_frames_parado;
+            }
+            else {
+                odisseu.contador_animacao++;
+                if (odisseu.contador_animacao >= 10) { // delay padrão para outras animações
+                    odisseu.frame_atual++;
+                    // andar, parado ou atacando
+                    if (odisseu.atacando) {
+                        if (odisseu.frame_atual >= total_frames_atacando) {
+                            odisseu.atacando = false;
+                            odisseu.frame_atual = 0;
+                            ataque_ativado = false;
+                        }
+                    }
+                    else if (odisseu.andando) {
+                        if (odisseu.tem_espada)
+                            odisseu.frame_atual %= total_frames_andando_espada;
+                        else
+                            odisseu.frame_atual %= total_frames_andando;
+                    }
+                    else {
+                        if (odisseu.tem_espada)
+                            odisseu.frame_atual %= total_frames_parado_espada;
+                        else
+                            odisseu.frame_atual %= total_frames_parado;
+                    }
+                    odisseu.contador_animacao = 0;
                 }
-
-                odisseu.contador_animacao = 0;
             }
 
             // Atualiza animação da Circe
             circe.contador_animacao++;
-            if (circe.contador_animacao >= 10) {
+            int delay_animacao_circe = circe.sofrendo_dano ? 5 : 10;
+            if (circe.contador_animacao >= delay_animacao_circe) {
                 if (circe.sofrendo_dano) {
                     circe.frame_atual++;
                     if (circe.frame_atual >= total_frames_dano) {
@@ -269,22 +342,19 @@ int main(void) {
             // Verificar colisão durante o ataque
             if (ataque_ativado) {
                 duracao_ataque++;
-
-                // Define a área de ataque (hitbox) na frente do Odisseu
-                // Ajuste estes valores para tornar o hitbox menor
-                float area_ataque_x = odisseu.olhando_direita ? odisseu.x + odisseu.largura * 0.5f : odisseu.x - odisseu.largura * 0.3f;
+                float area_ataque_x = odisseu.olhando_direita ?
+                    odisseu.x + odisseu.largura * 0.5f :
+                    odisseu.x - odisseu.largura * 0.3f;
                 float area_ataque_y = odisseu.y + odisseu.altura * 0.1f;
-                float area_ataque_largura = odisseu.largura * 0.1f;  // 10% da largura original
-                float area_ataque_altura = odisseu.altura * 0.1f;    // 10% da altura original
+                float area_ataque_largura = odisseu.largura * 0.1f;
+                float area_ataque_altura = odisseu.altura * 0.1f;
 
-                // Verifica se a Circe está dentro da área de ataque
                 if (verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
                     circe.x, circe.y, circe.largura, circe.altura)) {
                     circe.sofrendo_dano = true;
                     circe.frame_atual = 0;
                 }
 
-                // Desativa o ataque após um tempo
                 if (duracao_ataque >= DURACAO_MAXIMA_ATAQUE) {
                     ataque_ativado = false;
                 }
@@ -298,30 +368,49 @@ int main(void) {
 
             // Fundo
             al_draw_scaled_bitmap(
-                imagem_fundo, 0, 0,
-                al_get_bitmap_width(imagem_fundo),
-                al_get_bitmap_height(imagem_fundo),
-                0, 0, LARGURA_TELA, ALTURA_TELA, 0
+                imagem_fundo,
+                0, 0, al_get_bitmap_width(imagem_fundo), al_get_bitmap_height(imagem_fundo),
+                0, 0, LARGURA_TELA, ALTURA_TELA,
+                0
             );
 
             // Seleciona o sprite do Odisseu
             ALLEGRO_BITMAP* sprite_atual_odisseu;
             int largura_frame_odisseu, altura_frame_odisseu;
 
-            if (odisseu.animando_transicao) {
+            if (odisseu.desembainhando || odisseu.guardando_espada) {
                 sprite_atual_odisseu = sprite_odisseuDesembainhar;
                 largura_frame_odisseu = largura_frame_desembainhar;
                 altura_frame_odisseu = altura_frame_desembainhar;
             }
+            else if (odisseu.atacando) {
+                sprite_atual_odisseu = sprite_odisseuAtacando;
+                largura_frame_odisseu = largura_frame_atacando;
+                altura_frame_odisseu = altura_frame_atacando;
+            }
             else if (odisseu.andando) {
-                sprite_atual_odisseu = sprite_odisseuAndando;
-                largura_frame_odisseu = largura_frame_andando;
-                altura_frame_odisseu = altura_frame_andando;
+                if (odisseu.tem_espada) {
+                    sprite_atual_odisseu = sprite_odisseuAndandoEspada;
+                    largura_frame_odisseu = largura_frame_andando_espada;
+                    altura_frame_odisseu = altura_frame_andando_espada;
+                }
+                else {
+                    sprite_atual_odisseu = sprite_odisseuAndando;
+                    largura_frame_odisseu = largura_frame_andando;
+                    altura_frame_odisseu = altura_frame_andando;
+                }
             }
             else {
-                sprite_atual_odisseu = sprite_odisseuParado;
-                largura_frame_odisseu = largura_frame_parado;
-                altura_frame_odisseu = altura_frame_parado;
+                if (odisseu.tem_espada) {
+                    sprite_atual_odisseu = sprite_odisseuParadoEspada;
+                    largura_frame_odisseu = largura_frame_parado_espada;
+                    altura_frame_odisseu = altura_frame_parado_espada;
+                }
+                else {
+                    sprite_atual_odisseu = sprite_odisseuParado;
+                    largura_frame_odisseu = largura_frame_parado;
+                    altura_frame_odisseu = altura_frame_parado;
+                }
             }
 
             // Seleciona o sprite da Circe
@@ -344,6 +433,7 @@ int main(void) {
 
             // Desenha Odisseu
             int flagsOdisseu = odisseu.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+
             al_draw_scaled_bitmap(
                 sprite_atual_odisseu,
                 odisseu.frame_atual * largura_frame_odisseu, 0,
@@ -363,8 +453,6 @@ int main(void) {
                 0
             );
 
-            
-
             al_flip_display();
             redesenhar_tela = false;
         }
@@ -374,6 +462,9 @@ int main(void) {
     al_destroy_bitmap(sprite_odisseuParado);
     al_destroy_bitmap(sprite_odisseuAndando);
     al_destroy_bitmap(sprite_odisseuDesembainhar);
+    al_destroy_bitmap(sprite_odisseuAtacando);
+    al_destroy_bitmap(sprite_odisseuParadoEspada);
+    al_destroy_bitmap(sprite_odisseuAndandoEspada);
     al_destroy_bitmap(sprite_circeparada);
     al_destroy_bitmap(sprite_circeDano);
     al_destroy_bitmap(imagem_fundo);
