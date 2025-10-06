@@ -1,14 +1,71 @@
-# Ignorar tudo
-*
+# =============================================
+# .gitignore para IthakaJogo (C + Allegro)
+# =============================================
 
-# Exceções específicas
-!IthakaJogo/
-!IthakaJogo/Ithaka/
-!IthakaJogo/Ithaka/imagensJogo/
-!IthakaJogo/Ithaka/imagensJogo/**
-!IthakaJogo/Ithaka/main.c
+# Pastas de build do Visual Studio
+Debug/
+Release/
+x64/
+x86/
+.vs/
+ipch/
+packages/
 
-# Não ignorar a solução e configurações da solução
-!/IthakaJogo.sln
-!IthakaJogo/Ithaka.vcxproj.filters
-!IthakaJogo/Ithaka.vcxproj
+# Arquivos compilados
+*.exe
+*.obj
+*.pdb
+*.ilk
+*.idb
+*.dll
+*.lib
+*.exp
+
+# Arquivos temporários do Visual Studio
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+*.VC.db
+*.VC.VC.opendb
+*.opendb
+*.db
+*.sdf
+*.opensdf
+
+# Arquivos de log de build
+*.log
+*.tlog
+
+# Arquivos temporários
+*.tmp
+*.temp
+*.cache
+*.bak
+*~
+
+# Arquivos do IntelliSense
+*.aps
+*.ncb
+*.sbr
+*.bsc
+*.tlb
+*.tlh
+*.iobj
+*.ipdb
+
+# Arquivos ReSharper (caso use)
+_ReSharper*/
+*.DotSettings.user
+
+# ===========================================
+# MANTER NO GIT (não ignorar):
+# ===========================================
+# - Ithaka/main.c
+# - Ithaka/imagensJogo/** (todas as imagens)
+# - Ithaka/allegro.log
+# - Ithaka/*.vcxproj
+# - Ithaka/*.vcxproj.filters
+# - IthakaJogo.sln
+# - README.md
+# - .gitignore
