@@ -43,6 +43,7 @@ ALLEGRO_DISPLAY* criar_tela_cheia(InformacoesTela tela) {
     if (tela_jogo) return tela_jogo;
     al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
     tela_jogo = al_create_display(tela.largura, tela.altura);
+    return tela_jogo;
 }
 
 // limita um valor entre um mínimo e máximo
@@ -72,6 +73,7 @@ int main(void) {
     // Inicialização do Allegro
     if (!al_init()) return -1;
     if (!al_install_keyboard()) return -1;
+    if (!al_install_mouse()) return -1;
     al_init_image_addon();
 
     // Obter resolução do monitor
@@ -197,6 +199,7 @@ int main(void) {
     al_register_event_source(fila_eventos, al_get_display_event_source(tela_jogo));
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
     al_register_event_source(fila_eventos, al_get_timer_event_source(temporizador));
+    al_register_event_source(fila_eventos, al_get_mouse_event_source());
     al_start_timer(temporizador);
 
     // Loop principal do jogo
@@ -226,13 +229,15 @@ int main(void) {
             if (evento.keyboard.keycode == ALLEGRO_KEY_E && !odisseu.andando &&
                 !odisseu.desembainhando && !odisseu.atacando && odisseu.tem_espada) {
                 odisseu.guardando_espada = true;
-                odisseu.frame_atual = total_frames_desembainhar -1;
+                odisseu.frame_atual = total_frames_desembainhar - 1;
                 odisseu.contador_animacao = 0; // reinicia contador
             }
 
-
-            // Tecla "ESPAÇO" ativa ataque (só se tem espada, parado e não estiver animando)
-            if (evento.keyboard.keycode == ALLEGRO_KEY_SPACE && odisseu.tem_espada &&
+        }
+        //Botão esquerdo do mouse ativa ataque (só se tem espada, parado e não estiver animando)
+        else if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN) {
+            // bot�o esquerdo = 1
+            if (evento.mouse.button == 1 && odisseu.tem_espada &&
                 !odisseu.andando && !odisseu.desembainhando && !odisseu.atacando) {
                 odisseu.atacando = true;
                 odisseu.frame_atual = 0;
@@ -263,7 +268,7 @@ int main(void) {
                 odisseu_direcao_x /= comprimento;
             }
 
-            const int VELOCIDADE_PERSONAGEM = 250 / 60;
+            const float VELOCIDADE_PERSONAGEM = 250.0f / 60.0f;
             odisseu.x += odisseu_direcao_x * VELOCIDADE_PERSONAGEM;
             odisseu.y = limitar_valor(odisseu.y, 0, ALTURA_TELA - odisseu.altura);
             odisseu.andando = (odisseu_direcao_x != 0.0f);
