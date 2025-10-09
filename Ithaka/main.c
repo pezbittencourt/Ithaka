@@ -17,7 +17,9 @@ typedef struct
     float x, y;
     int largura, altura, frame_atual, contador_animacao;
     bool olhando_direita, olhando_esquerda, andando, desembainhando, sofrendo_dano, guardando_espada, atacando, tem_espada;
-} Personagem;
+}
+
+ Personagem;
 
 // detecta a resolução do monitor principal
 InformacoesTela obter_resolucao_tela_atual()
@@ -98,6 +100,9 @@ int main(void)
         printf("Falha ao criar display.\n");
         return -1;
     }
+    // enums para Odisseu e Circe (nomes claros para índices)
+    enum { ODI_PARADO, ODI_ANDANDO, ODI_DESEMBAINHAR, ODI_ATACANDO, ODI_PARADO_ESPADA, ODI_ANDANDO_ESPADA, ODI_TOTAL };
+    enum { CIRCE_PARADA, CIRCE_DANO, CIRCE_TOTAL };
 
     // Carregar imagens
     // Odisseu
@@ -121,7 +126,17 @@ int main(void)
     ALLEGRO_BITMAP* fundo5 = al_load_bitmap("./imagensJogo/cenarios/Polifemo/Fundo_Polifemo5.png");
     ALLEGRO_BITMAP* fundo5_pedra = al_load_bitmap("./imagensJogo/cenarios/Polifemo/Fundo_Polifemo5pedra.png");
     ALLEGRO_BITMAP* fundo5_escuro = al_load_bitmap("./imagensJogo/cenarios/Polifemo/Fundo_Polifemo5escuro.png");
-
+    ALLEGRO_BITMAP* fundo6 = al_load_bitmap("./imagensJogo/cenarios/Polifemo/fundo_Polifemo6.png");
+    ALLEGRO_BITMAP* fundo6_rocha = al_load_bitmap("./imagensJogo/cenarios/Polifemo/fundo_Polifemo6rocha.png");
+    
+    //Tela inicial
+    ALLEGRO_BITMAP* fundo7 = al_load_bitmap("./imagensJogo/cenarios/menu/Fundo_Menu.png");
+    ALLEGRO_BITMAP* ithaka_Logo = al_load_bitmap("./imagensJogo/cenarios/menu/Ithaka_Logo.png");
+    ALLEGRO_BITMAP* fundo_branco = al_load_bitmap("./imagensJogo/cenarios/menu/Fundo_Branco_Transparente.png");
+    ALLEGRO_BITMAP* click_menu = al_load_bitmap("./imagensJogo/cenarios/menu/click_menu.png");
+    ALLEGRO_BITMAP* click_iniciar = al_load_bitmap("./imagensJogo/cenarios/menu/click_Iniciar.png");
+    
+    
     // Verificação de imagens carregadas corretamente
     if (!sprite_odisseuParado || !sprite_odisseuAndando || !sprite_odisseuDesembainhar ||
         !sprite_odisseuAtacando || !sprite_odisseuParadoEspada || !sprite_odisseuAndandoEspada ||
@@ -133,15 +148,18 @@ int main(void)
     }
 
     // Vetor de fundos
-    ALLEGRO_BITMAP* fundos[5] = {
+    ALLEGRO_BITMAP* fundos[7] = {
         fundo1,
         fundo2,
         fundo3,
         fundo4,
-        fundo5 };
+        fundo5,
+        fundo6,
+        fundo7
+    };
     // Controle de cenário
     int cenario_atual = 0;  // Pra começar no primeiro fundo
-    int total_cenarios = 5; // Total de fundos existentes
+    int total_cenarios = 7; // Total de fundos existentes
 
     // Configurações de animação do sprite parado
     // Odisseu
@@ -309,54 +327,67 @@ int main(void)
                 odisseu_direcao_x /= comprimento;
             }
 
-            const float velocidade_odisseu = 500.0f / 60.0f;
+            const float velocidade_odisseu = 800.0f / 60.0f;
             odisseu.x += odisseu_direcao_x * velocidade_odisseu;
             odisseu.y = limitar_valor(odisseu.y, 0, ALTURA_TELA - odisseu.altura);
             odisseu.andando = (odisseu_direcao_x != 0.0f);
 
             // Mudança de tela
-            // Esquerda pra direita
+            int direcao_cenario = 0; // 0=nenhum, 1=esquerda->direita, 2=direita->esquerda
+
             if (odisseu.x >= LARGURA_TELA)
+                direcao_cenario = 1;
+            else if (odisseu.x + odisseu.largura <= 0)
+                direcao_cenario = 2;
+
+            switch (direcao_cenario)
             {
+            case 1: // esquerda para direita
                 if (cenario_atual < total_cenarios - 1)
                 {
                     cenario_atual++;
-                    // reaparece do lado esquerdo
-                    odisseu.x = -odisseu.largura + 10;
+                    odisseu.x = -odisseu.largura + 10; // reaparece do lado esquerdo
                 }
                 else
-                {
-                    // trava no último cenário
-                    odisseu.x = LARGURA_TELA - odisseu.largura;
-                }
-            }
-
-            // Direita pra esquerda
-            else if (odisseu.x + odisseu.largura <= 0)
-            {
+                    odisseu.x = LARGURA_TELA - odisseu.largura; // trava no último cenário
+                break;
+            case 2: // direita para esquerda
                 if (cenario_atual > 0)
                 {
                     cenario_atual--;
-                    // reaparece do lado direito
-                    odisseu.x = LARGURA_TELA - 10;
+                    odisseu.x = LARGURA_TELA - 10; // reaparece do lado direito
                 }
                 else
-                {
-                    // trava no primeiro cenário
-                    odisseu.x = 0;
-                }
+                    odisseu.x = 0; // trava no primeiro cenário
+                break;
             }
-            if (cenario_atual == 0 && odisseu.x <= -70)
+
+            // Ajustes finos para limites do primeiro e último cenário
+            switch (cenario_atual)
             {
-                odisseu.x = -70;
+            case 0:
+                if (odisseu.x <= -70)
+                    odisseu.x = -70;
+                break;
+            case 6:
+                if ((odisseu.x + odisseu.largura) > LARGURA_TELA + 70)
+                    odisseu.x = LARGURA_TELA - odisseu.largura + 70;
+                break;
             }
-            else if (cenario_atual == total_cenarios - 1 && (odisseu.x + odisseu.largura) > LARGURA_TELA + 70)
-            {
-                odisseu.x = LARGURA_TELA - odisseu.largura + 70;
-            }
-            // Puxando a espada
+
+            // Atualiza animação do Odisseu (desembainhar, guardar espada, andar, atacar, parado)
+            int estado_animacao = 0; // 0=andar/parado,1=desembainhar,2=guardar_espada,3=atacar
+
             if (odisseu.desembainhando)
+                estado_animacao = 1;
+            else if (odisseu.guardando_espada)
+                estado_animacao = 2;
+            else if (odisseu.atacando)
+                estado_animacao = 3;
+
+            switch (estado_animacao)
             {
+            case 1: // Desembainhar
                 odisseu.contador_animacao++;
                 if (odisseu.contador_animacao >= VELOCIDADE_ANIMACAO_DESEMBAINHAR)
                 {
@@ -365,80 +396,76 @@ int main(void)
                     {
                         odisseu.desembainhando = false;
                         odisseu.frame_atual = 0;
-                        odisseu.tem_espada = true; // Agora tem espada permanentemente
+                        odisseu.tem_espada = true;
                     }
                     odisseu.contador_animacao = 0;
                 }
-            }
-            // Guardar espada (frames invertidos)
-            else if (odisseu.guardando_espada)
-            {
+                break;
+            case 2: // Guardar espada
                 odisseu.contador_animacao++;
                 if (odisseu.contador_animacao >= VELOCIDADE_ANIMACAO_DESEMBAINHAR)
                 {
-                    odisseu.frame_atual--; // <- diferente do desembainhar, decrementa
+                    odisseu.frame_atual--;
                     if (odisseu.frame_atual < 0)
                     {
                         odisseu.guardando_espada = false;
                         odisseu.frame_atual = 0;
-                        odisseu.tem_espada = false; // terminou guardando
+                        odisseu.tem_espada = false;
                     }
                     odisseu.contador_animacao = 0;
                 }
-            }
-            else
-            {
+                break;
+            case 3: // Atacar
                 odisseu.contador_animacao++;
                 if (odisseu.contador_animacao >= 10)
-                { // delay padrão para outras animações
+                {
                     odisseu.frame_atual++;
-                    // andar, parado ou atacando
-                    if (odisseu.atacando)
+                    if (odisseu.frame_atual >= total_frames_atacando)
                     {
-                        if (odisseu.frame_atual >= total_frames_atacando)
-                        {
-                            odisseu.atacando = false;
-                            odisseu.frame_atual = 0;
-                            ataque_ativado = false;
-                        }
+                        odisseu.atacando = false;
+                        odisseu.frame_atual = 0;
+                        ataque_ativado = false;
                     }
-                    else if (odisseu.andando)
+                    odisseu.contador_animacao = 0;
+                }
+                break;
+            case 0: // Andar ou parado
+            default:
+                odisseu.contador_animacao++;
+                if (odisseu.contador_animacao >= 10)
+                {
+                    odisseu.frame_atual++;
+                    if (odisseu.andando)
+                        odisseu.frame_atual %= (odisseu.tem_espada ? total_frames_andando_espada : total_frames_andando);
+                    else
+                        odisseu.frame_atual %= (odisseu.tem_espada ? total_frames_parado_espada : total_frames_parado);
+                    odisseu.contador_animacao = 0;
+                }
+                break;
+            }
+
+            // Atualiza animação da Circe apenas no cenário 5
+            if (cenario_atual == 5)
+            {
+                circe.contador_animacao++;
+                int delay_animacao_circe = circe.sofrendo_dano ? 5 : 10;
+                if (circe.contador_animacao >= delay_animacao_circe)
+                {
+                    if (circe.sofrendo_dano)
                     {
-                        if (odisseu.tem_espada)
-                            odisseu.frame_atual %= total_frames_andando_espada;
-                        else
-                            odisseu.frame_atual %= total_frames_andando;
+                        circe.frame_atual++;
+                        if (circe.frame_atual >= total_frames_dano)
+                        {
+                            circe.sofrendo_dano = false;
+                            circe.frame_atual = 0;
+                        }
                     }
                     else
                     {
-                        if (odisseu.tem_espada)
-                            odisseu.frame_atual %= total_frames_parado_espada;
-                        else
-                            odisseu.frame_atual %= total_frames_parado;
+                        circe.frame_atual = (circe.frame_atual + 1) % total_frames_circeparada;
                     }
-                    odisseu.contador_animacao = 0;
+                    circe.contador_animacao = 0;
                 }
-            }
-
-            // Atualiza animação da Circe
-            circe.contador_animacao++;
-            int delay_animacao_circe = circe.sofrendo_dano ? 5 : 10;
-            if (circe.contador_animacao >= delay_animacao_circe)
-            {
-                if (circe.sofrendo_dano)
-                {
-                    circe.frame_atual++;
-                    if (circe.frame_atual >= total_frames_dano)
-                    {
-                        circe.sofrendo_dano = false;
-                        circe.frame_atual = 0;
-                    }
-                }
-                else
-                {
-                    circe.frame_atual = (circe.frame_atual + 1) % total_frames_circeparada;
-                }
-                circe.contador_animacao = 0;
             }
 
             // Verificar colisão durante o ataque
@@ -458,9 +485,7 @@ int main(void)
                 }
 
                 if (duracao_ataque >= DURACAO_MAXIMA_ATAQUE)
-                {
                     ataque_ativado = false;
-                }
             }
 
             redesenhar_tela = true;
@@ -470,72 +495,80 @@ int main(void)
         {
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
-            // Seleciona o sprite do Odisseu
+            // Seleciona o sprite do Odisseu sem else if
             ALLEGRO_BITMAP* sprite_atual_odisseu;
             int largura_frame_odisseu, altura_frame_odisseu;
 
+            int estado_odisseu = 0; // 0=parado,1=andando,2=desembainhar,3=atacando,4=parado_espada,5=andando_espada
+
             if (odisseu.desembainhando || odisseu.guardando_espada)
+                estado_odisseu = 2;
+            else if (odisseu.atacando)
+                estado_odisseu = 3;
+            else if (odisseu.andando)
+                estado_odisseu = odisseu.tem_espada ? 5 : 1;
+            else
+                estado_odisseu = odisseu.tem_espada ? 4 : 0;
+
+            switch (estado_odisseu)
             {
+            case 2:
                 sprite_atual_odisseu = sprite_odisseuDesembainhar;
                 largura_frame_odisseu = largura_frame_desembainhar;
                 altura_frame_odisseu = altura_frame_desembainhar;
-            }
-            else if (odisseu.atacando)
-            {
+                break;
+            case 3:
                 sprite_atual_odisseu = sprite_odisseuAtacando;
                 largura_frame_odisseu = largura_frame_atacando;
                 altura_frame_odisseu = altura_frame_atacando;
-            }
-            else if (odisseu.andando)
-            {
-                if (odisseu.tem_espada)
-                {
-                    sprite_atual_odisseu = sprite_odisseuAndandoEspada;
-                    largura_frame_odisseu = largura_frame_andando_espada;
-                    altura_frame_odisseu = altura_frame_andando_espada;
-                }
-                else
-                {
-                    sprite_atual_odisseu = sprite_odisseuAndando;
-                    largura_frame_odisseu = largura_frame_andando;
-                    altura_frame_odisseu = altura_frame_andando;
-                }
-            }
-            else
-            {
-                if (odisseu.tem_espada)
-                {
-                    sprite_atual_odisseu = sprite_odisseuParadoEspada;
-                    largura_frame_odisseu = largura_frame_parado_espada;
-                    altura_frame_odisseu = altura_frame_parado_espada;
-                }
-                else
-                {
-                    sprite_atual_odisseu = sprite_odisseuParado;
-                    largura_frame_odisseu = largura_frame_parado;
-                    altura_frame_odisseu = altura_frame_parado;
-                }
+                break;
+            case 1:
+                sprite_atual_odisseu = sprite_odisseuAndando;
+                largura_frame_odisseu = largura_frame_andando;
+                altura_frame_odisseu = altura_frame_andando;
+                break;
+            case 5:
+                sprite_atual_odisseu = sprite_odisseuAndandoEspada;
+                largura_frame_odisseu = largura_frame_andando_espada;
+                altura_frame_odisseu = altura_frame_andando_espada;
+                break;
+            case 4:
+                sprite_atual_odisseu = sprite_odisseuParadoEspada;
+                largura_frame_odisseu = largura_frame_parado_espada;
+                altura_frame_odisseu = altura_frame_parado_espada;
+                break;
+            case 0:
+            default:
+                sprite_atual_odisseu = sprite_odisseuParado;
+                largura_frame_odisseu = largura_frame_parado;
+                altura_frame_odisseu = altura_frame_parado;
+                break;
             }
 
-            // Seleciona o sprite da Circe
+            // Seleciona o sprite da Circe sem else if
             ALLEGRO_BITMAP* sprite_atual_circe;
             int largura_frame_circe, altura_frame_circe;
             int frame_circe;
 
-            if (circe.sofrendo_dano)
+            int estado_circe = circe.sofrendo_dano ? 1 : 0; // 0=parada,1=dano
+
+            switch (estado_circe)
             {
+            case 1:
                 sprite_atual_circe = sprite_circeDano;
                 largura_frame_circe = largura_frame_dano;
                 altura_frame_circe = altura_frame_dano;
                 frame_circe = circe.frame_atual;
-            }
-            else
-            {
+                break;
+            case 0:
+            default:
                 sprite_atual_circe = sprite_circeparada;
                 largura_frame_circe = largura_frame_circeparada;
                 altura_frame_circe = altura_frame_circeparada;
                 frame_circe = circe.frame_atual % total_frames_circeparada;
+                break;
             }
+
             // Desenha o fundo do cenário atual
             ALLEGRO_BITMAP* fundo_atual = fundos[cenario_atual];
 
@@ -558,9 +591,11 @@ int main(void)
                 odisseu.x, odisseu.y,
                 odisseu.largura, odisseu.altura,
                 flagsOdisseu);
-            if (cenario_atual == 3)
+
+            // Desenha sobreposições dependendo do cenário
+            switch (cenario_atual)
             {
-                // Desenha árvore em primeiro plano
+            case 3:
                 al_draw_scaled_bitmap(
                     fundo4_arvore,
                     0, 0,
@@ -568,10 +603,8 @@ int main(void)
                     0, 0,
                     LARGURA_TELA, ALTURA_TELA,
                     0);
-            }
-            else if (cenario_atual == 4)
-            {
-                // Desenha pedra em primeiro plano
+                break;
+            case 4:
                 al_draw_scaled_bitmap(
                     fundo5_pedra,
                     0, 0,
@@ -579,13 +612,50 @@ int main(void)
                     0, 0,
                     LARGURA_TELA, ALTURA_TELA,
                     0);
+                break;
+            case 5:
+                al_draw_scaled_bitmap(
+                    fundo6_rocha,
+                    0, 0,
+                    al_get_bitmap_width(fundo6_rocha), al_get_bitmap_height(fundo6_rocha),
+                    0, 0,
+                    LARGURA_TELA, ALTURA_TELA,
+                    0);
+                // Desenha Circe
+                int flagsCirce = circe.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+
+                al_draw_scaled_bitmap(
+                    sprite_atual_circe,
+                    frame_circe* largura_frame_circe, 0,
+                    largura_frame_circe, altura_frame_circe,
+                    circe.x, circe.y,
+                    circe.largura, circe.altura, flagsCirce);
+
+                
+                break;
+            case 6:
+                al_draw_scaled_bitmap(
+                    fundo_branco,
+                    0, 0,
+                    al_get_bitmap_width(fundo_branco), al_get_bitmap_height(fundo_branco),
+                    0, 0,
+                    LARGURA_TELA, ALTURA_TELA,
+                    0);
+                al_draw_scaled_bitmap(
+                    ithaka_Logo,
+                    0, 0,
+                    al_get_bitmap_width(ithaka_Logo), al_get_bitmap_height(ithaka_Logo),
+                    0, 0,
+                    LARGURA_TELA, ALTURA_TELA,
+                    0);
+                break;
             }
 
+            
             al_flip_display();
             redesenhar_tela = false;
         }
     }
-
     // Limpeza geral:
     // Odisseu
     al_destroy_bitmap(sprite_odisseuParado);
@@ -604,9 +674,16 @@ int main(void)
     {
         al_destroy_bitmap(fundos[i]);
     }
+    //fundos sobreposição
     al_destroy_bitmap(fundo4_arvore);
     al_destroy_bitmap(fundo5_pedra);
     al_destroy_bitmap(fundo5_escuro);
+
+    //menu
+    al_destroy_bitmap(ithaka_Logo);
+    al_destroy_bitmap(fundo_branco);
+    al_destroy_bitmap(click_menu);
+    al_destroy_bitmap(click_iniciar);
 
     al_destroy_timer(temporizador);
     al_destroy_event_queue(fila_eventos);
