@@ -3,6 +3,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
+#include "menu_inicial.h"
 
 // estrutura para armazenar informações de resolução
 typedef struct
@@ -100,9 +101,15 @@ int main(void)
         printf("Falha ao criar display.\n");
         return -1;
     }
-    // enums para Odisseu e Circe (nomes claros para índices)
+    if (!menu_inicial(tela_jogo)) {
+        al_destroy_display(tela_jogo);
+        return 0;
+    }
+
+   // enums para Odisseu e Circe (nomes claros para índices)
     enum { ODI_PARADO, ODI_ANDANDO, ODI_DESEMBAINHAR, ODI_ATACANDO, ODI_PARADO_ESPADA, ODI_ANDANDO_ESPADA, ODI_TOTAL };
     enum { CIRCE_PARADA, CIRCE_DANO, CIRCE_TOTAL };
+
 
     // Carregar imagens
     // Odisseu
@@ -129,37 +136,30 @@ int main(void)
     ALLEGRO_BITMAP* fundo6 = al_load_bitmap("./imagensJogo/cenarios/Polifemo/fundo_Polifemo6.png");
     ALLEGRO_BITMAP* fundo6_rocha = al_load_bitmap("./imagensJogo/cenarios/Polifemo/fundo_Polifemo6rocha.png");
     
-    //Tela inicial
-    ALLEGRO_BITMAP* fundo7 = al_load_bitmap("./imagensJogo/cenarios/menu/Fundo_Menu.png");
-    ALLEGRO_BITMAP* ithaka_Logo = al_load_bitmap("./imagensJogo/cenarios/menu/Ithaka_Logo.png");
-    ALLEGRO_BITMAP* fundo_branco = al_load_bitmap("./imagensJogo/cenarios/menu/Fundo_Branco_Transparente.png");
-    ALLEGRO_BITMAP* click_menu = al_load_bitmap("./imagensJogo/cenarios/menu/click_menu.png");
-    ALLEGRO_BITMAP* click_iniciar = al_load_bitmap("./imagensJogo/cenarios/menu/click_Iniciar.png");
-    
     
     // Verificação de imagens carregadas corretamente
     if (!sprite_odisseuParado || !sprite_odisseuAndando || !sprite_odisseuDesembainhar ||
         !sprite_odisseuAtacando || !sprite_odisseuParadoEspada || !sprite_odisseuAndandoEspada ||
         !sprite_circeparada || !sprite_circeDano ||
-        !fundo1 || !fundo2 || !fundo3 || !fundo4 || !fundo4_arvore || !fundo5 || !fundo5_pedra || !fundo5_escuro)
+        !fundo1 || !fundo2 || !fundo3 || !fundo4 || !fundo4_arvore || !fundo5 || !fundo5_pedra || !fundo5_escuro ||
+        !fundo6 || !fundo6_rocha)
     {
         printf("Erro ao carregar imagens.\n");
         return -1;
     }
 
     // Vetor de fundos
-    ALLEGRO_BITMAP* fundos[7] = {
+    ALLEGRO_BITMAP* fundos[6] = {
         fundo1,
         fundo2,
         fundo3,
         fundo4,
         fundo5,
-        fundo6,
-        fundo7
+        fundo6
     };
     // Controle de cenário
     int cenario_atual = 0;  // Pra começar no primeiro fundo
-    int total_cenarios = 7; // Total de fundos existentes
+    int total_cenarios = 6; // Total de fundos existentes
 
     // Configurações de animação do sprite parado
     // Odisseu
@@ -633,22 +633,6 @@ int main(void)
 
                 
                 break;
-            case 6:
-                al_draw_scaled_bitmap(
-                    fundo_branco,
-                    0, 0,
-                    al_get_bitmap_width(fundo_branco), al_get_bitmap_height(fundo_branco),
-                    0, 0,
-                    LARGURA_TELA, ALTURA_TELA,
-                    0);
-                al_draw_scaled_bitmap(
-                    ithaka_Logo,
-                    0, 0,
-                    al_get_bitmap_width(ithaka_Logo), al_get_bitmap_height(ithaka_Logo),
-                    0, 0,
-                    LARGURA_TELA, ALTURA_TELA,
-                    0);
-                break;
             }
 
             
@@ -679,11 +663,7 @@ int main(void)
     al_destroy_bitmap(fundo5_pedra);
     al_destroy_bitmap(fundo5_escuro);
 
-    //menu
-    al_destroy_bitmap(ithaka_Logo);
-    al_destroy_bitmap(fundo_branco);
-    al_destroy_bitmap(click_menu);
-    al_destroy_bitmap(click_iniciar);
+
 
     al_destroy_timer(temporizador);
     al_destroy_event_queue(fila_eventos);
