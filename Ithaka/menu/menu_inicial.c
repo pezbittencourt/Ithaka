@@ -1,6 +1,9 @@
 ﻿#include "menu_inicial.h"
+#include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <stdio.h>
+#include <stdbool.h>
+#include <math.h>
 
 bool menu_inicial(ALLEGRO_DISPLAY* display) {
     // Obter dimensões da tela

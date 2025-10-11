@@ -116,6 +116,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(ProjectDir)fases;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -140,11 +141,13 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="fases\Polifemus\fase_Polifemo.c" />
     <ClCompile Include="main.c" />
-    <ClCompile Include="menu_inicial.c" />
+    <ClCompile Include="menu\menu_inicial.c" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="menu_inicial.h" />
+    <ClInclude Include="fases/Polifemus/fase_Polifemo.h" />
+    <ClInclude Include="menu\menu_inicial.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

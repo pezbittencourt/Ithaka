@@ -13,6 +13,15 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
+    <Filter Include="menu">
+      <UniqueIdentifier>{d7a04caa-7a71-43a7-a8bf-22b0f7d8b6c8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fases">
+      <UniqueIdentifier>{37a6f8ca-40ff-42df-b4fa-d55ff299041d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fases\Polifemus">
+      <UniqueIdentifier>{d88c4c75-52b1-49f3-b487-6cddecb9602b}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
@@ -21,13 +30,19 @@
     <ClCompile Include="main.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
-    <ClCompile Include="menu_inicial.c">
-      <Filter>Arquivos de Origem</Filter>
+    <ClCompile Include="menu\menu_inicial.c">
+      <Filter>menu</Filter>
+    </ClCompile>
+    <ClCompile Include="fases\Polifemus\fase_Polifemo.c">
+      <Filter>fases\Polifemus</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="menu_inicial.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
+    <ClInclude Include="menu\menu_inicial.h">
+      <Filter>menu</Filter>
+    </ClInclude>
+    <ClInclude Include="fases/Polifemus/fase_Polifemo.h">
+      <Filter>fases\Polifemus</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
