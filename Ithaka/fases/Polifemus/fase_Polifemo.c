@@ -16,8 +16,9 @@ bool carregar_cenarios_polifemo(CenarioPolifemo* cenario) {
     cenario->fundos[7] = al_load_bitmap("./imagensJogo/cenarios/Circe/fundoCirce2.png");
     cenario->fundos[8] = al_load_bitmap("./imagensJogo/cenarios/Circe/fundoCirce3.png");
     cenario->fundos[9] = al_load_bitmap("./imagensJogo/cenarios/Circe/fundoCirce4.png");
-    cenario->fundos[10] = al_load_bitmap("./imagensJogo/cenarios/Poseidon/fundoPoseidon.png");
-    cenario->fundos[11] = al_load_bitmap("./imagensJogo/cenarios/Olimpo/fundoOlimpo.png");
+    cenario->fundos[10] = al_load_bitmap("./imagensJogo/cenarios/Submundo/submundoProfeta.png");
+    cenario->fundos[11] = al_load_bitmap("./imagensJogo/cenarios/Poseidon/fundoPoseidon.png");
+    cenario->fundos[12] = al_load_bitmap("./imagensJogo/cenarios/Olimpo/fundoOlimpo.png");
 
     // === Carregamento das sobreposições ===
     cenario->fundo4_arvore = al_load_bitmap("./imagensJogo/cenarios/Polifemo/Fundo_Polifemo4arvore.png");
@@ -29,7 +30,7 @@ bool carregar_cenarios_polifemo(CenarioPolifemo* cenario) {
     cenario->efeitoFrenteCirce3 = al_load_bitmap("./imagensJogo/cenarios/Circe/efeitoFrenteCirce3.png");
 
     // === Verificação de carregamento ===
-    for (int i = 0; i < 12; i++) {
+    for (int i = 0; i < 13; i++) {
         if (!cenario->fundos[i]) {
             fprintf(stderr, "❌ Erro ao carregar fundo %d do cenário.\n", i + 1);
             return false;

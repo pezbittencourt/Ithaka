@@ -16,7 +16,13 @@ typedef struct {
     int largura, altura, frame_atual, contador_animacao;
     bool olhando_direita, olhando_esquerda, andando, desembainhando,
         sofrendo_dano, guardando_espada, atacando, tem_espada;
+
+    int frame_contador;        // controla o tempo de troca de frame
+    int velocidade_animacao;   // define a velocidade da animação
+    int num_frames;            // total de frames do sprite
+
 } Personagem;
+
 
 InformacoesTela obter_resolucao_tela_atual() {
     InformacoesTela tela;
@@ -65,8 +71,8 @@ int main(void) {
     const int LARGURA_TELA = tela.largura;
     const int ALTURA_TELA = tela.altura;
     const int ALTURA_SPRITE = 250, LARGURA_SPRITE = 250;
-    int ALTURA_PERSONAGEM = deixarProporcional(ALTURA_SPRITE, ALTURA_TELA, ALTURA_TELA_ORIGINAL);
-    int LARGURA_PERSONAGEM = deixarProporcional(LARGURA_SPRITE, LARGURA_TELA, LARGURA_TELA_ORIGINAL);
+    int ALTURA_PERSONAGEM = deixarProporcional(ALTURA_SPRITE + 60, ALTURA_TELA, ALTURA_TELA_ORIGINAL);
+    int LARGURA_PERSONAGEM = deixarProporcional(LARGURA_SPRITE + 25, LARGURA_TELA, LARGURA_TELA_ORIGINAL);
 
     ALLEGRO_DISPLAY* tela_jogo = criar_tela_cheia(tela);
     if (!tela_jogo) {
@@ -193,8 +199,8 @@ int main(void) {
     };
 
     Personagem Hermes = {
-        .x = LARGURA_TELA - (LARGURA_TELA / 1.5),
-        .y = deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+        .x = LARGURA_TELA - (LARGURA_TELA / 2.5),
+        .y = deixarProporcional(710, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
         .olhando_direita = true,
@@ -206,9 +212,13 @@ int main(void) {
         .atacando = false,
         .tem_espada = false,
         .frame_atual = 0,
-        .contador_animacao = 0
+        .contador_animacao = 0,
+        .frame_contador = 0,
+    .velocidade_animacao = 10,
+    .num_frames = 5
     };
 
+    static bool hermes_animacao_concluida = false;
     bool ataque_ativado = false;
     int duracao_ataque = 0;
     const int DURACAO_MAXIMA_ATAQUE = 15;
@@ -365,15 +375,46 @@ int main(void) {
                 }
             }
 
-            // Atualizar Hermes (apenas quando estiver no cenário 8)
+
+           // configuração Hermes
+           // Atualizar Hermes
             if (cenario.cenario_atual == 7) {
-                Hermes.contador_animacao++;
-                if (Hermes.contador_animacao >= 10) {
-                    Hermes.frame_atual = (Hermes.frame_atual + 1) % total_frames_hermesParado;
-                    Hermes.contador_animacao = 0;
+                // Atualizar direção de Hermes baseado na posição do Odisseu
+                if (odisseu.x > Hermes.x) {
+                    Hermes.olhando_direita = true;
+                }
+                else {
+                    Hermes.olhando_direita = false;
+                }
+
+                // Se a animação de tirar elmo não foi concluída
+                if (!hermes_animacao_concluida) {
+                    Hermes.frame_contador++;
+                    if (Hermes.frame_contador >= Hermes.velocidade_animacao) {
+                        Hermes.frame_contador = 0;
+                        Hermes.frame_atual++;
+
+                        // Quando completar os 18 frames da animação de tirar elmo
+                        if (Hermes.frame_atual >= 18) {
+                            hermes_animacao_concluida = true;
+                            Hermes.frame_atual = 0;
+                            Hermes.num_frames = 5; // Volta para animação parada com 5 frames
+                        }
+                    }
+                }
+                // Após concluir a animação, continua com a animação parada normal
+                else {
+                    Hermes.frame_contador++;
+                    if (Hermes.frame_contador >= Hermes.velocidade_animacao) {
+                        Hermes.frame_contador = 0;
+                        Hermes.frame_atual++;
+
+                        if (Hermes.frame_atual >= Hermes.num_frames) {
+                            Hermes.frame_atual = 0;
+                        }
+                    }
                 }
             }
-
 
             // Verificar colisão
             if (ataque_ativado) {
@@ -461,10 +502,26 @@ int main(void) {
 
             // Desenhar Hermes no cenário 7 (mesmo comportamento visual do Odisseu parado)
             if (cenario.cenario_atual == 7) {
-                ALLEGRO_BITMAP* sprite_hermes = hermesParado;
-                int largura_frame_hermes = largura_frame_hermesParado;
-                int altura_frame_hermes = altura_frame_hermesParado;
-                int frame_hermes = Hermes.frame_atual % total_frames_hermesParado;
+                ALLEGRO_BITMAP* sprite_hermes;
+                int largura_frame_hermes;
+                int altura_frame_hermes;
+                int total_frames_hermes;
+
+                // Escolher sprite baseado se a animação foi concluída
+                if (!hermes_animacao_concluida) {
+                    sprite_hermes = hermesTiraElmo;
+                    largura_frame_hermes = largura_frame_hermesTiraElmo;
+                    altura_frame_hermes = altura_frame_hermesTiraElmo;
+                    total_frames_hermes = total_frames_hermesTiraElmo;
+                }
+                else {
+                    sprite_hermes = hermesParado;
+                    largura_frame_hermes = largura_frame_hermesParado;
+                    altura_frame_hermes = altura_frame_hermesParado;
+                    total_frames_hermes = total_frames_hermesParado;
+                }
+
+                int frame_hermes = Hermes.frame_atual % total_frames_hermes;
                 int flagsHermes = Hermes.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
 
                 al_draw_scaled_bitmap(
@@ -498,15 +555,23 @@ int main(void) {
         }
     }
 
-    // Limpeza
+	// Limpeza de eventos e personagens
+
+	//Odisseu
     al_destroy_bitmap(odisseuParado);
     al_destroy_bitmap(odisseuAndando);
     al_destroy_bitmap(odisseuDesembainhar);
     al_destroy_bitmap(odisseuAtacando);
     al_destroy_bitmap(odisseuParadoEspada);
     al_destroy_bitmap(odisseuAndandoEspada);
+    
+    //Circe
     al_destroy_bitmap(circeparada);
     al_destroy_bitmap(circeDano);
+	
+    //Hermes
+    al_destroy_bitmap(hermesParado);
+	al_destroy_bitmap(hermesTiraElmo);
 
     destruir_cenarios_polifemo(&cenario);
     al_destroy_timer(temporizador);
