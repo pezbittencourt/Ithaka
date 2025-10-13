@@ -90,56 +90,72 @@ int main(void) {
     }
 
     // Carregar sprites
-    ALLEGRO_BITMAP* sprite_odisseuParado = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParado.png");
-    ALLEGRO_BITMAP* sprite_odisseuAndando = al_load_bitmap("./imagensJogo/personagens/Odisseu/andandoSemEspada.png");
-    ALLEGRO_BITMAP* sprite_odisseuDesembainhar = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiDesembainhar.png");
-    ALLEGRO_BITMAP* sprite_odisseuAtacando = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiAtacando.png");
-    ALLEGRO_BITMAP* sprite_odisseuParadoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParadoEspada.png");
-    ALLEGRO_BITMAP* sprite_odisseuAndandoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiAndandoEspada.png");
-    ALLEGRO_BITMAP* sprite_circeparada = al_load_bitmap("./imagensJogo/personagens/Circe/circeparada.png");
-    ALLEGRO_BITMAP* sprite_circeDano = al_load_bitmap("./imagensJogo/personagens/Circe/circeDano.png");
+    ALLEGRO_BITMAP* odisseuParado = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParado.png");
+    ALLEGRO_BITMAP* odisseuAndando = al_load_bitmap("./imagensJogo/personagens/Odisseu/andandoSemEspada.png");
+    ALLEGRO_BITMAP* odisseuDesembainhar = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiDesembainhar.png");
+    ALLEGRO_BITMAP* odisseuAtacando = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiAtacando.png");
+    ALLEGRO_BITMAP* odisseuParadoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParadoEspada.png");
+    ALLEGRO_BITMAP* odisseuAndandoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiAndandoEspada.png");
+    ALLEGRO_BITMAP* circeparada = al_load_bitmap("./imagensJogo/personagens/Circe/circeparada.png");
+    ALLEGRO_BITMAP* circeDano = al_load_bitmap("./imagensJogo/personagens/Circe/circeDano.png");
+	ALLEGRO_BITMAP* hermesParado = al_load_bitmap("./imagensJogo/personagens/Hermes/hermesParado.png");
+    ALLEGRO_BITMAP* hermesTiraElmo = al_load_bitmap("./imagensJogo/personagens/Hermes/tirandoElmo.png");
 
-    if (!sprite_odisseuParado || !sprite_odisseuAndando || !sprite_odisseuDesembainhar ||
-        !sprite_odisseuAtacando || !sprite_odisseuParadoEspada || !sprite_odisseuAndandoEspada ||
-        !sprite_circeparada || !sprite_circeDano) {
+    if (!odisseuParado || !odisseuAndando || !odisseuDesembainhar ||
+        !odisseuAtacando || !odisseuParadoEspada || !odisseuAndandoEspada ||
+        !circeparada || !circeDano ||!hermesParado ||!hermesTiraElmo) {
         printf("Erro ao carregar imagens dos personagens.\n");
         return -1;
     }
 
     // Configurações de frames
+
+    //Odisseu configuração
     int total_frames_parado = 5;
-    int largura_frame_parado = al_get_bitmap_width(sprite_odisseuParado) / total_frames_parado;
-    int altura_frame_parado = al_get_bitmap_height(sprite_odisseuParado);
+    int largura_frame_parado = al_get_bitmap_width(odisseuParado) / total_frames_parado;
+    int altura_frame_parado = al_get_bitmap_height(odisseuParado);
 
     int total_frames_parado_espada = 5;
-    int largura_frame_parado_espada = al_get_bitmap_width(sprite_odisseuParadoEspada) / total_frames_parado_espada;
-    int altura_frame_parado_espada = al_get_bitmap_height(sprite_odisseuParadoEspada);
-
-    int total_frames_circeparada = 5;
-    int largura_frame_circeparada = al_get_bitmap_width(sprite_circeparada) / total_frames_circeparada;
-    int altura_frame_circeparada = al_get_bitmap_height(sprite_circeparada);
-
-    int total_frames_dano = 7;
-    int largura_frame_dano = al_get_bitmap_width(sprite_circeDano) / total_frames_dano;
-    int altura_frame_dano = al_get_bitmap_height(sprite_circeDano);
+    int largura_frame_parado_espada = al_get_bitmap_width(odisseuParadoEspada) / total_frames_parado_espada;
+    int altura_frame_parado_espada = al_get_bitmap_height(odisseuParadoEspada);
 
     int total_frames_andando = 6;
-    int largura_frame_andando = al_get_bitmap_width(sprite_odisseuAndando) / total_frames_andando;
-    int altura_frame_andando = al_get_bitmap_height(sprite_odisseuAndando);
+    int largura_frame_andando = al_get_bitmap_width(odisseuAndando) / total_frames_andando;
+    int altura_frame_andando = al_get_bitmap_height(odisseuAndando);
 
     int total_frames_andando_espada = 6;
-    int largura_frame_andando_espada = al_get_bitmap_width(sprite_odisseuAndandoEspada) / total_frames_andando_espada;
-    int altura_frame_andando_espada = al_get_bitmap_height(sprite_odisseuAndandoEspada);
+    int largura_frame_andando_espada = al_get_bitmap_width(odisseuAndandoEspada) / total_frames_andando_espada;
+    int altura_frame_andando_espada = al_get_bitmap_height(odisseuAndandoEspada);
 
     int total_frames_desembainhar = 7;
-    int largura_frame_desembainhar = al_get_bitmap_width(sprite_odisseuDesembainhar) / total_frames_desembainhar;
-    int altura_frame_desembainhar = al_get_bitmap_height(sprite_odisseuDesembainhar);
+    int largura_frame_desembainhar = al_get_bitmap_width(odisseuDesembainhar) / total_frames_desembainhar;
+    int altura_frame_desembainhar = al_get_bitmap_height(odisseuDesembainhar);
+    
+    const int VELOCIDADE_ANIMACAO_DESEMBAINHAR = 6;
 
     int total_frames_atacando = 6;
-    int largura_frame_atacando = al_get_bitmap_width(sprite_odisseuAtacando) / total_frames_atacando;
-    int altura_frame_atacando = al_get_bitmap_height(sprite_odisseuAtacando);
+    int largura_frame_atacando = al_get_bitmap_width(odisseuAtacando) / total_frames_atacando;
+    int altura_frame_atacando = al_get_bitmap_height(odisseuAtacando);
 
-    const int VELOCIDADE_ANIMACAO_DESEMBAINHAR = 6;
+
+	//Circe configuração
+    int total_frames_circeparada = 5;
+    int largura_frame_circeparada = al_get_bitmap_width(circeparada) / total_frames_circeparada;
+    int altura_frame_circeparada = al_get_bitmap_height(circeparada);
+
+    int total_frames_dano = 7;
+    int largura_frame_dano = al_get_bitmap_width(circeDano) / total_frames_dano;
+    int altura_frame_dano = al_get_bitmap_height(circeDano);
+
+	//Hermes configuração
+	int total_frames_hermesParado = 5;
+	int largura_frame_hermesParado = al_get_bitmap_width(hermesParado) / total_frames_hermesParado;
+	int altura_frame_hermesParado = al_get_bitmap_height(hermesParado);
+
+	int total_frames_hermesTiraElmo = 18;
+	int largura_frame_hermesTiraElmo = al_get_bitmap_width(hermesTiraElmo) / total_frames_hermesTiraElmo;
+	int altura_frame_hermesTiraElmo = al_get_bitmap_height(hermesTiraElmo);
+
 
     // Inicializar personagens
     Personagem odisseu = {
@@ -161,6 +177,23 @@ int main(void) {
 
     Personagem circe = {
         .x = LARGURA_TELA - (LARGURA_TELA / 3),
+        .y = deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+        .largura = LARGURA_PERSONAGEM,
+        .altura = ALTURA_PERSONAGEM,
+        .olhando_direita = true,
+        .olhando_esquerda = false,
+        .andando = false,
+        .desembainhando = false,
+        .sofrendo_dano = false,
+        .guardando_espada = false,
+        .atacando = false,
+        .tem_espada = false,
+        .frame_atual = 0,
+        .contador_animacao = 0
+    };
+
+    Personagem Hermes = {
+        .x = LARGURA_TELA - (LARGURA_TELA / 1.5),
         .y = deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
@@ -314,7 +347,7 @@ int main(void) {
             }
 
             // Atualizar Circe
-            if (cenario.cenario_atual == 5) {
+            if (cenario.cenario_atual == 9) {
                 circe.contador_animacao++;
                 int delay_animacao_circe = circe.sofrendo_dano ? 5 : 10;
                 if (circe.contador_animacao >= delay_animacao_circe) {
@@ -331,6 +364,16 @@ int main(void) {
                     circe.contador_animacao = 0;
                 }
             }
+
+            // Atualizar Hermes (apenas quando estiver no cenário 8)
+            if (cenario.cenario_atual == 7) {
+                Hermes.contador_animacao++;
+                if (Hermes.contador_animacao >= 10) {
+                    Hermes.frame_atual = (Hermes.frame_atual + 1) % total_frames_hermesParado;
+                    Hermes.contador_animacao = 0;
+                }
+            }
+
 
             // Verificar colisão
             if (ataque_ativado) {
@@ -371,33 +414,33 @@ int main(void) {
 
             switch (estado_odisseu) {
             case 2:
-                sprite_atual_odisseu = sprite_odisseuDesembainhar;
+                sprite_atual_odisseu = odisseuDesembainhar;
                 largura_frame_odisseu = largura_frame_desembainhar;
                 altura_frame_odisseu = altura_frame_desembainhar;
                 break;
             case 3:
-                sprite_atual_odisseu = sprite_odisseuAtacando;
+                sprite_atual_odisseu = odisseuAtacando;
                 largura_frame_odisseu = largura_frame_atacando;
                 altura_frame_odisseu = altura_frame_atacando;
                 break;
             case 1:
-                sprite_atual_odisseu = sprite_odisseuAndando;
+                sprite_atual_odisseu = odisseuAndando;
                 largura_frame_odisseu = largura_frame_andando;
                 altura_frame_odisseu = altura_frame_andando;
                 break;
             case 5:
-                sprite_atual_odisseu = sprite_odisseuAndandoEspada;
+                sprite_atual_odisseu = odisseuAndandoEspada;
                 largura_frame_odisseu = largura_frame_andando_espada;
                 altura_frame_odisseu = altura_frame_andando_espada;
                 break;
             case 4:
-                sprite_atual_odisseu = sprite_odisseuParadoEspada;
+                sprite_atual_odisseu = odisseuParadoEspada;
                 largura_frame_odisseu = largura_frame_parado_espada;
                 altura_frame_odisseu = altura_frame_parado_espada;
                 break;
             case 0:
             default:
-                sprite_atual_odisseu = sprite_odisseuParado;
+                sprite_atual_odisseu = odisseuParado;
                 largura_frame_odisseu = largura_frame_parado;
                 altura_frame_odisseu = altura_frame_parado;
                 break;
@@ -416,9 +459,27 @@ int main(void) {
             // Desenhar sobreposições
             desenhar_sobreposicoes_polifemo(&cenario, LARGURA_TELA, ALTURA_TELA);
 
-            // Desenhar Circe no cenário 5
-            if (cenario.cenario_atual == 5) {
-                ALLEGRO_BITMAP* sprite_atual_circe = circe.sofrendo_dano ? sprite_circeDano : sprite_circeparada;
+            // Desenhar Hermes no cenário 7 (mesmo comportamento visual do Odisseu parado)
+            if (cenario.cenario_atual == 7) {
+                ALLEGRO_BITMAP* sprite_hermes = hermesParado;
+                int largura_frame_hermes = largura_frame_hermesParado;
+                int altura_frame_hermes = altura_frame_hermesParado;
+                int frame_hermes = Hermes.frame_atual % total_frames_hermesParado;
+                int flagsHermes = Hermes.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+
+                al_draw_scaled_bitmap(
+                    sprite_hermes,
+                    frame_hermes * largura_frame_hermes, 0,
+                    largura_frame_hermes, altura_frame_hermes,
+                    Hermes.x, Hermes.y,
+                    Hermes.largura, Hermes.altura,
+                    flagsHermes);
+            }
+
+
+            // Desenhar Circe no último cenário
+            if (cenario.cenario_atual == 9) {
+                ALLEGRO_BITMAP* sprite_atual_circe = circe.sofrendo_dano ? circeDano : circeparada;
                 int largura_frame_circe = circe.sofrendo_dano ? largura_frame_dano : largura_frame_circeparada;
                 int altura_frame_circe = circe.sofrendo_dano ? altura_frame_dano : altura_frame_circeparada;
                 int frame_circe = circe.sofrendo_dano ? circe.frame_atual : circe.frame_atual % total_frames_circeparada;
@@ -438,14 +499,14 @@ int main(void) {
     }
 
     // Limpeza
-    al_destroy_bitmap(sprite_odisseuParado);
-    al_destroy_bitmap(sprite_odisseuAndando);
-    al_destroy_bitmap(sprite_odisseuDesembainhar);
-    al_destroy_bitmap(sprite_odisseuAtacando);
-    al_destroy_bitmap(sprite_odisseuParadoEspada);
-    al_destroy_bitmap(sprite_odisseuAndandoEspada);
-    al_destroy_bitmap(sprite_circeparada);
-    al_destroy_bitmap(sprite_circeDano);
+    al_destroy_bitmap(odisseuParado);
+    al_destroy_bitmap(odisseuAndando);
+    al_destroy_bitmap(odisseuDesembainhar);
+    al_destroy_bitmap(odisseuAtacando);
+    al_destroy_bitmap(odisseuParadoEspada);
+    al_destroy_bitmap(odisseuAndandoEspada);
+    al_destroy_bitmap(circeparada);
+    al_destroy_bitmap(circeDano);
 
     destruir_cenarios_polifemo(&cenario);
     al_destroy_timer(temporizador);
