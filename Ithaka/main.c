@@ -291,7 +291,7 @@ int main(void) {
                 odisseu_direcao_x /= comprimento;
             }
 
-            const float velocidade_odisseu = 800.0f / 60.0f;
+            const float velocidade_odisseu = 1200.0f / 120.0f;
             odisseu.x += odisseu_direcao_x * velocidade_odisseu;
             odisseu.y = limitar_valor(odisseu.y, 0, ALTURA_TELA - odisseu.altura);
             odisseu.andando = (odisseu_direcao_x != 0.0f);

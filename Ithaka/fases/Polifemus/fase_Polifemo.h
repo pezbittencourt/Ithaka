@@ -6,7 +6,7 @@
 
 // Estrutura para gerenciar os cenários
 typedef struct {
-    ALLEGRO_BITMAP* fundos[13];
+    ALLEGRO_BITMAP* fundos[16];
     ALLEGRO_BITMAP* fundo4_arvore;
     ALLEGRO_BITMAP* fundo5_pedra;
     ALLEGRO_BITMAP* fundo5_escuro;
