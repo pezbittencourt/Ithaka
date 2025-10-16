@@ -143,12 +143,12 @@
   <ItemGroup>
     <ClCompile Include="fases\Polifemus\fase_Polifemo.c" />
     <ClCompile Include="main.c" />
-    <ClCompile Include="mapa.c" />
+    <ClCompile Include="mapa\mapa.c" />
     <ClCompile Include="menu\menu_inicial.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fases/Polifemus/fase_Polifemo.h" />
-    <ClInclude Include="mapa.h" />
+    <ClInclude Include="mapa\mapa.h" />
     <ClInclude Include="menu\menu_inicial.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

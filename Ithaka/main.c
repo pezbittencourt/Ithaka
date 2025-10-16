@@ -5,7 +5,7 @@
 #include <math.h>
 #include "menu/menu_inicial.h"
 #include "fases/Polifemus/fase_Polifemo.h"
-#include "mapa.h"
+#include "mapa/mapa.h"
 
 typedef struct {
     int largura;
