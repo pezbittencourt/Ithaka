@@ -36,6 +36,9 @@
     <ClCompile Include="fases\Polifemus\fase_Polifemo.c">
       <Filter>fases\Polifemus</Filter>
     </ClCompile>
+    <ClCompile Include="mapa.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="menu\menu_inicial.h">
@@ -43,6 +46,9 @@
     </ClInclude>
     <ClInclude Include="fases/Polifemus/fase_Polifemo.h">
       <Filter>fases\Polifemus</Filter>
+    </ClInclude>
+    <ClInclude Include="mapa.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

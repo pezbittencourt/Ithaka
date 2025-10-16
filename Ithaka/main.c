@@ -5,6 +5,7 @@
 #include <math.h>
 #include "menu/menu_inicial.h"
 #include "fases/Polifemus/fase_Polifemo.h"
+#include "mapa.h"
 
 typedef struct {
     int largura;
@@ -80,11 +81,17 @@ int main(void) {
         return -1;
     }
 
-	// Menu inicial
     if (!menu_inicial(tela_jogo)) {
-        printf("Erro ao carregar menu.\n");
+        printf("Jogo encerrado.\n");
         al_destroy_display(tela_jogo);
-        return -1;
+        return 0; // Saída normal, não é erro
+    }
+
+    // Exibir mapa inicial
+    if (!exibir_mapa_inicial(tela_jogo)) {
+        printf("Usuário voltou do mapa.\n");
+        al_destroy_display(tela_jogo);
+        return 0; // Usuário pressionou ESC no mapa
     }
 
     // Cenários Polifemo
@@ -374,7 +381,6 @@ int main(void) {
                     circe.contador_animacao = 0;
                 }
             }
-
 
            // configuração Hermes
            // Atualizar Hermes
