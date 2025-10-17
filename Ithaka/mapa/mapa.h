@@ -1,9 +1,14 @@
-#ifndef MAPA_INICIAL_H
-#define MAPA_INICIAL_H
+﻿#ifndef MAPA_H
+#define MAPA_H
 
 #include <allegro5/allegro.h>
-#include <stdbool.h>
 
-bool exibir_mapa_inicial(ALLEGRO_DISPLAY* display);
+// Códigos de retorno
+#define MAPA_SAIR           -1
+#define MAPA_VOLTAR_MENU     0
+#define MAPA_FASE_POLIFEMO   1
+#define MAPA_FASE_CIRCE      2 
+
+int exibir_mapa_inicial(ALLEGRO_DISPLAY* display);
 
 #endif

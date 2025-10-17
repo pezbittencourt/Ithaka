@@ -5,8 +5,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 
-bool exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
-    // Obter dimensões da tela
+int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
     int tela_largura = al_get_display_width(display);
     int tela_altura = al_get_display_height(display);
 
@@ -20,35 +19,35 @@ bool exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
     printf("[MAPA] Área Polifemo: X=%d Y=%d L=%d A=%d\n",
         areaX_polifemo, areaY_polifemo, area_largura, area_altura);
 
-    // ============ ÁREA 2: MENU (CENTRO) ============
-    int area_menu_largura = 200;
-    int area_menu_altura = 100;
+    // ============ ÁREA 2: CIRCE (CENTRO) ============
+    int area_circe_largura = 200;
+    int area_circe_altura = 100;
 
-    int areaX_menu = (tela_largura / 2) - (area_menu_largura / 2);
-    int areaY_menu = (tela_altura / 2) - (area_menu_altura / 2);
+    int areaX_circe = (tela_largura / 2) - (area_circe_largura / 2);
+    int areaY_circe = (tela_altura / 2) - (area_circe_altura / 2);
 
-    printf("[MAPA] Área Menu: X=%d Y=%d L=%d A=%d\n",
-        areaX_menu, areaY_menu, area_menu_largura, area_menu_altura);
+    printf("[MAPA] Área Circe (Centro): X=%d Y=%d L=%d A=%d\n",
+        areaX_circe, areaY_circe, area_circe_largura, area_circe_altura);
 
     // Carregar imagem do mapa
     ALLEGRO_BITMAP* mapa = al_load_bitmap("./imagensJogo/cenarios/mapa/mapaInicial.png");
     if (!mapa) {
         printf("Erro ao carregar imagem do mapa.\n");
-        return false;
+        return MAPA_SAIR;
     }
 
     // Inicializar addon de primitivas
     if (!al_init_primitives_addon()) {
         printf("Erro ao inicializar primitivas.\n");
         al_destroy_bitmap(mapa);
-        return false;
+        return MAPA_SAIR;
     }
 
     // Criar fila de eventos
     ALLEGRO_EVENT_QUEUE* fila_eventos = al_create_event_queue();
     if (!fila_eventos) {
         al_destroy_bitmap(mapa);
-        return false;
+        return MAPA_SAIR;
     }
 
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
@@ -56,9 +55,9 @@ bool exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
     al_register_event_source(fila_eventos, al_get_display_event_source(display));
 
     bool rodando = true;
-    bool confirmar = false;
+    int escolha = MAPA_VOLTAR_MENU;  // Padrão: voltar ao menu
     bool mouse_sobre_polifemo = false;
-    bool mouse_sobre_menu = false;
+    bool mouse_sobre_circe = false;
     bool redesenhar = true;
 
     while (rodando) {
@@ -67,13 +66,13 @@ bool exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
 
         if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
             rodando = false;
-            confirmar = false;
+            escolha = MAPA_SAIR;
         }
         else if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
             if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 printf("[MAPA] ESC pressionado - Voltando ao menu\n");
                 rodando = false;
-                confirmar = false;
+                escolha = MAPA_VOLTAR_MENU;
             }
         }
         else if (evento.type == ALLEGRO_EVENT_MOUSE_AXES) {
@@ -87,16 +86,16 @@ bool exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
                 mouse_y >= areaY_polifemo &&
                 mouse_y <= areaY_polifemo + area_altura);
 
-            // Verificar área Menu
-            bool estava_sobre_menu = mouse_sobre_menu;
-            mouse_sobre_menu = (mouse_x >= areaX_menu &&
-                mouse_x <= areaX_menu + area_menu_largura &&
-                mouse_y >= areaY_menu &&
-                mouse_y <= areaY_menu + area_menu_altura);
+            // Verificar área Circe (centro)
+            bool estava_sobre_circe = mouse_sobre_circe;
+            mouse_sobre_circe = (mouse_x >= areaX_circe &&
+                mouse_x <= areaX_circe + area_circe_largura &&
+                mouse_y >= areaY_circe &&
+                mouse_y <= areaY_circe + area_circe_altura);
 
             // Redesenhar se qualquer estado mudou
             if (estava_sobre_polifemo != mouse_sobre_polifemo ||
-                estava_sobre_menu != mouse_sobre_menu) {
+                estava_sobre_circe != mouse_sobre_circe) {
                 redesenhar = true;
             }
         }
@@ -105,16 +104,16 @@ bool exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
                 int mouse_x = evento.mouse.x;
                 int mouse_y = evento.mouse.y;
 
-                // PRIORIDADE 1: Verificar clique no MENU primeiro
-                bool clicou_menu = (mouse_x >= areaX_menu &&
-                    mouse_x <= areaX_menu + area_menu_largura &&
-                    mouse_y >= areaY_menu &&
-                    mouse_y <= areaY_menu + area_menu_altura);
+                // PRIORIDADE 1: Verificar clique em CIRCE (centro)
+                bool clicou_circe = (mouse_x >= areaX_circe &&
+                    mouse_x <= areaX_circe + area_circe_largura &&
+                    mouse_y >= areaY_circe &&
+                    mouse_y <= areaY_circe + area_circe_altura);
 
-                if (clicou_menu) {
-                    printf("[MAPA] Clique no MENU - Voltando...\n");
+                if (clicou_circe) {
+                    printf("[MAPA] Clique em CIRCE (centro) - Iniciando fase...\n");
                     rodando = false;
-                    confirmar = false;  // Retorna false = voltar ao menu
+                    escolha = MAPA_FASE_CIRCE;
                 }
                 // PRIORIDADE 2: Verificar clique em POLIFEMO
                 else {
@@ -126,10 +125,11 @@ bool exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
                     if (clicou_polifemo) {
                         printf("[MAPA] Clique em POLIFEMO - Iniciando jogo...\n");
                         rodando = false;
-                        confirmar = true;  // Retorna true = iniciar jogo
+                        escolha = MAPA_FASE_POLIFEMO; 
                     }
                     else {
-                        printf("[MAPA] Clique fora (X=%d Y=%d)\n", mouse_x, mouse_y);
+                        printf("[MAPA] Clique fora das áreas (X=%d Y=%d)\n",
+                            mouse_x, mouse_y);
                     }
                 }
             }
@@ -179,29 +179,30 @@ bool exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
                 );
             }
 
-            // ============ DESENHAR ÁREA MENU ============
-            if (mouse_sobre_menu) {
+            // ============ DESENHAR ÁREA CIRCE (CENTRO) ============
+            if (mouse_sobre_circe) {
+                // Rosa/Roxo para Circe (mágica/feiticeira)
                 al_draw_filled_rectangle(
-                    areaX_menu, areaY_menu,
-                    areaX_menu + area_menu_largura,
-                    areaY_menu + area_menu_altura,
-                    al_map_rgba(255, 50, 50, 100)  // Vermelho
+                    areaX_circe, areaY_circe,
+                    areaX_circe + area_circe_largura,
+                    areaY_circe + area_circe_altura,
+                    al_map_rgba(200, 50, 200, 100)  // Roxo semi-transparente
                 );
 
                 al_draw_rectangle(
-                    areaX_menu, areaY_menu,
-                    areaX_menu + area_menu_largura,
-                    areaY_menu + area_menu_altura,
-                    al_map_rgba(255, 0, 0, 255),
+                    areaX_circe, areaY_circe,
+                    areaX_circe + area_circe_largura,
+                    areaY_circe + area_circe_altura,
+                    al_map_rgba(255, 100, 255, 255),  // Borda rosa/roxo
                     5
                 );
             }
             else {
                 al_draw_rectangle(
-                    areaX_menu, areaY_menu,
-                    areaX_menu + area_menu_largura,
-                    areaY_menu + area_menu_altura,
-                    al_map_rgba(200, 200, 200, 150),
+                    areaX_circe, areaY_circe,
+                    areaX_circe + area_circe_largura,
+                    areaY_circe + area_circe_altura,
+                    al_map_rgba(200, 150, 200, 150),  // Borda lilás clara
                     3
                 );
             }
@@ -214,5 +215,5 @@ bool exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
     al_destroy_event_queue(fila_eventos);
     al_destroy_bitmap(mapa);
 
-    return confirmar;
+    return escolha;  // Retorna o código da escolha
 }

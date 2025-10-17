@@ -141,6 +141,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="fases\Circe\circe.c" />
     <ClCompile Include="fases\Polifemus\fase_Polifemo.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mapa\mapa.c" />
@@ -148,6 +149,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fases/Polifemus/fase_Polifemo.h" />
+    <ClInclude Include="fases\Circe\circe.h" />
     <ClInclude Include="mapa\mapa.h" />
     <ClInclude Include="menu\menu_inicial.h" />
   </ItemGroup>

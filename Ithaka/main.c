@@ -5,6 +5,7 @@
 #include <math.h>
 #include "menu/menu_inicial.h"
 #include "fases/Polifemus/fase_Polifemo.h"
+#include "fases/Circe/circe.h"
 #include "mapa/mapa.h"
 
 typedef struct {
@@ -95,11 +96,12 @@ int main(void) {
     }
 
     // Cenários Polifemo
-    CenarioPolifemo cenario;
+    cenarioPolifemo cenario;
     if (!carregar_cenarios_polifemo(&cenario)) {
         printf("Erro ao carregar cenários.\n");
         al_destroy_display(tela_jogo);
         return -1;
+
     }
 
     // Carregar sprites
@@ -250,8 +252,10 @@ int main(void) {
             jogo_rodando = false;
         }
         else if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
-            if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
+            if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 jogo_rodando = false;
+                return 0;
+            }
 
             if (evento.keyboard.keycode == ALLEGRO_KEY_E && !odisseu.andando &&
                 !odisseu.desembainhando && !odisseu.atacando && !odisseu.tem_espada) {
@@ -298,7 +302,7 @@ int main(void) {
                 odisseu_direcao_x /= comprimento;
             }
 
-            const float velocidade_odisseu = 1200.0f / 120.0f;
+            const float velocidade_odisseu = 2000.0f / 120.0f;
             odisseu.x += odisseu_direcao_x * velocidade_odisseu;
             odisseu.y = limitar_valor(odisseu.y, 0, ALTURA_TELA - odisseu.altura);
             odisseu.andando = (odisseu_direcao_x != 0.0f);
@@ -562,8 +566,8 @@ int main(void) {
     }
 
 	// Limpeza de eventos e personagens
-
-	//Odisseu
+	
+    //Odisseu
     al_destroy_bitmap(odisseuParado);
     al_destroy_bitmap(odisseuAndando);
     al_destroy_bitmap(odisseuDesembainhar);

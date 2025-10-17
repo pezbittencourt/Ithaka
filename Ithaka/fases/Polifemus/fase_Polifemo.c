@@ -2,7 +2,7 @@
 #include <stdio.h>
 #include "fase_Polifemo.h"
 
-bool carregar_cenarios_polifemo(CenarioPolifemo* cenario) {
+bool carregar_cenarios_polifemo(cenarioPolifemo* cenario) {
     if (!cenario) return false;
 
     // === Carregamento dos fundos ===
@@ -12,16 +12,12 @@ bool carregar_cenarios_polifemo(CenarioPolifemo* cenario) {
     cenario->fundos[3] = al_load_bitmap("./imagensJogo/cenarios/Polifemo/Fundo_Polifemo4.png");
     cenario->fundos[4] = al_load_bitmap("./imagensJogo/cenarios/Polifemo/Fundo_Polifemo5.png");
     cenario->fundos[5] = al_load_bitmap("./imagensJogo/cenarios/Polifemo/fundo_Polifemo6.png");
-    cenario->fundos[6] = al_load_bitmap("./imagensJogo/cenarios/Circe/fundoCirce1.png");
-    cenario->fundos[7] = al_load_bitmap("./imagensJogo/cenarios/Circe/fundoCirce2.png");
-    cenario->fundos[8] = al_load_bitmap("./imagensJogo/cenarios/Circe/fundoCirce3.png");
-    cenario->fundos[9] = al_load_bitmap("./imagensJogo/cenarios/Circe/fundoCirce4.png");
-    cenario->fundos[10] = al_load_bitmap("./imagensJogo/cenarios/Submundo/submundoProfeta.png");
-    cenario->fundos[11] = al_load_bitmap("./imagensJogo/cenarios/Poseidon/fundoPoseidon.png");
-    cenario->fundos[12] = al_load_bitmap("./imagensJogo/cenarios/Olimpo/fundoOlimpo.png");
-    cenario->fundos[13] = al_load_bitmap("./imagensJogo/cenarios/Itaca/fundoItaca1.png");
-    cenario->fundos[14] = al_load_bitmap("./imagensJogo/cenarios/Itaca/fundoItaca2.png");
-    cenario->fundos[15] = al_load_bitmap("./imagensJogo/cenarios/Itaca/fundoItaca3.png");
+    cenario->fundos[6] = al_load_bitmap("./imagensJogo/cenarios/Submundo/submundoProfeta.png");
+    cenario->fundos[7] = al_load_bitmap("./imagensJogo/cenarios/Poseidon/fundoPoseidon.png");
+    cenario->fundos[8] = al_load_bitmap("./imagensJogo/cenarios/Olimpo/fundoOlimpo.png");
+    cenario->fundos[9]= al_load_bitmap("./imagensJogo/cenarios/Itaca/fundoItaca1.png");
+    cenario->fundos[10] = al_load_bitmap("./imagensJogo/cenarios/Itaca/fundoItaca2.png");
+    cenario->fundos[11] = al_load_bitmap("./imagensJogo/cenarios/Itaca/fundoItaca3.png");
 
 
 
@@ -30,12 +26,9 @@ bool carregar_cenarios_polifemo(CenarioPolifemo* cenario) {
     cenario->fundo5_pedra = al_load_bitmap("./imagensJogo/cenarios/Polifemo/Fundo_Polifemo5pedra.png");
     cenario->fundo5_escuro = al_load_bitmap("./imagensJogo/cenarios/Polifemo/Fundo_Polifemo5escuro.png");
     cenario->fundo6_rocha = al_load_bitmap("./imagensJogo/cenarios/Polifemo/fundo_Polifemo6rocha.png");
-    cenario->frenteCirce1 = al_load_bitmap("./imagensJogo/cenarios/Circe/frenteCirce1.png");
-    cenario->frenteCirce3 = al_load_bitmap("./imagensJogo/cenarios/Circe/frenteCirce3.png");
-    cenario->efeitoFrenteCirce3 = al_load_bitmap("./imagensJogo/cenarios/Circe/efeitoFrenteCirce3.png");
 
     // === Verificação de carregamento ===
-    for (int i = 0; i < 16; i++) {
+    for (int i = 0; i < 12; i++) {
         if (!cenario->fundos[i]) {
             fprintf(stderr, "❌ Erro ao carregar fundo %d do cenário.\n", i + 1);
             return false;
@@ -43,20 +36,19 @@ bool carregar_cenarios_polifemo(CenarioPolifemo* cenario) {
     }
 
     if (!cenario->fundo4_arvore || !cenario->fundo5_pedra || !cenario->fundo5_escuro ||
-        !cenario->fundo6_rocha || !cenario->frenteCirce1 ||
-        !cenario->frenteCirce3 || !cenario->efeitoFrenteCirce3) {
+        !cenario->fundo6_rocha) {
         fprintf(stderr, "❌ Erro ao carregar uma das sobreposições dos cenários.\n");
         return false;
     }
 
     // Inicialização
     cenario->cenario_atual = 0;
-    cenario->total_cenarios = 16;
+    cenario->total_cenarios = 12;
 
     return true;
 }
 
-void desenhar_cenario_polifemo(CenarioPolifemo* cenario, int largura_tela, int altura_tela) {
+void desenhar_cenario_polifemo(cenarioPolifemo* cenario, int largura_tela, int altura_tela) {
     ALLEGRO_BITMAP* fundo_atual = cenario->fundos[cenario->cenario_atual];
     if (!fundo_atual) return;
 
@@ -71,7 +63,7 @@ void desenhar_cenario_polifemo(CenarioPolifemo* cenario, int largura_tela, int a
     );
 }
 
-void desenhar_sobreposicoes_polifemo(CenarioPolifemo* cenario, int largura_tela, int altura_tela) {
+void desenhar_sobreposicoes_polifemo(cenarioPolifemo* cenario, int largura_tela, int altura_tela) {
     switch (cenario->cenario_atual) {
     case 3: // Fundo 4
         al_draw_scaled_bitmap(cenario->fundo4_arvore, 0, 0,
@@ -91,20 +83,10 @@ void desenhar_sobreposicoes_polifemo(CenarioPolifemo* cenario, int largura_tela,
             al_get_bitmap_height(cenario->fundo6_rocha),
             0, 0, largura_tela, altura_tela, 0);
         break;
-    case 8: // Fundo Circe3 – aplicar efeito e frente
-        al_draw_scaled_bitmap(cenario->efeitoFrenteCirce3, 0, 0,
-            al_get_bitmap_width(cenario->efeitoFrenteCirce3),
-            al_get_bitmap_height(cenario->efeitoFrenteCirce3),
-            0, 0, largura_tela, altura_tela, 0);
-        al_draw_scaled_bitmap(cenario->frenteCirce3, 0, 0,
-            al_get_bitmap_width(cenario->frenteCirce3),
-            al_get_bitmap_height(cenario->frenteCirce3),
-            0, 0, largura_tela, altura_tela, 0);
-        break;
     }
 }
 
-void atualizar_transicao_cenario(CenarioPolifemo* cenario, float* pos_x_personagem,
+void atualizar_transicao_cenario(cenarioPolifemo* cenario, float* pos_x_personagem,
     float largura_personagem, int largura_tela) {
     int direcao_cenario = 0;
 
@@ -133,8 +115,8 @@ void atualizar_transicao_cenario(CenarioPolifemo* cenario, float* pos_x_personag
     }
 }
 
-void destruir_cenarios_polifemo(CenarioPolifemo* cenario) {
-    for (int i = 0; i < 16; i++) {
+void destruir_cenarios_polifemo(cenarioPolifemo* cenario) {
+    for (int i = 0; i < 12; i++) {
         if (cenario->fundos[i]) {
             al_destroy_bitmap(cenario->fundos[i]);
             cenario->fundos[i] = NULL;
