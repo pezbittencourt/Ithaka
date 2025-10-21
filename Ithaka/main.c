@@ -1,4 +1,4 @@
-﻿#include <allegro5/allegro.h>
+#include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
 #include <stdio.h>
 #include <stdbool.h>
@@ -343,12 +343,12 @@ int main(void) {
     }
 
 
-    while (jogo_rodando) {
-        ALLEGRO_EVENT evento;
-        al_wait_for_event(fila_eventos, &evento);
+    while (!sair) {
+        ALLEGRO_EVENT ev;
+        al_wait_for_event(fila, &ev);
 
-        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-            jogo_rodando = false;
+        if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+            sair = true;
         }
         else if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
             if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
@@ -587,10 +587,10 @@ int main(void) {
             }
 
 
-            redesenhar_tela = true;
+            redraw = true;
         }
 
-        if (redesenhar_tela && al_is_event_queue_empty(fila_eventos)) {
+        if (redraw && al_is_event_queue_empty(fila)) {
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
             // Desenhar cenário
@@ -722,7 +722,8 @@ int main(void) {
             }
 
             al_flip_display();
-            redesenhar_tela = false;
+
+            redraw = false;
         }
     }
 
