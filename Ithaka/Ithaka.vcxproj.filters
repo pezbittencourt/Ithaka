@@ -36,7 +36,10 @@
     <ClCompile Include="fases\Polifemus\fase_Polifemo.c">
       <Filter>fases\Polifemus</Filter>
     </ClCompile>
-    <ClCompile Include="mapa.c">
+    <ClCompile Include="fases\Circe\circe.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="mapa\mapa.c">
       <Filter>Arquivos de Origem</Filter>
     </ClCompile>
   </ItemGroup>
@@ -47,7 +50,10 @@
     <ClInclude Include="fases/Polifemus/fase_Polifemo.h">
       <Filter>fases\Polifemus</Filter>
     </ClInclude>
-    <ClInclude Include="mapa.h">
+    <ClInclude Include="fases\Circe\circe.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="mapa\mapa.h">
       <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>

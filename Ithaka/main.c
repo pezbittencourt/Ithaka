@@ -2,6 +2,7 @@
 #include <allegro5/allegro_image.h>
 #include <stdio.h>
 #include <stdbool.h>
+#include <allegro5/allegro_primitives.h>
 #include <math.h>
 #include "menu/menu_inicial.h"
 #include "fases/Polifemus/fase_Polifemo.h"
@@ -14,10 +15,10 @@ typedef struct {
 } InformacoesTela;
 
 typedef struct {
-    float x, y;
+    float x, y, forca_disparo;
     int largura, altura, frame_atual, contador_animacao;
     bool olhando_direita, olhando_esquerda, andando, desembainhando,
-        sofrendo_dano, guardando_espada, atacando, tem_espada;
+    sofrendo_dano, guardando_espada, atacando, tem_espada, disparando;
 
     int frame_contador;        // controla o tempo de troca de frame
     int velocidade_animacao;   // define a velocidade da animação
@@ -25,6 +26,11 @@ typedef struct {
 
 } Personagem;
 
+typedef struct
+{
+    float x, y, angulo, anguloInicial, vx, vy, tempo_de_vida;
+    int largura, altura;
+} Flecha;
 
 InformacoesTela obter_resolucao_tela_atual() {
     InformacoesTela tela;
@@ -49,10 +55,6 @@ static float limitar_valor(float valor, float minimo, float maximo) {
     return valor;
 }
 
-float deixarProporcional(float posicao, float tamanho_tela, float tamanho_tela_original) {
-    return (posicao * tamanho_tela) / tamanho_tela_original;
-}
-
 bool verificar_colisao(float objeto1_x, float objeto1_y, float objeto1_largura, float objeto1_altura,
     float objeto2_x, float objeto2_y, float objeto2_largura, float objeto2_altura) {
     return (objeto1_x < objeto2_x + objeto2_largura &&
@@ -60,18 +62,101 @@ bool verificar_colisao(float objeto1_x, float objeto1_y, float objeto1_largura, 
         objeto1_y < objeto2_y + objeto2_altura &&
         objeto1_y + objeto1_altura > objeto2_y);
 }
+void adicionarFlecha(Flecha** array, int* count, int* capaciade, Flecha flecha) {
+    if (*count == *capaciade) {
+        *capaciade = (*capaciade == 0) ? 1 : (*capaciade * 2);
+        Flecha* temp = realloc(*array, *capaciade * sizeof(Flecha));
+        if (temp == NULL) {
+            printf(stderr, "Realocação de memória falhou ao adicionar flecha!\n");
+            exit(EXIT_FAILURE);
+        }
+        *array = temp;
+    }
+
+    (*array)[*count] = flecha;
+    (*count)++;
+}
+
+void criarPontosParabola(float x, float y, float v, ALLEGRO_MOUSE_STATE estadoMouse, float pontos[8], float target_y, float g) {
+    float angulo = atan2f(y - estadoMouse.y, x + estadoMouse.x);
+
+    float vx = v * cosf(angulo);
+    if (estadoMouse.x < x) vx = -vx;
+    float vy = -v * sinf(angulo);
+
+    float delta = vy * vy - 2.0f * g * (y - target_y);
+    if (delta < 0) delta = 0;
+
+    float t_hit = (-vy + sqrtf(delta)) / g;
+
+    float x1 = x + vx * t_hit;
+    float y1 = y + vy * t_hit + 0.5f * g * t_hit * t_hit;
+
+    float m = vy / vx;
+    float m1 = (vy + g * t_hit) / vx;
+
+    float dx = x1 - x;
+
+    float x3 = x + dx / 3;
+    float y3 = y + dx / 3 * m;
+
+    float x4 = x1 - dx / 3;
+    float y4 = y1 - dx / 3 * m1;
+
+
+    pontos[0] = x; pontos[1] = y;
+    pontos[2] = x3;        pontos[3] = y3;
+    pontos[4] = x4;       pontos[5] = y4;
+    pontos[6] = x1;  pontos[7] = y1;
+}
+
+bool atualizar_flecha(Flecha* flecha, int y_chao, float g, Personagem circe) {
+    if (flecha->y >= y_chao) {
+        flecha->y = y_chao;
+        flecha->tempo_de_vida++;
+        return false;
+    }
+    float x1 = flecha->x + flecha->vx;
+    float y1 = flecha->y - flecha->vy;
+    flecha->angulo = -atan2f(flecha->vy, flecha->vx);
+    flecha->x = x1;
+    flecha->y = y1;
+
+    flecha->vy -= g;
+    return verificar_colisao(
+        flecha->x, flecha->y, flecha->largura, flecha->altura,
+        circe.x, circe.y, circe.altura, circe.largura
+    );
+}
+
+void remover_flecha(Flecha** array, int* count, int indice) {
+    if (indice < 0 || indice >= *count) {
+        printf(stderr, "Índice inválido ao remover flecha!\n");
+        return;
+    }
+
+    for (int i = indice; i < *count - 1; i++) {
+        (*array)[i] = (*array)[i + 1];
+    }
+
+    (*count)--;
+}
 
 int main(void) {
     if (!al_init()) return -1;
     if (!al_install_keyboard()) return -1;
     if (!al_install_mouse()) return -1;
     if (!al_init_image_addon()) return -1;
+    if (!al_init_primitives_addon()) return -1;
 
     InformacoesTela tela = obter_resolucao_tela_atual();
     const int ALTURA_TELA_ORIGINAL = 1080;
     const int LARGURA_TELA_ORIGINAL = 1920;
     const int LARGURA_TELA = tela.largura;
+    const float FORCA_DISPARO_MAX = 30.f;
     const int ALTURA_TELA = tela.altura;
+    const int ALTURA_FLECHA = 20, LARGURA_FLECHA = 75;
+    const float GRAVIDADE = 1.0f;
     const int ALTURA_SPRITE = 250, LARGURA_SPRITE = 250;
     int ALTURA_PERSONAGEM = deixarProporcional(ALTURA_SPRITE + 60, ALTURA_TELA, ALTURA_TELA_ORIGINAL);
     int LARGURA_PERSONAGEM = deixarProporcional(LARGURA_SPRITE + 25, LARGURA_TELA, LARGURA_TELA_ORIGINAL);
@@ -113,12 +198,13 @@ int main(void) {
     ALLEGRO_BITMAP* odisseuAndandoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiAndandoEspada.png");
     ALLEGRO_BITMAP* circeparada = al_load_bitmap("./imagensJogo/personagens/Circe/circeparada.png");
     ALLEGRO_BITMAP* circeDano = al_load_bitmap("./imagensJogo/personagens/Circe/circeDano.png");
-	ALLEGRO_BITMAP* hermesParado = al_load_bitmap("./imagensJogo/personagens/Hermes/hermesParado.png");
+    ALLEGRO_BITMAP* hermesParado = al_load_bitmap("./imagensJogo/personagens/Hermes/hermesParado.png");
     ALLEGRO_BITMAP* hermesTiraElmo = al_load_bitmap("./imagensJogo/personagens/Hermes/tirandoElmo.png");
+    ALLEGRO_BITMAP* sprite_flecha = al_load_bitmap("./imagensJogo/objetos/flecha.png");
 
     if (!odisseuParado || !odisseuAndando || !odisseuDesembainhar ||
         !odisseuAtacando || !odisseuParadoEspada || !odisseuAndandoEspada ||
-        !circeparada || !circeDano ||!hermesParado ||!hermesTiraElmo) {
+        !circeparada || !circeDano || !hermesParado || !hermesTiraElmo || !sprite_flecha) {
         printf("Erro ao carregar imagens dos personagens.\n");
         return -1;
     }
@@ -145,7 +231,7 @@ int main(void) {
     int total_frames_desembainhar = 7;
     int largura_frame_desembainhar = al_get_bitmap_width(odisseuDesembainhar) / total_frames_desembainhar;
     int altura_frame_desembainhar = al_get_bitmap_height(odisseuDesembainhar);
-    
+
     const int VELOCIDADE_ANIMACAO_DESEMBAINHAR = 6;
 
     int total_frames_atacando = 6;
@@ -153,7 +239,7 @@ int main(void) {
     int altura_frame_atacando = al_get_bitmap_height(odisseuAtacando);
 
 
-	//Circe configuração
+    //Circe configuração
     int total_frames_circeparada = 5;
     int largura_frame_circeparada = al_get_bitmap_width(circeparada) / total_frames_circeparada;
     int altura_frame_circeparada = al_get_bitmap_height(circeparada);
@@ -162,14 +248,14 @@ int main(void) {
     int largura_frame_dano = al_get_bitmap_width(circeDano) / total_frames_dano;
     int altura_frame_dano = al_get_bitmap_height(circeDano);
 
-	//Hermes configuração
-	int total_frames_hermesParado = 5;
-	int largura_frame_hermesParado = al_get_bitmap_width(hermesParado) / total_frames_hermesParado;
-	int altura_frame_hermesParado = al_get_bitmap_height(hermesParado);
+    //Hermes configuração
+    int total_frames_hermesParado = 5;
+    int largura_frame_hermesParado = al_get_bitmap_width(hermesParado) / total_frames_hermesParado;
+    int altura_frame_hermesParado = al_get_bitmap_height(hermesParado);
 
-	int total_frames_hermesTiraElmo = 18;
-	int largura_frame_hermesTiraElmo = al_get_bitmap_width(hermesTiraElmo) / total_frames_hermesTiraElmo;
-	int altura_frame_hermesTiraElmo = al_get_bitmap_height(hermesTiraElmo);
+    int total_frames_hermesTiraElmo = 18;
+    int largura_frame_hermesTiraElmo = al_get_bitmap_width(hermesTiraElmo) / total_frames_hermesTiraElmo;
+    int altura_frame_hermesTiraElmo = al_get_bitmap_height(hermesTiraElmo);
 
 
     // Inicializar personagens
@@ -187,8 +273,13 @@ int main(void) {
         .atacando = false,
         .tem_espada = false,
         .frame_atual = 0,
-        .contador_animacao = 0
+        .contador_animacao = 0,
+        .disparando = false,
+        .forca_disparo = 0.0f
+
     };
+    const int y_chao = odisseu.y + ALTURA_PERSONAGEM;
+
 
     Personagem circe = {
         .x = LARGURA_TELA - (LARGURA_TELA / 3),
@@ -231,6 +322,7 @@ int main(void) {
     bool ataque_ativado = false;
     int duracao_ataque = 0;
     const int DURACAO_MAXIMA_ATAQUE = 15;
+    float pontosArco[8];
 
     // Sistema de eventos
     ALLEGRO_EVENT_QUEUE* fila_eventos = al_create_event_queue();
@@ -243,6 +335,13 @@ int main(void) {
 
     bool jogo_rodando = true;
     bool redesenhar_tela = false;
+    Flecha* listaFlechas = (Flecha*)malloc(sizeof(*listaFlechas));
+    int count_flechas = 0, capacidade_flechas = 0;
+    if (listaFlechas == NULL) {
+        printf(stderr, "alocação de memória para as flechas falhou!\n");
+        return -1;
+    }
+
 
     while (jogo_rodando) {
         ALLEGRO_EVENT evento;
@@ -282,8 +381,9 @@ int main(void) {
         }
         else if (evento.type == ALLEGRO_EVENT_TIMER) {
             ALLEGRO_KEYBOARD_STATE estado_teclado;
+            ALLEGRO_MOUSE_STATE estado_mouse;
             al_get_keyboard_state(&estado_teclado);
-
+            al_get_mouse_state(&estado_mouse);
             float odisseu_direcao_x = 0.0f;
 
             if (!odisseu.desembainhando && !odisseu.atacando && !odisseu.guardando_espada) {
@@ -301,6 +401,31 @@ int main(void) {
                 float comprimento = sqrtf(odisseu_direcao_x * odisseu_direcao_x);
                 odisseu_direcao_x /= comprimento;
             }
+            if (!odisseu.tem_espada && al_mouse_button_down(&estado_mouse, ALLEGRO_MOUSE_BUTTON_LEFT)) {
+                odisseu.disparando = true;
+                if (odisseu.forca_disparo <= FORCA_DISPARO_MAX - 0.75f) {
+                    odisseu.forca_disparo += 0.75f;
+                }
+                criarPontosParabola(odisseu.x + (LARGURA_PERSONAGEM / 2), odisseu.y + (ALTURA_PERSONAGEM / 2), odisseu.forca_disparo, estado_mouse, pontosArco, y_chao, GRAVIDADE);
+            }
+            else {
+                if (odisseu.disparando) {
+                    Flecha f = {
+                        .x = odisseu.x + (LARGURA_PERSONAGEM / 2),
+                        .y = odisseu.y + (ALTURA_PERSONAGEM / 2),
+                        .altura = ALTURA_FLECHA,
+                        .largura = LARGURA_FLECHA,
+                        .tempo_de_vida = 0.0f
+                    };
+                    f.angulo = atan2f(f.y - estado_mouse.y, f.x + estado_mouse.x);
+                    f.vx = odisseu.forca_disparo * cosf(f.angulo),
+                        f.vy = odisseu.forca_disparo * sinf(f.angulo),
+                        adicionarFlecha(&listaFlechas, &count_flechas, &capacidade_flechas, f);
+                }
+                odisseu.disparando = false;
+                odisseu.forca_disparo = 0.0f;
+            }
+        
 
             const float velocidade_odisseu = 2000.0f / 120.0f;
             odisseu.x += odisseu_direcao_x * velocidade_odisseu;
@@ -386,8 +511,8 @@ int main(void) {
                 }
             }
 
-           // configuração Hermes
-           // Atualizar Hermes
+            // configuração Hermes
+            // Atualizar Hermes
             if (cenario.cenario_atual == 7) {
                 // Atualizar direção de Hermes baseado na posição do Odisseu
                 if (odisseu.x > Hermes.x) {
@@ -443,6 +568,24 @@ int main(void) {
                 if (duracao_ataque >= DURACAO_MAXIMA_ATAQUE)
                     ataque_ativado = false;
             }
+
+            //atualiza flechas
+            int i = 0;
+            while (i < count_flechas) {
+                if (atualizar_flecha(&listaFlechas[i], y_chao, GRAVIDADE, circe)) {
+                    circe.sofrendo_dano = true;
+                    remover_flecha(&listaFlechas, &count_flechas, i);
+                    printf("removeu1");
+                }
+                else if (listaFlechas[i].tempo_de_vida > 120.0f) {
+                    remover_flecha(&listaFlechas, &count_flechas, i);
+                    printf("removeu2");
+                }
+                else {
+                    i++;
+                }
+            }
+
 
             redesenhar_tela = true;
         }
@@ -507,6 +650,24 @@ int main(void) {
                 odisseu.largura, odisseu.altura,
                 flagsOdisseu);
 
+            //desenha linha de disparo das flechas
+            if (odisseu.disparando) {
+                al_draw_spline(pontosArco, al_map_rgb(0, 0, 255), 3.0f);
+            }
+
+            //desenhar flechas
+            for (int j = 0; j < count_flechas; j++) {
+                al_draw_scaled_rotated_bitmap(
+                    sprite_flecha,
+                    0 + LARGURA_FLECHA / 2, 0 + ALTURA_FLECHA / 2,
+                    listaFlechas[j].x + LARGURA_FLECHA / 2, listaFlechas[j].y + ALTURA_FLECHA / 2,
+                    1, 1,
+                    listaFlechas[j].angulo,
+                    0
+                );
+            }
+
+
             // Desenhar sobreposições
             desenhar_sobreposicoes_polifemo(&cenario, LARGURA_TELA, ALTURA_TELA);
 
@@ -565,8 +726,8 @@ int main(void) {
         }
     }
 
-	// Limpeza de eventos e personagens
-	
+    // Limpeza de eventos e personagens
+
     //Odisseu
     al_destroy_bitmap(odisseuParado);
     al_destroy_bitmap(odisseuAndando);
@@ -574,19 +735,20 @@ int main(void) {
     al_destroy_bitmap(odisseuAtacando);
     al_destroy_bitmap(odisseuParadoEspada);
     al_destroy_bitmap(odisseuAndandoEspada);
-    
+
     //Circe
     al_destroy_bitmap(circeparada);
     al_destroy_bitmap(circeDano);
-	
+
     //Hermes
     al_destroy_bitmap(hermesParado);
-	al_destroy_bitmap(hermesTiraElmo);
+    al_destroy_bitmap(hermesTiraElmo);
 
     destruir_cenarios_polifemo(&cenario);
     al_destroy_timer(temporizador);
     al_destroy_event_queue(fila_eventos);
     al_destroy_display(tela_jogo);
+    free(listaFlechas);
 
     return 0;
 }

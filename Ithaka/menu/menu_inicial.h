@@ -6,4 +6,6 @@
 // Retorna true se o usuário escolheu iniciar o jogo, false se escolheu sair
 bool menu_inicial(ALLEGRO_DISPLAY* display);
 
+float deixarProporcional(float posicao, float tamanho_tela, float tamanho_tela_original);
+
 #endif

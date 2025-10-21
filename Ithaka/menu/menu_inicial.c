@@ -5,7 +5,12 @@
 #include <stdbool.h>
 #include <math.h>
 
+const int ALTURA_TELA_ORIGINAL = 1080;
+const int LARGURA_TELA_ORIGINAL = 1920;
 
+float deixarProporcional(float posicao, float tamanho_tela, float tamanho_tela_original) {
+    return (posicao * tamanho_tela) / tamanho_tela_original;
+}
 
 bool menu_inicial(ALLEGRO_DISPLAY* display) {
     // Obter dimensões da tela
@@ -43,6 +48,13 @@ bool menu_inicial(ALLEGRO_DISPLAY* display) {
     int altura_frame_menu = al_get_bitmap_height(click_sair);
     int largura_frame_iniciar = al_get_bitmap_width(click_iniciar) / num_frames;
     int altura_frame_iniciar = al_get_bitmap_height(click_iniciar);
+    
+    //tamanhos escalados pra resolucoes diferentes
+    int largura_menu_scaled = deixarProporcional(largura_frame_menu, tela_largura, LARGURA_TELA_ORIGINAL);
+    int altura_menu_scaled = deixarProporcional(altura_frame_menu, tela_altura, ALTURA_TELA_ORIGINAL);
+
+    int largura_iniciar_scaled = deixarProporcional(largura_frame_iniciar, tela_largura, LARGURA_TELA_ORIGINAL);
+    int altura_iniciar_scaled = deixarProporcional(altura_frame_iniciar, tela_altura, ALTURA_TELA_ORIGINAL);
 
     // Hitbox click_iniciar (centro)
     int hitbox_iniciar_largura = 400;
@@ -117,8 +129,14 @@ bool menu_inicial(ALLEGRO_DISPLAY* display) {
                 0, 0, tela_largura, tela_altura, 0);
 
             // Desenhar sprites
-            al_draw_bitmap_region(click_sair, frame_menu * largura_frame_menu, 0, largura_frame_menu, altura_frame_menu, 0, 0, 0);
-            al_draw_bitmap_region(click_iniciar, frame_iniciar * largura_frame_iniciar, 0, largura_frame_iniciar, altura_frame_iniciar, 0, 0, 0);
+
+           al_draw_scaled_bitmap(click_sair, frame_menu * largura_frame_menu, 0, largura_frame_menu, altura_frame_menu, 0, 0,
+               largura_menu_scaled, altura_menu_scaled, 0 );
+
+           al_draw_scaled_bitmap(click_iniciar, frame_iniciar * largura_frame_iniciar, 0, largura_frame_iniciar, altura_frame_iniciar, 0, 0,
+               largura_iniciar_scaled, altura_iniciar_scaled, 0 );
+
+       
 
             al_flip_display();
         }
