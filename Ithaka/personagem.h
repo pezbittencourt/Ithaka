@@ -5,7 +5,7 @@
 
 typedef struct Personagem {
     float x, y, forca_disparo;
-    int largura, altura, frame_atual, contador_animacao;
+    int largura, altura, frame_atual, contador_animacao,vida;
     bool olhando_direita, olhando_esquerda, andando, desembainhando,
         sofrendo_dano, guardando_espada, atacando, tem_espada, disparando;
     int frame_contador;

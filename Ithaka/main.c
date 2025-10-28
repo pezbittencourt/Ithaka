@@ -186,10 +186,12 @@ int main(void) {
     ALLEGRO_BITMAP* hermesParado = al_load_bitmap("./imagensJogo/personagens/Hermes/hermesParado.png");
     ALLEGRO_BITMAP* hermesTiraElmo = al_load_bitmap("./imagensJogo/personagens/Hermes/tirandoElmo.png");
     ALLEGRO_BITMAP* sprite_flecha = al_load_bitmap("./imagensJogo/objetos/flecha.png");
+    ALLEGRO_BITMAP* sprite_coracao = al_load_bitmap("./imagensJogo/objetos/coracao.png");
 
     if (!odisseuParado || !odisseuAndando || !odisseuDesembainhar ||
         !odisseuAtacando || !odisseuParadoEspada || !odisseuAndandoEspada ||
-        !circeparada || !circeDano || !hermesParado || !hermesTiraElmo || !sprite_flecha) {
+        !circeparada || !circeDano || !hermesParado || !hermesTiraElmo || !sprite_flecha ||
+        !sprite_coracao) {
         printf("Erro ao carregar imagens dos personagens.\n");
         return -1;
     }
@@ -247,6 +249,7 @@ int main(void) {
     Personagem odisseu = {
         .x = (LARGURA_TELA / 2) - (LARGURA_TELA / 2.5),
         .y = deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+        .vida = 3,
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
         .olhando_direita = true,
@@ -269,6 +272,7 @@ int main(void) {
     Personagem circe = {
         .x = LARGURA_TELA - (LARGURA_TELA / 3),
         .y = deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+        .vida = 3,
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
         .olhando_direita = true,
@@ -478,7 +482,7 @@ int main(void) {
             }
 
             // Atualizar Circe
-            if (fase->cenario_atual == 9) {
+            if (fase->cenario_atual == 3 && escolha_mapa == 2 && circe.vida > 0) {
                 circe.contador_animacao++;
                 int delay_animacao_circe = circe.sofrendo_dano ? 5 : 10;
                 if (circe.contador_animacao >= delay_animacao_circe) {
@@ -498,7 +502,7 @@ int main(void) {
 
             // configuração Hermes
             // Atualizar Hermes
-            if (fase->cenario_atual == 7) {
+            if (fase->cenario_atual == 0 && escolha_mapa == 4) {
                 // Atualizar direção de Hermes baseado na posição do Odisseu
                 if (odisseu.x > Hermes.x) {
                     Hermes.olhando_direita = true;
@@ -547,6 +551,7 @@ int main(void) {
                 if (verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
                     circe.x, circe.y, circe.largura, circe.altura)) {
                     circe.sofrendo_dano = true;
+                    circe.vida--;
                     circe.frame_atual = 0;
                 }
 
@@ -559,6 +564,7 @@ int main(void) {
             while (i < count_flechas) {
                 if (atualizar_flecha(&listaFlechas[i], y_chao, GRAVIDADE, circe)) {
                     circe.sofrendo_dano = true;
+                    circe.vida--;
                     remover_flecha(&listaFlechas, &count_flechas, i);
                 }
                 else if (listaFlechas[i].tempo_de_vida > 120.0f) {
@@ -653,7 +659,7 @@ int main(void) {
             desenhar_sobreposicoes(fase, LARGURA_TELA, ALTURA_TELA);
 
             // Desenhar Hermes no cenário 7 (mesmo comportamento visual do Odisseu parado)
-            if (fase->cenario_atual == 7) {
+            if (fase->cenario_atual == 0 && escolha_mapa == 4) {
                 ALLEGRO_BITMAP* sprite_hermes;
                 int largura_frame_hermes;
                 int altura_frame_hermes;
@@ -687,7 +693,7 @@ int main(void) {
 
 
             // Desenhar Circe no último cenário
-            if (fase->cenario_atual == 9) {
+            if (fase->cenario_atual == 3 && escolha_mapa == 2 && circe.vida > 0) {
                 ALLEGRO_BITMAP* sprite_atual_circe = circe.sofrendo_dano ? circeDano : circeparada;
                 int largura_frame_circe = circe.sofrendo_dano ? largura_frame_dano : largura_frame_circeparada;
                 int altura_frame_circe = circe.sofrendo_dano ? altura_frame_dano : altura_frame_circeparada;
@@ -700,6 +706,22 @@ int main(void) {
                     largura_frame_circe, altura_frame_circe,
                     circe.x, circe.y,
                     circe.largura, circe.altura, flagsCirce);
+            }
+
+            //desenhar coracao de vida
+            for (int i = 0; i < odisseu.vida; i++) {
+                float largura_coracao = (al_get_bitmap_width(sprite_coracao) * 0.1) * (tela.largura / 1920.0f);
+                float altura_coracao = (al_get_bitmap_height(sprite_coracao) * 0.1) * (tela.altura / 1080.0f);
+                float offset_x = (tela.largura * 0.05) + (largura_coracao * (i + 1));
+                float offset_y = tela.altura * 0.05;
+                al_draw_scaled_bitmap(
+                    sprite_coracao,
+                    0, 0,
+                    al_get_bitmap_width(sprite_coracao),
+                    al_get_bitmap_height(sprite_coracao),
+                    offset_x, offset_y,
+                    largura_coracao, altura_coracao , 0
+                );
             }
 
             al_flip_display();
