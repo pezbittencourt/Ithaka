@@ -22,9 +22,27 @@
     <Filter Include="fases\Polifemus">
       <UniqueIdentifier>{d88c4c75-52b1-49f3-b487-6cddecb9602b}</UniqueIdentifier>
     </Filter>
+    <Filter Include="fases\Circe">
+      <UniqueIdentifier>{8488791d-d4eb-42fd-9516-22fd14463a64}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fases\Itaca">
+      <UniqueIdentifier>{4ac152e7-d111-4490-a3e8-8422872cf4e4}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fases\Poseidon">
+      <UniqueIdentifier>{ad104ec3-8f9a-4b0c-b064-e8a8586f117d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fases\Submundo">
+      <UniqueIdentifier>{85ab01e8-bd46-4c1c-977a-11117a7b8ee8}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="fases\Olimpo">
+      <UniqueIdentifier>{28dc9b18-c076-43f7-8786-6163d2ab8cf6}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <None Include="packages.config" />
+    <None Include="fase.h">
+      <Filter>fases</Filter>
+    </None>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="main.c">
@@ -36,11 +54,26 @@
     <ClCompile Include="fases\Polifemus\fase_Polifemo.c">
       <Filter>fases\Polifemus</Filter>
     </ClCompile>
-    <ClCompile Include="fases\Circe\circe.c">
-      <Filter>Arquivos de Origem</Filter>
-    </ClCompile>
     <ClCompile Include="mapa\mapa.c">
       <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
+    <ClCompile Include="fase.c">
+      <Filter>fases</Filter>
+    </ClCompile>
+    <ClCompile Include="fases\Circe\circe.c">
+      <Filter>fases\Circe</Filter>
+    </ClCompile>
+    <ClCompile Include="fases\Itaca\Itaca.c">
+      <Filter>fases\Itaca</Filter>
+    </ClCompile>
+    <ClCompile Include="fases\Poseidon\poseidon.c">
+      <Filter>fases\Poseidon</Filter>
+    </ClCompile>
+    <ClCompile Include="fases\Olimpo\olimpo.c">
+      <Filter>fases\Olimpo</Filter>
+    </ClCompile>
+    <ClCompile Include="fases\Submundo\submundo.c">
+      <Filter>fases\Submundo</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -50,11 +83,32 @@
     <ClInclude Include="fases/Polifemus/fase_Polifemo.h">
       <Filter>fases\Polifemus</Filter>
     </ClInclude>
-    <ClInclude Include="fases\Circe\circe.h">
-      <Filter>Arquivos de Cabeçalho</Filter>
-    </ClInclude>
     <ClInclude Include="mapa\mapa.h">
       <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="personagem.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="informacoes_tela.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="flecha.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
+    </ClInclude>
+    <ClInclude Include="fases\Circe\circe.h">
+      <Filter>fases\Circe</Filter>
+    </ClInclude>
+    <ClInclude Include="fases\Itaca\Itaca.h">
+      <Filter>fases\Itaca</Filter>
+    </ClInclude>
+    <ClInclude Include="fases\Poseidon\poseidon.h">
+      <Filter>fases\Poseidon</Filter>
+    </ClInclude>
+    <ClInclude Include="fases\Olimpo\olimpo.h">
+      <Filter>fases\Olimpo</Filter>
+    </ClInclude>
+    <ClInclude Include="fases\Submundo\submundo.h">
+      <Filter>fases\Submundo</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

@@ -1,4 +1,4 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <ItemGroup Label="ProjectConfigurations">
     <ProjectConfiguration Include="Debug|Win32">
@@ -117,6 +117,7 @@
       <PreprocessorDefinitions>_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
       <AdditionalIncludeDirectories>$(ProjectDir)fases;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <CompileAs>Default</CompileAs>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -138,16 +139,29 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <None Include="fase.h" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
+    <ClCompile Include="fase.c" />
     <ClCompile Include="fases\Circe\circe.c" />
+    <ClCompile Include="fases\Itaca\Itaca.c" />
+    <ClCompile Include="fases\Olimpo\olimpo.c" />
     <ClCompile Include="fases\Polifemus\fase_Polifemo.c" />
+    <ClCompile Include="fases\Poseidon\poseidon.c" />
+    <ClCompile Include="fases\Submundo\submundo.c" />
     <ClCompile Include="main.c" />
     <ClCompile Include="mapa\mapa.c" />
     <ClCompile Include="menu\menu_inicial.c" />
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="fases\Itaca\Itaca.h" />
+    <ClInclude Include="fases\Olimpo\olimpo.h" />
+    <ClInclude Include="fases\Poseidon\poseidon.h" />
+    <ClInclude Include="fases\Submundo\submundo.h" />
+    <ClInclude Include="flecha.h" />
+    <ClInclude Include="informacoes_tela.h" />
+    <ClInclude Include="personagem.h" />
     <ClInclude Include="fases/Polifemus/fase_Polifemo.h" />
     <ClInclude Include="fases\Circe\circe.h" />
     <ClInclude Include="mapa\mapa.h" />

@@ -3,27 +3,8 @@
 
 #include <allegro5/allegro.h>
 #include <stdbool.h>
-
-// Estrutura para gerenciar os cenários
-typedef struct {
-    ALLEGRO_BITMAP* fundos[12];
-    ALLEGRO_BITMAP* fundo4_arvore;
-    ALLEGRO_BITMAP* fundo5_pedra;
-    ALLEGRO_BITMAP* fundo5_escuro;
-    ALLEGRO_BITMAP* fundo6_rocha;
-    ALLEGRO_BITMAP* frenteCirce1;
-    ALLEGRO_BITMAP* frenteCirce3;
-    ALLEGRO_BITMAP* efeitoFrenteCirce3;
-    int cenario_atual;
-    int total_cenarios;
-} cenarioPolifemo;
+#include "../../fase.h"
 
 // Funções principais
-bool carregar_cenarios_polifemo(cenarioPolifemo* cenario);
-void desenhar_cenario_polifemo(cenarioPolifemo* cenario, int largura_tela, int altura_tela);
-void desenhar_sobreposicoes_polifemo(cenarioPolifemo* cenario, int largura_tela, int altura_tela);
-void atualizar_transicao_cenario(cenarioPolifemo* cenario, float* pos_x_personagem,
-    float largura_personagem, int largura_tela);
-void destruir_cenarios_polifemo(cenarioPolifemo* cenario);
-
+bool carregar_cenarios_polifemo(Fase* cenario);
 #endif

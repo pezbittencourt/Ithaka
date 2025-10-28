@@ -8,29 +8,10 @@
 #include "fases/Polifemus/fase_Polifemo.h"
 #include "fases/Circe/circe.h"
 #include "mapa/mapa.h"
-
-typedef struct {
-    int largura;
-    int altura;
-} InformacoesTela;
-
-typedef struct {
-    float x, y, forca_disparo;
-    int largura, altura, frame_atual, contador_animacao;
-    bool olhando_direita, olhando_esquerda, andando, desembainhando,
-    sofrendo_dano, guardando_espada, atacando, tem_espada, disparando;
-
-    int frame_contador;        // controla o tempo de troca de frame
-    int velocidade_animacao;   // define a velocidade da animação
-    int num_frames;            // total de frames do sprite
-
-} Personagem;
-
-typedef struct
-{
-    float x, y, angulo, anguloInicial, vx, vy, tempo_de_vida;
-    int largura, altura;
-} Flecha;
+#include "informacoes_tela.h"
+#include "flecha.h"
+#include "fase.h"
+#include "personagem.h"
 
 InformacoesTela obter_resolucao_tela_atual() {
     InformacoesTela tela;
@@ -173,16 +154,20 @@ int main(void) {
         return 0; // Saída normal, não é erro
     }
 
-    // Exibir mapa inicial
-    if (!exibir_mapa_inicial(tela_jogo)) {
+    // Exibir mapa 
+    int escolha_mapa = exibir_mapa_inicial(tela_jogo);
+    if (!escolha_mapa) {
         printf("Usuário voltou do mapa.\n");
         al_destroy_display(tela_jogo);
         return 0; // Usuário pressionou ESC no mapa
     }
 
-    // Cenários Polifemo
-    cenarioPolifemo cenario;
-    if (!carregar_cenarios_polifemo(&cenario)) {
+    Fase* fase = (Fase*)malloc(sizeof(Fase));
+    if (!fase) {
+        printf("Erro ao alocar memória para a fase.\n");
+        return -1;
+    }
+    if (!carregar_cenario(fase,escolha_mapa)) {
         printf("Erro ao carregar cenários.\n");
         al_destroy_display(tela_jogo);
         return -1;
@@ -343,12 +328,12 @@ int main(void) {
     }
 
 
-    while (!sair) {
-        ALLEGRO_EVENT ev;
-        al_wait_for_event(fila, &ev);
+    while (jogo_rodando) {
+        ALLEGRO_EVENT evento;
+        al_wait_for_event(fila_eventos, &evento);
 
-        if (ev.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
-            sair = true;
+        if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
+            jogo_rodando = false;
         }
         else if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
             if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
@@ -433,7 +418,7 @@ int main(void) {
             odisseu.andando = (odisseu_direcao_x != 0.0f);
 
             // Atualizar transição de cenário
-            atualizar_transicao_cenario(&cenario, &odisseu.x, odisseu.largura, LARGURA_TELA);
+            atualizar_transicao_cenario(fase, &odisseu.x, odisseu.largura, LARGURA_TELA);
 
             // Atualizar animação do Odisseu
             int estado_animacao = 0;
@@ -493,7 +478,7 @@ int main(void) {
             }
 
             // Atualizar Circe
-            if (cenario.cenario_atual == 9) {
+            if (fase->cenario_atual == 9) {
                 circe.contador_animacao++;
                 int delay_animacao_circe = circe.sofrendo_dano ? 5 : 10;
                 if (circe.contador_animacao >= delay_animacao_circe) {
@@ -513,7 +498,7 @@ int main(void) {
 
             // configuração Hermes
             // Atualizar Hermes
-            if (cenario.cenario_atual == 7) {
+            if (fase->cenario_atual == 7) {
                 // Atualizar direção de Hermes baseado na posição do Odisseu
                 if (odisseu.x > Hermes.x) {
                     Hermes.olhando_direita = true;
@@ -575,11 +560,9 @@ int main(void) {
                 if (atualizar_flecha(&listaFlechas[i], y_chao, GRAVIDADE, circe)) {
                     circe.sofrendo_dano = true;
                     remover_flecha(&listaFlechas, &count_flechas, i);
-                    printf("removeu1");
                 }
                 else if (listaFlechas[i].tempo_de_vida > 120.0f) {
                     remover_flecha(&listaFlechas, &count_flechas, i);
-                    printf("removeu2");
                 }
                 else {
                     i++;
@@ -587,14 +570,14 @@ int main(void) {
             }
 
 
-            redraw = true;
+            redesenhar_tela = true;
         }
 
-        if (redraw && al_is_event_queue_empty(fila)) {
+        if (redesenhar_tela && al_is_event_queue_empty(fila_eventos)) {
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
             // Desenhar cenário
-            desenhar_cenario_polifemo(&cenario, LARGURA_TELA, ALTURA_TELA);
+            desenhar_cenario(fase, LARGURA_TELA, ALTURA_TELA);
 
             // Selecionar sprite do Odisseu
             ALLEGRO_BITMAP* sprite_atual_odisseu;
@@ -667,12 +650,10 @@ int main(void) {
                 );
             }
 
-
-            // Desenhar sobreposições
-            desenhar_sobreposicoes_polifemo(&cenario, LARGURA_TELA, ALTURA_TELA);
+            desenhar_sobreposicoes(fase, LARGURA_TELA, ALTURA_TELA);
 
             // Desenhar Hermes no cenário 7 (mesmo comportamento visual do Odisseu parado)
-            if (cenario.cenario_atual == 7) {
+            if (fase->cenario_atual == 7) {
                 ALLEGRO_BITMAP* sprite_hermes;
                 int largura_frame_hermes;
                 int altura_frame_hermes;
@@ -706,7 +687,7 @@ int main(void) {
 
 
             // Desenhar Circe no último cenário
-            if (cenario.cenario_atual == 9) {
+            if (fase->cenario_atual == 9) {
                 ALLEGRO_BITMAP* sprite_atual_circe = circe.sofrendo_dano ? circeDano : circeparada;
                 int largura_frame_circe = circe.sofrendo_dano ? largura_frame_dano : largura_frame_circeparada;
                 int altura_frame_circe = circe.sofrendo_dano ? altura_frame_dano : altura_frame_circeparada;
@@ -723,7 +704,7 @@ int main(void) {
 
             al_flip_display();
 
-            redraw = false;
+            redesenhar_tela = false;
         }
     }
 
@@ -745,7 +726,7 @@ int main(void) {
     al_destroy_bitmap(hermesParado);
     al_destroy_bitmap(hermesTiraElmo);
 
-    destruir_cenarios_polifemo(&cenario);
+    destruir_cenarios(fase);
     al_destroy_timer(temporizador);
     al_destroy_event_queue(fila_eventos);
     al_destroy_display(tela_jogo);
