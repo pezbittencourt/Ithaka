@@ -38,7 +38,7 @@ int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
             .x = 485 * escala_x,
             .y = 626 * escala_y,
             .largura = 165 * escala_x,
-            .altura = 148 * escala_y,
+            .altura = 140 * escala_y,
             .fase_id = MAPA_FASE_POLIFEMO,
             .nome = "POLIFEMO",
             .mouse_sobre = false,
@@ -79,10 +79,10 @@ int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
             .cor_destaque = al_map_rgba(100, 200, 255, 100)
         },
         {
-            .x = tela_largura * 0.45,
-            .y = tela_altura * 0.15,
+            .x = 360 * escala_x,
+            .y = 768 * escala_y,
             .largura = 130 * escala_x,
-            .altura = 50 * escala_y,
+            .altura = 135 * escala_y,
             .fase_id = MAPA_FASE_OLIMPO,
             .nome = "OLIMPO",
             .mouse_sobre = false,
