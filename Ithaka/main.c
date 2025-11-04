@@ -771,8 +771,23 @@ int main(void) {
 
                 if (fase->cenario_atual == 2 && odisseu.x > LARGURA_TELA - LARGURA_TELA / 9) odisseu.x = LARGURA_TELA - LARGURA_TELA / 9;
 
-                if (fase->cenario_atual == 0 && inimigo1.vida > 0 && inimigo2.vida > 0 && inimigo3.vida > 0 && odisseu.x > LARGURA_TELA - LARGURA_TELA / 9) odisseu.x = LARGURA_TELA - LARGURA_TELA / 9;
+                if (fase->cenario_atual == 1){ 
+                bool algum_inimigo_vivo = (inimigo4.vida > 0 || inimigo5.vida > 0 || inimigo6.vida > 0);
+                float limite_barreira = LARGURA_TELA - LARGURA_TELA / 9;
+
+                if (algum_inimigo_vivo && odisseu.x > limite_barreira) {
+                    odisseu.x = limite_barreira;
+                }
+            }
                 
+                if (fase->cenario_atual == 0) {
+                    bool algum_inimigo_vivo = (inimigo1.vida > 0 || inimigo2.vida > 0 || inimigo3.vida > 0);
+                    float limite_barreira = LARGURA_TELA - LARGURA_TELA / 9;
+
+                    if (algum_inimigo_vivo && odisseu.x > limite_barreira) {
+                        odisseu.x = limite_barreira;
+                    }
+                }
                 //config da escada
                 if (fase->cenario_atual == 0 && odisseu.x < LARGURA_TELA / 1.38) odisseu.y = 550;
                 if (fase->cenario_atual == 0 && (odisseu.x > LARGURA_TELA / 1.32)) odisseu.y = 520;
@@ -836,7 +851,7 @@ int main(void) {
                     }
                     if (inimigo3.sofrendo_dano && inimigo3.vida > 0) {
                         inimigo3.contador_animacao++;
-                        if (inimigo3.contador_animacao >= 5) {
+                        if (inimigo3.contador_animacao >=5) {
                             inimigo3.frame_atual++;
                             if (inimigo3.frame_atual >= total_frames_inimigos_dano) {
                                 inimigo3.sofrendo_dano = false;
@@ -857,7 +872,7 @@ int main(void) {
                     }
                     if (inimigo4.sofrendo_dano && inimigo4.vida > 0) {
                         inimigo4.contador_animacao++;
-                        if (inimigo4.contador_animacao >= 5) {
+                        if (inimigo4.contador_animacao >= 10) {
                             inimigo4.frame_atual++;
                             if (inimigo4.frame_atual >= total_frames_inimigos_dano) {
                                 inimigo4.sofrendo_dano = false;
@@ -876,7 +891,7 @@ int main(void) {
                     }
                     if (inimigo5.sofrendo_dano && inimigo5.vida > 0) {
                         inimigo5.contador_animacao++;
-                        if (inimigo5.contador_animacao >= 5) {
+                        if (inimigo5.contador_animacao >= 10) {
                             inimigo5.frame_atual++;
                             if (inimigo5.frame_atual >= total_frames_inimigos_dano) {
                                 inimigo5.sofrendo_dano = false;
@@ -894,7 +909,7 @@ int main(void) {
                     }
                     if (inimigo6.sofrendo_dano && inimigo6.vida > 0) {
                         inimigo6.contador_animacao++;
-                        if (inimigo6.contador_animacao >= 5) {
+                        if (inimigo6.contador_animacao >= 10) {
                             inimigo6.frame_atual++;
                             if (inimigo6.frame_atual >= total_frames_inimigos_dano) {
                                 inimigo6.sofrendo_dano = false;
@@ -907,7 +922,7 @@ int main(void) {
                 if (fase->cenario_atual == 2) {
                     // Atualizar Penelope
                     penelope.contador_animacao++;
-                    if (penelope.contador_animacao >= 8) {
+                    if (penelope.contador_animacao >= 10) {
                         penelope.frame_atual = (penelope.frame_atual + 1) % total_frames_penelope_parada;
                         penelope.contador_animacao = 0;
                     }
