@@ -840,9 +840,6 @@ int main(void) {
                         }
                     }
 
-
-
-
                     // Atualizar inimigo3
                     inimigo3.contador_animacao++;
                     if (inimigo3.contador_animacao >= inimigo3.velocidade_animacao) {
@@ -872,7 +869,7 @@ int main(void) {
                     }
                     if (inimigo4.sofrendo_dano && inimigo4.vida > 0) {
                         inimigo4.contador_animacao++;
-                        if (inimigo4.contador_animacao >= 10) {
+                        if (inimigo4.contador_animacao >= 5) {
                             inimigo4.frame_atual++;
                             if (inimigo4.frame_atual >= total_frames_inimigos_dano) {
                                 inimigo4.sofrendo_dano = false;
@@ -881,8 +878,6 @@ int main(void) {
                             inimigo4.contador_animacao = 0;
                         }
                     }
-
-
                     // Atualizar inimigo5
                     inimigo5.contador_animacao++;
                     if (inimigo5.contador_animacao >= inimigo5.velocidade_animacao) {
@@ -891,7 +886,7 @@ int main(void) {
                     }
                     if (inimigo5.sofrendo_dano && inimigo5.vida > 0) {
                         inimigo5.contador_animacao++;
-                        if (inimigo5.contador_animacao >= 10) {
+                        if (inimigo5.contador_animacao >= 5) {
                             inimigo5.frame_atual++;
                             if (inimigo5.frame_atual >= total_frames_inimigos_dano) {
                                 inimigo5.sofrendo_dano = false;
@@ -900,7 +895,6 @@ int main(void) {
                             inimigo5.contador_animacao = 0;
                         }
                     }
-
                     // Atualizar inimigo6
                     inimigo6.contador_animacao++;
                     if (inimigo6.contador_animacao >= inimigo6.velocidade_animacao) {
@@ -909,7 +903,7 @@ int main(void) {
                     }
                     if (inimigo6.sofrendo_dano && inimigo6.vida > 0) {
                         inimigo6.contador_animacao++;
-                        if (inimigo6.contador_animacao >= 10) {
+                        if (inimigo6.contador_animacao >= 5) {
                             inimigo6.frame_atual++;
                             if (inimigo6.frame_atual >= total_frames_inimigos_dano) {
                                 inimigo6.sofrendo_dano = false;
