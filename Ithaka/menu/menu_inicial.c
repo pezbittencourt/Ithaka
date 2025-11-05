@@ -30,7 +30,7 @@ bool menu_inicial(ALLEGRO_DISPLAY* display) {
     ALLEGRO_BITMAP* fundo_menu = al_load_bitmap("./imagensJogo/cenarios/menu/Fundo_Menu.png");
     ALLEGRO_BITMAP* ithaka_Logo = al_load_bitmap("./imagensJogo/cenarios/menu/Ithaka_Logo.png");
     ALLEGRO_BITMAP* fundo_branco = al_load_bitmap("./imagensJogo/cenarios/menu/Fundo_Branco_Transparente.png");
-    ALLEGRO_BITMAP* click_sair = al_load_bitmap("./imagensJogo/cenarios/menu/click_Menu.png");
+    ALLEGRO_BITMAP* click_sair = al_load_bitmap("./imagensJogo/cenarios/menu/click_Sair.png");
     ALLEGRO_BITMAP* click_iniciar = al_load_bitmap("./imagensJogo/cenarios/menu/click_Iniciar.png");
 
     if (!fundo_menu || !ithaka_Logo || !fundo_branco || !click_sair || !click_iniciar) {
