@@ -895,6 +895,8 @@ int main(void) {
                             inimigo5.contador_animacao = 0;
                         }
                     }
+
+
                     // Atualizar inimigo6
                     inimigo6.contador_animacao++;
                     if (inimigo6.contador_animacao >= inimigo6.velocidade_animacao) {
