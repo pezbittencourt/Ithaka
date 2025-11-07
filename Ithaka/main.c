@@ -196,22 +196,29 @@ int main(void) {
 
 
     //parados
-    ALLEGRO_BITMAP* inimigoParado1 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo1parado.png");
-    ALLEGRO_BITMAP* inimigoParado2 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo2parado.png");
-    ALLEGRO_BITMAP* inimigoParado3 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo3parado.png");
-    ALLEGRO_BITMAP* inimigoParado4 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo4parado.png");
-    ALLEGRO_BITMAP* inimigoParado5 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo5parado.png");
-    ALLEGRO_BITMAP* inimigoParado6 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo6parado.png");
+    ALLEGRO_BITMAP* inimigoParado1 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo1/inimigo1parado.png");
+    ALLEGRO_BITMAP* inimigoParado2 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo2/inimigo2parado.png");
+    ALLEGRO_BITMAP* inimigoParado3 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo3/inimigo3parado.png");
+    ALLEGRO_BITMAP* inimigoParado4 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo4/inimigo4parado.png");
+    ALLEGRO_BITMAP* inimigoParado5 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo5/inimigo5parado.png");
+    ALLEGRO_BITMAP* inimigoParado6 = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo6/inimigo6parado.png");
 
 
     //tomando dano
-    ALLEGRO_BITMAP* inimigo1_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo1dano.png");
-    ALLEGRO_BITMAP* inimigo2_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo2dano.png");
-    ALLEGRO_BITMAP* inimigo3_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo3dano.png");
-    ALLEGRO_BITMAP* inimigo4_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo4dano.png");
-    ALLEGRO_BITMAP* inimigo5_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo5dano.png");
-    ALLEGRO_BITMAP* inimigo6_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo6dano.png");
+    ALLEGRO_BITMAP* inimigo1_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo1/inimigo1dano.png");
+    ALLEGRO_BITMAP* inimigo2_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo2/inimigo2dano.png");
+    ALLEGRO_BITMAP* inimigo3_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo3/inimigo3dano.png");
+    ALLEGRO_BITMAP* inimigo4_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo4/inimigo4dano.png");
+    ALLEGRO_BITMAP* inimigo5_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo5/inimigo5dano.png");
+    ALLEGRO_BITMAP* inimigo6_sofre_dano = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo6/inimigo6dano.png");
 
+    //Batendo
+    ALLEGRO_BITMAP* inimigo1_batendo = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo1/inimigo1golpe.png");
+    ALLEGRO_BITMAP* inimigo2_batendo = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo1/inimigo2golpe.png");
+    ALLEGRO_BITMAP* inimigo3_batendo = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo1/inimigo3golpe.png");
+    ALLEGRO_BITMAP* inimigo4_batendo = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo1/inimigo4golpe.png");
+    ALLEGRO_BITMAP* inimigo5_batendo = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo1/inimigo5golpe.png");
+    ALLEGRO_BITMAP* inimigo6_batendo = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo1/inimigo6golpe.png");
 
 
     //Objetos
@@ -249,7 +256,7 @@ int main(void) {
 
     int total_frames_desembainhar = 7;
     int largura_frame_desembainhar = al_get_bitmap_width(odisseuDesembainhar) / total_frames_desembainhar;
-    int altura_frame_desembainhar = al_get_bitmap_height(odisseuDesembainhar);//aqui
+    int altura_frame_desembainhar = al_get_bitmap_height(odisseuDesembainhar);
 
     const int VELOCIDADE_ANIMACAO_DESEMBAINHAR = 6;
 
@@ -286,38 +293,54 @@ int main(void) {
     //Config padrão dos inimigos
     int  total_frames_inimigos_parados = 4;
     int total_frames_inimigos_dano = 6;
-
-    //inimigo 1
+    int total_frames_inimigos_atacando = 6;
+    //=============inimigo 1================
     int largura_frame_inimigo1_parado = al_get_bitmap_width(inimigoParado1) / total_frames_inimigos_parados;
     int altura_frame_inimigo1_parado = al_get_bitmap_height(inimigoParado1);
 
+
+	//tomando dano
     int largura_frame_inimigo1_dano = al_get_bitmap_width(inimigo1_sofre_dano) / total_frames_inimigos_dano;
     int altura_frame_inimigo1_dano = al_get_bitmap_height(inimigo1_sofre_dano);
 
-    //inimigo 2
+	//batendo
+    int total_frames_inimigo1_atacando = 6;
+    int largura_frame_inimigo1_atacando = al_get_bitmap_width(inimigo1_batendo) / total_frames_inimigo1_atacando;
+    int altura_frame_inimigo1_atacando = al_get_bitmap_height(inimigo1_batendo);
+
+
+    //==============inimigo 2==============
     int largura_frame_inimigo2_parado = al_get_bitmap_width(inimigoParado2) / total_frames_inimigos_parados;
     int altura_frame_inimigo2_parado = al_get_bitmap_height(inimigoParado2);
 
     int largura_frame_inimigo2_dano = al_get_bitmap_width(inimigo2_sofre_dano) / total_frames_inimigos_dano;
     int altura_frame_inimigo2_dano = al_get_bitmap_height(inimigo2_sofre_dano);
+
+
     //inimigo 3
     int largura_frame_inimigo3_parado = al_get_bitmap_width(inimigoParado3) / total_frames_inimigos_parados;
     int altura_frame_inimigo3_parado = al_get_bitmap_height(inimigoParado3);
 
     int largura_frame_inimigo3_dano = al_get_bitmap_width(inimigo3_sofre_dano) / total_frames_inimigos_dano;
     int altura_frame_inimigo3_dano = al_get_bitmap_height(inimigo3_sofre_dano);
+
+
+
+
     //inimigo 4
     int largura_frame_inimigo4_parado = al_get_bitmap_width(inimigoParado4) / total_frames_inimigos_parados;
     int altura_frame_inimigo4_parado = al_get_bitmap_height(inimigoParado4);
 
     int largura_frame_inimigo4_dano = al_get_bitmap_width(inimigo4_sofre_dano) / total_frames_inimigos_dano;
     int altura_frame_inimigo4_dano = al_get_bitmap_height(inimigo4_sofre_dano);
+
     //inimigo 5
     int largura_frame_inimigo5_parado = al_get_bitmap_width(inimigoParado5) / total_frames_inimigos_parados;
     int altura_frame_inimigo5_parado = al_get_bitmap_height(inimigoParado5);
 
     int largura_frame_inimigo5_dano = al_get_bitmap_width(inimigo5_sofre_dano) / total_frames_inimigos_dano;
     int altura_frame_inimigo5_dano = al_get_bitmap_height(inimigo5_sofre_dano);
+    
     //inimigo 6
     int largura_frame_inimigo6_parado = al_get_bitmap_width(inimigoParado6) / total_frames_inimigos_parados;
     int altura_frame_inimigo6_parado = al_get_bitmap_height(inimigoParado6);
@@ -328,13 +351,13 @@ int main(void) {
     // Inicializar personagens
     Personagem odisseu = {
         .x = (escolha_mapa == 2) ? (LARGURA_TELA / 4.2) : (LARGURA_TELA / 30),
-        .y = (escolha_mapa == 3) ? deixarProporcional(650, ALTURA_TELA, ALTURA_TELA_ORIGINAL)
+        .y = (escolha_mapa == 3) ? deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL)
         : deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
         .vida = 3,
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
         .olhando_direita = true,
-        .olhando_esquerda = false,
+        .olhando_esquerda = false, 
         .andando = false,
         .desembainhando = false,
         .sofrendo_dano = false,
@@ -381,7 +404,7 @@ int main(void) {
 
     Personagem Hermes = {
         .x = LARGURA_TELA / 1.5,
-        .y = deixarProporcional(710, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+        .y = deixarProporcional(730, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
         .olhando_direita = true,
@@ -408,6 +431,8 @@ int main(void) {
     .olhando_direita = true,
     .olhando_esquerda = false,
     .sofrendo_dano = false,
+    .atacando = false,
+    .cooldown_ataque = 0,
     .frame_atual = 0,
     .contador_animacao = 0,
     .frame_contador = 0,
@@ -424,6 +449,7 @@ int main(void) {
     .olhando_direita = true,
     .olhando_esquerda = false,
     .sofrendo_dano = false,
+    .atacando = false,
     .frame_atual = 0,
     .contador_animacao = 0,
     .frame_contador = 0,
@@ -440,6 +466,7 @@ int main(void) {
     .olhando_direita = true,
     .olhando_esquerda = false,
     .sofrendo_dano = false,
+    .atacando = false,
     .frame_atual = 0,
     .contador_animacao = 0,
     .frame_contador = 0,
@@ -456,6 +483,7 @@ int main(void) {
     .olhando_direita = true,
     .olhando_esquerda = false,
     .sofrendo_dano = false,
+    .atacando = false,
     .frame_atual = 0,
     .contador_animacao = 0,
     .frame_contador = 0,
@@ -472,6 +500,7 @@ int main(void) {
     .olhando_direita = true,
     .olhando_esquerda = false,
     .sofrendo_dano = false,
+    .atacando = false,
     .frame_atual = 0,
     .contador_animacao = 0,
     .frame_contador = 0,
@@ -488,6 +517,7 @@ int main(void) {
     .olhando_direita = true,
     .olhando_esquerda = false,
     .sofrendo_dano = false,
+    .atacando = false,
     .frame_atual = 0,
     .contador_animacao = 0,
     .frame_contador = 0,
@@ -557,6 +587,7 @@ int main(void) {
                 duracao_ataque = 0;
             }
         }
+        
         else if (evento.type == ALLEGRO_EVENT_TIMER) {
             ALLEGRO_KEYBOARD_STATE estado_teclado;
             ALLEGRO_MOUSE_STATE estado_mouse;
@@ -620,10 +651,6 @@ int main(void) {
 
             //barreira mapa 1 (Polifemo)
             if (fase->cenario_atual == 5 && escolha_mapa == 1 && odisseu.x > LARGURA_TELA - LARGURA_TELA / 10) odisseu.x = LARGURA_TELA - LARGURA_TELA / 10;
-
-
-           
-
 
             //barreira mapa 5 (submundo)
             if (fase->cenario_atual == 0 && escolha_mapa == 5 && odisseu.x > LARGURA_TELA / 3.5) odisseu.x = LARGURA_TELA / 3.5;
@@ -804,12 +831,52 @@ int main(void) {
                 
                 // Atualizar animação dos inimigos
                 if (fase->cenario_atual == 0) {
+                 
                     // Atualizar inimigo1
-                    inimigo1.contador_animacao++;
-                    if (inimigo1.contador_animacao >= inimigo1.velocidade_animacao) {
-                        inimigo1.frame_atual = (inimigo1.frame_atual + 1) % inimigo1.num_frames;
+                    // Atualizar direção baseada no Odisseu
+                    if (odisseu.x > inimigo1.x) {
+                        inimigo1.olhando_direita = false;
+                    }
+                    else {
+                        inimigo1.olhando_direita = true;
+                    }
+
+                    // Decrementar cooldown
+                    if (inimigo1.cooldown_ataque > 0) {
+                        inimigo1.cooldown_ataque--;
+                    }
+
+                    // Verificar se pode atacar (distância E cooldown zerado)
+                    if (inimigo1.vida > 0 && !inimigo1.sofrendo_dano && !inimigo1.atacando &&
+                        abs(inimigo1.x - odisseu.x) < 200 && inimigo1.cooldown_ataque <= 0) {
+                        inimigo1.atacando = true;
+                        inimigo1.frame_atual = 0;
                         inimigo1.contador_animacao = 0;
                     }
+
+                    // Atualizar animação de ataque
+                    if (inimigo1.atacando && inimigo1.vida > 0) {
+                        inimigo1.contador_animacao++;
+                        if (inimigo1.contador_animacao >= 10) {  // Velocidade do ataque
+                            inimigo1.frame_atual++;
+                            if (inimigo1.frame_atual >= total_frames_inimigos_atacando) {
+                                inimigo1.atacando = false;
+                                inimigo1.frame_atual = 0;
+                                inimigo1.cooldown_ataque = 60; // 1 segundo de cooldown (60 frames)
+                            }
+                            inimigo1.contador_animacao = 0;
+                        }
+                    }
+                    // Animação parada (quando não está atacando nem tomando dano)
+                    else if (inimigo1.vida > 0 && !inimigo1.sofrendo_dano) {
+                        inimigo1.contador_animacao++;
+                        if (inimigo1.contador_animacao >= inimigo1.velocidade_animacao) {
+                            inimigo1.frame_atual = (inimigo1.frame_atual + 1) % inimigo1.num_frames;
+                            inimigo1.contador_animacao = 0;
+                        }
+                    }
+
+                    // Animação de dano
                     if (inimigo1.sofrendo_dano && inimigo1.vida > 0) {
                         inimigo1.contador_animacao++;
                         if (inimigo1.contador_animacao >= 5) {
@@ -821,6 +888,8 @@ int main(void) {
                             inimigo1.contador_animacao = 0;
                         }
                     }
+                   
+                   
 
                     // Atualizar inimigo2
                     inimigo2.contador_animacao++;
@@ -937,7 +1006,7 @@ int main(void) {
                 if (verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
                     circe.x, circe.y, circe.largura, circe.altura)) {
 
-                    // Só aplicar dano se a Circe ainda não estiver no estado "sof rendo_dano"
+                    // Só aplicar dano se a Circe ainda não estiver no estado "sofrendo_dano"
                     if (!circe.sofrendo_dano) {
                         circe.sofrendo_dano = true;
                         circe.vida--;
@@ -945,67 +1014,89 @@ int main(void) {
                     }
                 }
                 if (escolha_mapa == 3) {
-                    // Inimigo 1
-                    if (inimigo1.vida > 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
-                        inimigo1.x, inimigo1.y, inimigo1.largura, inimigo1.altura)) {
-                        if (!inimigo1.sofrendo_dano) {
-                            inimigo1.sofrendo_dano = true;
-                            inimigo1.vida--;
-                            inimigo1.frame_atual = 0;
+
+                    if (fase->cenario_atual == 0) {
+                        // Inimigo 1
+                        if (inimigo1.vida > 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
+                            inimigo1.x, inimigo1.y, inimigo1.largura, inimigo1.altura)) {
+                            if (!inimigo1.sofrendo_dano) {
+                                inimigo1.sofrendo_dano = true;
+                                inimigo1.vida--;
+                                inimigo1.frame_atual = 0;
+                            }
+                        }
+
+                        // Verificar ataque do inimigo1
+                        if (inimigo1.atacando && inimigo1.vida > 0 && inimigo1.frame_atual == 3) { // Frame 3 é o golpe
+                            float area_ataque_inimigo1_x = inimigo1.olhando_direita ?
+                                inimigo1.x + inimigo1.largura * 0.5f : inimigo1.x - inimigo1.largura * 0.3f;
+                            float area_ataque_inimigo1_y = inimigo1.y + inimigo1.altura * 0.1f;
+                            float area_ataque_inimigo1_largura = inimigo1.largura * 0.1f;
+                            float area_ataque_inimigo1_altura = inimigo1.altura * 0.1f;
+
+                            if (verificar_colisao(area_ataque_inimigo1_x, area_ataque_inimigo1_y,
+                                area_ataque_inimigo1_largura, area_ataque_inimigo1_altura,
+                                odisseu.x, odisseu.y, odisseu.largura, odisseu.altura)) {
+                                if (!odisseu.sofrendo_dano) {
+                                    odisseu.sofrendo_dano = true;
+                                    odisseu.vida--;
+                                    odisseu.frame_atual = 0;
+                                }
+                            }
+                        }
+
+                        // Inimigo 2
+                        if (inimigo2.vida > 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
+                            inimigo2.x, inimigo2.y, inimigo2.largura, inimigo2.altura)) {
+                            if (!inimigo2.sofrendo_dano) {
+                                inimigo2.sofrendo_dano = true;
+                                inimigo2.vida--;
+                                inimigo2.frame_atual = 0;
+                            }
+                        }
+
+                        // Inimigo 3
+                        if (inimigo3.vida > 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
+                            inimigo3.x, inimigo3.y, inimigo3.largura, inimigo3.altura)) {
+                            if (!inimigo3.sofrendo_dano) {
+                                inimigo3.sofrendo_dano = true;
+                                inimigo3.vida--;
+                                inimigo3.frame_atual = 0;
+                            }
                         }
                     }
-
-                    // Inimigo 2
-                    if (inimigo2.vida > 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
-                        inimigo2.x, inimigo2.y, inimigo2.largura, inimigo2.altura)) {
-                        if (!inimigo2.sofrendo_dano) {
-                            inimigo2.sofrendo_dano = true;
-                            inimigo2.vida--;
-                            inimigo2.frame_atual = 0;
+                    if (fase->cenario_atual == 1) {
+                        // Inimigo 4
+                        if (inimigo4.vida > 0 && inimigo1.vida == 0 && inimigo2.vida == 0 && inimigo3.vida == 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
+                            inimigo4.x, inimigo4.y, inimigo4.largura, inimigo4.altura)) {
+                            if (!inimigo4.sofrendo_dano) {
+                                inimigo4.sofrendo_dano = true;
+                                inimigo4.vida--;
+                                inimigo4.frame_atual = 0;
+                            }
                         }
-                    }
 
-                    // Inimigo 3
-                    if (inimigo3.vida > 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
-                        inimigo3.x, inimigo3.y, inimigo3.largura, inimigo3.altura)) {
-                        if (!inimigo3.sofrendo_dano) {
-                            inimigo3.sofrendo_dano = true;
-                            inimigo3.vida--;
-                            inimigo3.frame_atual = 0;
+                        // Inimigo 5
+                        if (inimigo5.vida > 0 && inimigo1.vida == 0 && inimigo2.vida == 0 && inimigo3.vida == 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
+                            inimigo5.x, inimigo5.y, inimigo5.largura, inimigo5.altura)) {
+                            if (!inimigo5.sofrendo_dano) {
+                                inimigo5.sofrendo_dano = true;
+                                inimigo5.vida--;
+                                inimigo5.frame_atual = 0;
+                            }
                         }
-                    }
 
-                    // Inimigo 4
-                    if (inimigo4.vida > 0 && inimigo1.vida == 0 && inimigo2.vida == 0 && inimigo3.vida == 0  && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
-                        inimigo4.x, inimigo4.y, inimigo4.largura, inimigo4.altura)) {
-                        if (!inimigo4.sofrendo_dano) {
-                            inimigo4.sofrendo_dano = true;
-                            inimigo4.vida--;
-                            inimigo4.frame_atual = 0;
-                        }
-                    }
-
-                    // Inimigo 5
-                    if (inimigo5.vida > 0 && inimigo1.vida == 0 && inimigo2.vida == 0 && inimigo3.vida == 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
-                        inimigo5.x, inimigo5.y, inimigo5.largura, inimigo5.altura)) {
-                        if (!inimigo5.sofrendo_dano) {
-                            inimigo5.sofrendo_dano = true;
-                            inimigo5.vida--;
-                            inimigo5.frame_atual = 0;
-                        }
-                    }
-
-                    // Inimigo 6
-                    if (inimigo6.vida > 0 && inimigo1.vida == 0 && inimigo2.vida == 0 && inimigo3.vida == 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
-                        inimigo6.x, inimigo6.y, inimigo6.largura, inimigo6.altura)) {
-                        if (!inimigo6.sofrendo_dano) {
-                            inimigo6.sofrendo_dano = true;
-                            inimigo6.vida--;
-                            inimigo6.frame_atual = 0;
+                        // Inimigo 6
+                        if (inimigo6.vida > 0 && inimigo1.vida == 0 && inimigo2.vida == 0 && inimigo3.vida == 0 && verificar_colisao(area_ataque_x, area_ataque_y, area_ataque_largura, area_ataque_altura,
+                            inimigo6.x, inimigo6.y, inimigo6.largura, inimigo6.altura)) {
+                            if (!inimigo6.sofrendo_dano) {
+                                inimigo6.sofrendo_dano = true;
+                                inimigo6.vida--;
+                                inimigo6.frame_atual = 0;
+                            }
                         }
                     }
                 }
-
                 if (duracao_ataque >= DURACAO_MAXIMA_ATAQUE) ataque_ativado = false;
             }
 
@@ -1109,15 +1200,38 @@ int main(void) {
                 // DESENHO DOS INIMIGOS NO CENÁRIO 0 (Inimigos 1, 2 e 3)
                 if (fase->cenario_atual == 0) {
                     // INIMIGO 1
+
                     if (inimigo1.vida > 0) {
-                        ALLEGRO_BITMAP* sprite_inimigo1 = inimigo1.sofrendo_dano ? inimigo1_sofre_dano : inimigoParado1;
-                        int largura_inimigo1 = inimigo1.sofrendo_dano ? largura_frame_inimigo1_dano : largura_frame_inimigo1_parado;
-                        int altura_inimigo1 = inimigo1.sofrendo_dano ? altura_frame_inimigo1_dano : altura_frame_inimigo1_parado;
-                        int frame_inimigo1 = inimigo1.sofrendo_dano ? inimigo1.frame_atual : inimigo1.frame_atual % total_frames_inimigos_parados;
+                        ALLEGRO_BITMAP* sprite_inimigo1;
+                        int largura_inimigo1, altura_inimigo1;
+
+                        if (inimigo1.atacando) {
+                            sprite_inimigo1 = inimigo1_batendo;
+                            largura_inimigo1 = largura_frame_inimigo1_atacando;
+                            altura_inimigo1 = altura_frame_inimigo1_atacando;
+                            if (inimigo1.atacando && odisseu.x - inimigo1.x <= 200) {
+                                printf("Odisseu tomou dano");
+                            }
+
+                        }
+                        else if (inimigo1.sofrendo_dano) {
+                            sprite_inimigo1 = inimigo1_sofre_dano;
+                            largura_inimigo1 = largura_frame_inimigo1_dano;
+                            altura_inimigo1 = altura_frame_inimigo1_dano;
+                        }
+                        else {
+                            sprite_inimigo1 = inimigoParado1;
+                            largura_inimigo1 = largura_frame_inimigo1_parado;
+                            altura_inimigo1 = altura_frame_inimigo1_parado;
+                        }
+
                         int flags_inimigo1 = inimigo1.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
-                        al_draw_scaled_bitmap(sprite_inimigo1, frame_inimigo1 * largura_inimigo1, 0,
-                            largura_inimigo1, altura_inimigo1, inimigo1.x, inimigo1.y,
-                            inimigo1.largura, inimigo1.altura, flags_inimigo1);
+                        al_draw_scaled_bitmap(sprite_inimigo1,
+                            inimigo1.frame_atual * largura_inimigo1, 0,
+                            largura_inimigo1, altura_inimigo1,
+                            inimigo1.x, inimigo1.y,
+                            inimigo1.largura, inimigo1.altura,
+                            flags_inimigo1);
                     }
 
                     // INIMIGO 2
@@ -1308,6 +1422,9 @@ int main(void) {
     al_destroy_bitmap(inimigo5_sofre_dano);
     al_destroy_bitmap(inimigo6_sofre_dano);
 
+
+    //golpe 
+    al_destroy_bitmap(inimigo1_batendo);
 
     //Todo o resto
     destruir_cenarios(fase);

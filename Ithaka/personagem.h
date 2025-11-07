@@ -11,6 +11,7 @@ typedef struct Personagem {
     int frame_contador;
     int velocidade_animacao;
     int num_frames;
+    int cooldown_ataque;
 } Personagem;
 
 #endif
