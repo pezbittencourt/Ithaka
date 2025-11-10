@@ -1,5 +1,7 @@
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_font.h>
+#include <allegro5/allegro_ttf.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <allegro5/allegro_primitives.h>
@@ -10,6 +12,7 @@
 #include "flecha.h"
 #include "fase.h"
 #include "personagem.h"
+#include "Olimpo/olimpo.h"
 
 InformacoesTela obter_resolucao_tela_atual() {
     InformacoesTela tela;
@@ -222,9 +225,45 @@ int main(void) {
     ALLEGRO_BITMAP* inimigo6_atacando = al_load_bitmap("./imagensJogo/personagens/pretendentes/inimigo6/inimigo6golpe.png");
 
 
+
     //Objetos
     ALLEGRO_BITMAP* sprite_flecha = al_load_bitmap("./imagensJogo/objetos/flecha.png");
     ALLEGRO_BITMAP* sprite_coracao = al_load_bitmap("./imagensJogo/objetos/coracao.png");
+
+    //Caixa de diálogo - Quiz
+
+    ALLEGRO_BITMAP* caixa_dialogo = al_load_bitmap("./imagensJogo/dialogo/caixa_de_dialogo.png");
+
+    //Opções - Quiz 
+    ALLEGRO_BITMAP* opcao_1 = al_load_bitmap("./imagensJogo/dialogo/Opcao_1.png");
+    ALLEGRO_BITMAP* opcao_2 = al_load_bitmap("./imagensJogo/dialogo/Opcao_2.png");
+    ALLEGRO_BITMAP* opcao_3 = al_load_bitmap("./imagensJogo/dialogo/Opcao_3.png");
+    ALLEGRO_BITMAP* opcao_4 = al_load_bitmap("./imagensJogo/dialogo/Opcao_4.png");
+
+    //Opções Click - Quiz 
+    ALLEGRO_BITMAP* opcao_click_1 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Click_1.png");
+    ALLEGRO_BITMAP* opcao_click_2 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Click_2.png");
+    ALLEGRO_BITMAP* opcao_click_3 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Click_3.png");
+    ALLEGRO_BITMAP* opcao_click_4 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Click_4.png");
+
+    //Opções Erradas - Quiz 
+    ALLEGRO_BITMAP* opcao_errada_1 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Errada_1.png");
+    ALLEGRO_BITMAP* opcao_errada_2 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Errada_2.png");
+    ALLEGRO_BITMAP* opcao_errada_3 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Errada_3.png");
+    ALLEGRO_BITMAP* opcao_errada_4 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Errada_4.png");
+
+    //Opções Certas - Quiz 
+    ALLEGRO_BITMAP* opcao_certa_1 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Certa_1.png");
+    ALLEGRO_BITMAP* opcao_certa_2 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Certa_2.png");
+    ALLEGRO_BITMAP* opcao_certa_3 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Certa_3.png");
+    ALLEGRO_BITMAP* opcao_certa_4 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Certa_4.png");
+
+    //Carregando fontes 
+    al_init_font_addon();
+    al_init_ttf_addon();
+    ALLEGRO_FONT* fonte_quiz = al_load_ttf_font("arial.ttf", 24, 0);
+  
+
 
 
     if (!odisseuParado || !odisseuAndando || !odisseuDesembainhar ||
@@ -582,6 +621,35 @@ int main(void) {
     const int DURACAO_MAXIMA_ATAQUE = 15;
     float pontosArco[8];
 
+    // ---------------------------------------- INICIALIZAR QUIZ --------------------------------------------
+
+    pergunta perguntas[12];
+    fazendo_as_perguntas(perguntas);
+
+    //Variáveis declaradas em olimpo.h
+
+    quiz estado = {
+    .perguntaAtual = 0,
+    .numPerguntas = 12,
+    .respostaSelecionada = -1,
+    .erros = 0,
+    .respondida = false,
+    .perdeu = false,
+
+    };
+
+    //Array com as opcoes ::;
+
+    ALLEGRO_BITMAP* array_opcoes[4] = {
+        opcao_1,
+        opcao_2,
+        opcao_3,
+        opcao_4,
+    };
+
+    //-----------------------------------------------------------------------------------------------------------------
+
+
     // Sistema de eventos
     ALLEGRO_EVENT_QUEUE* fila_eventos = al_create_event_queue();
     ALLEGRO_TIMER* temporizador = al_create_timer(1.0 / 60.0);
@@ -683,6 +751,47 @@ int main(void) {
                 }
                 odisseu.disparando = false;
                 odisseu.forca_disparo = 0.0f;
+            }
+
+            //-------------------------------------------EVENTOS QUIZ (Mudar/Estudar, claude) -------------------------------------------
+
+            if (escolha_mapa == 4 && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
+
+                // Detectar cliques do mouse
+                if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida) {
+                    int opcao_clicada = -1;
+
+                    // Verificar qual opção foi clicada (!!Arrumar as coordenadas!!)
+                    int mx = evento.mouse.x;
+                    int my = evento.mouse.y;
+
+                    // Exemplo de áreas clicáveis (2x2):
+                    // Linha superior
+                    if (my >= 400 && my <= 550) {
+                        if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
+                            opcao_clicada = 0;  // Opção 1
+                        else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
+                            opcao_clicada = 1;  // Opção 2
+                    }
+                    // Linha inferior
+                    else if (my >= 600 && my <= 750) {
+                        if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
+                            opcao_clicada = 2;  // Opção 3
+                        else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
+                            opcao_clicada = 3;  // Opção 4
+                    }
+
+                    if (opcao_clicada != -1) {
+                        processa_resposta(perguntas, &estado, opcao_clicada);
+                    }
+                }
+
+                // Avançar para próxima pergunta (pressione ESPAÇO)
+                if (evento.type == ALLEGRO_EVENT_KEY_DOWN && estado.respondida) {
+                    if (evento.keyboard.keycode == ALLEGRO_KEY_SPACE) {
+                        proximaPergunta(&estado);
+                    }
+                }
             }
 
 
@@ -854,6 +963,12 @@ int main(void) {
                     }
                 }
             }
+
+            //================================== MISSÃO CALYPSO ============================================
+            else if (escolha_mapa == 6) {
+            }
+
+
 
             //===================================== MISSÃO ÍTACA =====================================//
             else if (escolha_mapa == 3) {
@@ -1642,6 +1757,32 @@ int main(void) {
             // Desenhar cenário
             desenhar_cenario(fase, LARGURA_TELA, ALTURA_TELA);
 
+            // Desenhar Quiz (Arrumar/estudar, Claude ***)
+
+            if (escolha_mapa == 4 && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
+                desenha_quiz(caixa_dialogo, array_opcoes, fonte_quiz,
+                    &perguntas[estado.perguntaAtual], &estado);
+
+                // Mostrar feedback após responder ***
+                if (estado.respondida) {
+                    al_draw_text(fonte_quiz, al_map_rgb(255, 255, 0), LARGURA_TELA / 2, 100,
+                        ALLEGRO_ALIGN_CENTER, "Pressione ESPAÇO para continuar");
+                }
+            }
+            // Verificar se perdeu no quiz ***
+            else if (escolha_mapa == 4 && estado.perdeu) {
+                al_draw_text(fonte_quiz, al_map_rgb(255, 0, 0), LARGURA_TELA / 2, ALTURA_TELA / 2,
+                    ALLEGRO_ALIGN_CENTER, "GAME OVER! Você errou 3 vezes.");
+            }
+            // Verificar se completou o quiz ****
+            else if (escolha_mapa == 4 && estado.perguntaAtual >= estado.numPerguntas) {
+                al_draw_text(fonte_quiz, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, ALTURA_TELA / 2,
+                    ALLEGRO_ALIGN_CENTER, "Parabéns! Você completou o quiz!");
+            }
+
+            // Selecionar sprite do Odisseu (SOMENTE se NÃO estiver no Olimpo!)
+            if (escolha_mapa != 4) {
+
             // Selecionar sprite do Odisseu
             ALLEGRO_BITMAP* sprite_atual_odisseu;
             int largura_frame_odisseu, altura_frame_odisseu;
@@ -2031,9 +2172,31 @@ int main(void) {
 
 	al_destroy_bitmap(sprite_flecha);
 	al_destroy_bitmap(sprite_coracao);
+
+    //diálogo e quiz
+
+    al_destroy_bitmap(caixa_dialogo);
+    al_destroy_bitmap(opcao_1);
+    al_destroy_bitmap(opcao_2);
+    al_destroy_bitmap(opcao_3);
+    al_destroy_bitmap(opcao_4);
+    al_destroy_bitmap(opcao_click_1);
+    al_destroy_bitmap(opcao_click_2);
+    al_destroy_bitmap(opcao_click_3);
+    al_destroy_bitmap(opcao_click_4);
+    al_destroy_bitmap(opcao_errada_1);
+    al_destroy_bitmap(opcao_errada_2);
+    al_destroy_bitmap(opcao_errada_3);
+    al_destroy_bitmap(opcao_errada_4);
+    al_destroy_bitmap(opcao_certa_1);
+    al_destroy_bitmap(opcao_certa_2);
+    al_destroy_bitmap(opcao_certa_3);
+    al_destroy_bitmap(opcao_certa_4);
+
     
     //Todo o resto
     destruir_cenarios(fase);
+    al_destroy_font(fonte_quiz);
     al_destroy_timer(temporizador);
     al_destroy_event_queue(fila_eventos);
     al_destroy_display(tela_jogo);
