@@ -704,6 +704,62 @@ int main(void) {
 				ataque_ativado = true;
                 duracao_ataque = 0;
             }
+            // Detectar cliques do mouse
+            if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida) {
+                int opcao_clicada = -1;
+
+                // Verificar qual opção foi clicada (!!Arrumar as coordenadas!!)
+                int mx = evento.mouse.x;
+                int my = evento.mouse.y;
+                // Detectar cliques do mouse
+                if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida) {
+                    int opcao_clicada = -1;
+
+                    // Verificar qual opção foi clicada (!!Arrumar as coordenadas!!)
+                    int mx = evento.mouse.x;
+                    int my = evento.mouse.y;
+
+                    // Exemplo de áreas clicáveis (2x2):
+                    // Linha superior
+                    if (my >= 400 && my <= 550) {
+                        if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
+                            opcao_clicada = 0;  // Opção 1
+                        else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
+                            opcao_clicada = 1;  // Opção 2
+                    }
+                    // Linha inferior
+                    else if (my >= 600 && my <= 750) {
+                        if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
+                            opcao_clicada = 2;  // Opção 3
+                        else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
+                            opcao_clicada = 3;  // Opção 4
+                    }
+
+                    if (opcao_clicada != -1) {
+                        processa_resposta(perguntas, &estado, opcao_clicada);
+                    }
+                }
+                // Exemplo de áreas clicáveis (2x2):
+                // Linha superior
+                if (my >= 400 && my <= 550) {
+                    if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
+                        opcao_clicada = 0;  // Opção 1
+                    else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
+                        opcao_clicada = 1;  // Opção 2
+                }
+                // Linha inferior
+                else if (my >= 600 && my <= 750) {
+                    if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
+                        opcao_clicada = 2;  // Opção 3
+                    else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
+                        opcao_clicada = 3;  // Opção 4
+                }
+
+                if (opcao_clicada != -1) {
+                    processa_resposta(perguntas, &estado, opcao_clicada);
+                }
+            }
+
         }
         
         else if (evento.type == ALLEGRO_EVENT_TIMER) {
@@ -755,36 +811,9 @@ int main(void) {
 
             //-------------------------------------------EVENTOS QUIZ (Mudar/Estudar, claude) -------------------------------------------
 
-            if (escolha_mapa == 4 && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
+            if (escolha_mapa == 6 && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
 
-                // Detectar cliques do mouse
-                if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida) {
-                    int opcao_clicada = -1;
-
-                    // Verificar qual opção foi clicada (!!Arrumar as coordenadas!!)
-                    int mx = evento.mouse.x;
-                    int my = evento.mouse.y;
-
-                    // Exemplo de áreas clicáveis (2x2):
-                    // Linha superior
-                    if (my >= 400 && my <= 550) {
-                        if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
-                            opcao_clicada = 0;  // Opção 1
-                        else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
-                            opcao_clicada = 1;  // Opção 2
-                    }
-                    // Linha inferior
-                    else if (my >= 600 && my <= 750) {
-                        if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
-                            opcao_clicada = 2;  // Opção 3
-                        else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
-                            opcao_clicada = 3;  // Opção 4
-                    }
-
-                    if (opcao_clicada != -1) {
-                        processa_resposta(perguntas, &estado, opcao_clicada);
-                    }
-                }
+                
 
                 // Avançar para próxima pergunta (pressione ESPAÇO)
                 if (evento.type == ALLEGRO_EVENT_KEY_DOWN && estado.respondida) {
@@ -1759,7 +1788,7 @@ int main(void) {
 
             // Desenhar Quiz (Arrumar/estudar, Claude ***)
 
-            if (escolha_mapa == 4 && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
+            if (escolha_mapa == 6 && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
                 desenha_quiz(caixa_dialogo, array_opcoes, fonte_quiz,
                     &perguntas[estado.perguntaAtual], &estado);
 
@@ -1770,18 +1799,18 @@ int main(void) {
                 }
             }
             // Verificar se perdeu no quiz ***
-            else if (escolha_mapa == 4 && estado.perdeu) {
+            else if (escolha_mapa == 6 && estado.perdeu) {
                 al_draw_text(fonte_quiz, al_map_rgb(255, 0, 0), LARGURA_TELA / 2, ALTURA_TELA / 2,
                     ALLEGRO_ALIGN_CENTER, "GAME OVER! Você errou 3 vezes.");
             }
             // Verificar se completou o quiz ****
-            else if (escolha_mapa == 4 && estado.perguntaAtual >= estado.numPerguntas) {
+            else if (escolha_mapa == 6 && estado.perguntaAtual >= estado.numPerguntas) {
                 al_draw_text(fonte_quiz, al_map_rgb(0, 255, 0), LARGURA_TELA / 2, ALTURA_TELA / 2,
                     ALLEGRO_ALIGN_CENTER, "Parabéns! Você completou o quiz!");
             }
 
             // Selecionar sprite do Odisseu (SOMENTE se NÃO estiver no Olimpo!)
-            if (escolha_mapa != 4) {
+            if (escolha_mapa != 6) {
 
             // Selecionar sprite do Odisseu
             ALLEGRO_BITMAP* sprite_atual_odisseu;
