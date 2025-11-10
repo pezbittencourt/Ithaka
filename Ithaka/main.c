@@ -859,9 +859,24 @@ int main(void) {
             else if (escolha_mapa == 3) {
 
                 //========================== RESTRIÇÕES DE MOVIMENTO ==========================//
-                if (fase->cenario_atual == 2 && odisseu.x > LARGURA_TELA - LARGURA_TELA / 9)
-                    odisseu.x = LARGURA_TELA - LARGURA_TELA / 9;
+                
+				//==========================CENARIO 0==========================//
+                if (fase->cenario_atual == 0) {
+                    bool inimigos_vivos = (inimigo1.vida > 0 || inimigo2.vida > 0 || inimigo3.vida > 0);
+                    float limite = LARGURA_TELA - LARGURA_TELA / 9;
 
+                    if (inimigos_vivos && odisseu.x > limite)
+                        odisseu.x = limite;
+                    //========================== CONFIGURAÇÃO DA ESCADA ==========================//
+                   
+                    if (odisseu.x < LARGURA_TELA / 1.38) odisseu.y = 550;
+                    if (odisseu.x > LARGURA_TELA / 1.32) odisseu.y = 520;
+                    if (odisseu.x > LARGURA_TELA / 1.25) odisseu.y = 490;
+                    if (odisseu.x > LARGURA_TELA / 1.22) odisseu.y = 460;
+                    if (odisseu.x > LARGURA_TELA / 1.19) odisseu.y = 430;
+                    if (odisseu.x > LARGURA_TELA / 1.15) odisseu.y = 380;
+
+                }
                 if (fase->cenario_atual == 1) {
                     bool inimigos_vivos = (inimigo4.vida > 0 || inimigo5.vida > 0 || inimigo6.vida > 0);
                     float limite = LARGURA_TELA - LARGURA_TELA / 9;
@@ -869,40 +884,15 @@ int main(void) {
                     if (inimigos_vivos && odisseu.x > limite)
                         odisseu.x = limite;
                 }
-
-                if (fase->cenario_atual == 0) {
-                    bool inimigos_vivos = (inimigo1.vida > 0 || inimigo2.vida > 0 || inimigo3.vida > 0);
+                if (fase->cenario_atual == 2) {
                     float limite = LARGURA_TELA - LARGURA_TELA / 9;
-
-                    if (inimigos_vivos && odisseu.x > limite)
-                        odisseu.x = limite;
+                    if (odisseu.x > limite)
+                    odisseu.x =limite;
+                        odisseu.y = 650;
                 }
-
-                //========================== CONFIGURAÇÃO DA ESCADA ==========================//
-             //config da escada 
-             if (fase->cenario_atual == 0 && odisseu.x < LARGURA_TELA / 1.38) odisseu.y = 550;
-             if (fase->cenario_atual == 0 && (odisseu.x > LARGURA_TELA / 1.32)) odisseu.y = 520;
-             if (fase->cenario_atual == 0 && (odisseu.x > LARGURA_TELA / 1.25)) odisseu.y = 490;
-             if (fase->cenario_atual == 0 && (odisseu.x > LARGURA_TELA / 1.22)) odisseu.y = 460;
-             if (fase->cenario_atual == 0 && (odisseu.x > LARGURA_TELA / 1.19)) odisseu.y = 430;
-             if (fase->cenario_atual == 0 && (odisseu.x > LARGURA_TELA / 1.15)) odisseu.y = 380;
-             if (fase->cenario_atual == 1 && inimigo4.vida > 0 && inimigo5.vida > 0 && inimigo6.vida > 0 && odisseu.x > LARGURA_TELA - LARGURA_TELA / 9) odisseu.x = LARGURA_TELA - LARGURA_TELA / 9;
-             if (fase->cenario_atual == 1) odisseu.y = 550;
-             if (fase->cenario_atual == 2) odisseu.y = 650;
-                
-
-                if (fase->cenario_atual == 1) {
-                    if (inimigo4.vida > 0 && inimigo5.vida > 0 && inimigo6.vida > 0 &&
-                        odisseu.x > LARGURA_TELA - LARGURA_TELA / 9)
-                        odisseu.x = LARGURA_TELA - LARGURA_TELA / 9;
-
-                    odisseu.y = 550;
-                }
-
-                if (fase->cenario_atual == 2)
-                    odisseu.y = 650;
-
                 //===================== ATUALIZAÇÃO DE PERSONAGENS =====================//
+
+
 
                 //------------------ CENÁRIO 0 ------------------//
                 if (fase->cenario_atual == 0) {
@@ -1542,12 +1532,99 @@ int main(void) {
             //atualiza flechas
             int i = 0;
             while (i < count_flechas) {
-                if (atualizar_flecha(&listaFlechas[i], y_chao, GRAVIDADE, circe)) {
-                    circe.sofrendo_dano = true;
-                    circe.vida--;
-                    remover_flecha(&listaFlechas, &count_flechas, i);
+                bool flecha_colidiu = false;
+
+                // Verifica se a flecha atingiu o chão
+                if (listaFlechas[i].y >= y_chao) {
+                    listaFlechas[i].y = y_chao;
+                    listaFlechas[i].tempo_de_vida++;
                 }
-                else if (listaFlechas[i].tempo_de_vida > 120.0f) {
+                else {
+                    // Atualiza posição da flecha
+                    float x1 = listaFlechas[i].x + listaFlechas[i].vx;
+                    float y1 = listaFlechas[i].y - listaFlechas[i].vy;
+                    listaFlechas[i].angulo = -atan2f(listaFlechas[i].vy, listaFlechas[i].vx);
+                    listaFlechas[i].x = x1;
+                    listaFlechas[i].y = y1;
+                    listaFlechas[i].vy -= GRAVIDADE;
+
+                    // Verificar colisão com Circe
+                    if (escolha_mapa == 2 && fase->cenario_atual == 3 && circe.vida > 0) {
+                        if (verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
+                            listaFlechas[i].largura, listaFlechas[i].altura,
+                            circe.x, circe.y, circe.largura, circe.altura)) {
+                            circe.sofrendo_dano = true;
+                            circe.vida--;
+                            circe.frame_atual = 0;
+                            flecha_colidiu = true;
+                        }
+                    }
+
+                    // Verificar colisão com inimigos 1, 2, 3
+                    if (escolha_mapa == 3 && fase->cenario_atual == 0) {
+                        if (inimigo1.vida > 0 && verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
+                            listaFlechas[i].largura, listaFlechas[i].altura,
+                            inimigo1.x, inimigo1.y, inimigo1.largura, inimigo1.altura)) {
+                            inimigo1.sofrendo_dano = true;
+                            inimigo1.vida--;
+                            inimigo1.frame_atual = 0;
+                            flecha_colidiu = true;
+                        }
+
+                        if (inimigo2.vida > 0 && verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
+                            listaFlechas[i].largura, listaFlechas[i].altura,
+                            inimigo2.x, inimigo2.y, inimigo2.largura, inimigo2.altura)) {
+                            inimigo2.sofrendo_dano = true;
+                            inimigo2.vida--;
+                            inimigo2.frame_atual = 0;
+                            flecha_colidiu = true;
+                        }
+
+                        if (inimigo3.vida > 0 && verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
+                            listaFlechas[i].largura, listaFlechas[i].altura,
+                            inimigo3.x, inimigo3.y, inimigo3.largura, inimigo3.altura)) {
+                            inimigo3.sofrendo_dano = true;
+                            inimigo3.vida--;
+                            inimigo3.frame_atual = 0;
+                            flecha_colidiu = true;
+                        }
+                    }
+
+                    // Verificar colisão com inimigos 4, 5, 6
+                    if (escolha_mapa == 3 && fase->cenario_atual == 1 &&
+                        inimigo1.vida == 0 && inimigo2.vida == 0 && inimigo3.vida == 0) {
+
+                        if (inimigo4.vida > 0 && verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
+                            listaFlechas[i].largura, listaFlechas[i].altura,
+                            inimigo4.x, inimigo4.y, inimigo4.largura, inimigo4.altura)) {
+                            inimigo4.sofrendo_dano = true;
+                            inimigo4.vida--;
+                            inimigo4.frame_atual = 0;
+                            flecha_colidiu = true;
+                        }
+
+                        if (inimigo5.vida > 0 && verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
+                            listaFlechas[i].largura, listaFlechas[i].altura,
+                            inimigo5.x, inimigo5.y, inimigo5.largura, inimigo5.altura)) {
+                            inimigo5.sofrendo_dano = true;
+                            inimigo5.vida--;
+                            inimigo5.frame_atual = 0;
+                            flecha_colidiu = true;
+                        }
+
+                        if (inimigo6.vida > 0 && verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
+                            listaFlechas[i].largura, listaFlechas[i].altura,
+                            inimigo6.x, inimigo6.y, inimigo6.largura, inimigo6.altura)) {
+                            inimigo6.sofrendo_dano = true;
+                            inimigo6.vida--;
+                            inimigo6.frame_atual = 0;
+                            flecha_colidiu = true;
+                        }
+                    }
+                }
+
+                // Remover flecha se colidiu ou tempo expirou
+                if (flecha_colidiu || listaFlechas[i].tempo_de_vida > 120.0f) {
                     remover_flecha(&listaFlechas, &count_flechas, i);
                 }
                 else {

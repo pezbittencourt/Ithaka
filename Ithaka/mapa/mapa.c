@@ -29,7 +29,7 @@ int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
             .largura = 178 * escala_x,
             .altura = 135 * escala_y,
             .fase_id = MAPA_FASE_SUBMUNDO,
-            .nome = "SUBIMUNDO",
+            .nome = "SUBMUNDO",
             .mouse_sobre = false,
             .cor_normal = al_map_rgba(100, 100, 100, 150),
             .cor_destaque = al_map_rgba(150, 150, 150, 100)
