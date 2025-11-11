@@ -13,6 +13,7 @@
 #include "fase.h"
 #include "personagem.h"
 #include "Olimpo/olimpo.h"
+#include "Circe/circe.h"
 
 InformacoesTela obter_resolucao_tela_atual() {
     InformacoesTela tela;
@@ -190,8 +191,21 @@ int main(void) {
 	ALLEGRO_BITMAP* Penelope = al_load_bitmap("./imagensJogo/personagens/Penelope/penelope.png");
 
     //Circe
-    ALLEGRO_BITMAP* circeparada = al_load_bitmap("./imagensJogo/personagens/Circe/circeparada.png");
-    ALLEGRO_BITMAP* circeDano = al_load_bitmap("./imagensJogo/personagens/Circe/circeDano.png");
+    ALLEGRO_BITMAP* sprites_circe[CIRCE_NUMERO_SPRITES];
+    int contagem_frames_circe[CIRCE_NUMERO_SPRITES];
+    contagem_frames_circe[CIRCE_SPRITE_PARADA] = 5;
+    sprites_circe[CIRCE_SPRITE_PARADA] = al_load_bitmap("./imagensJogo/personagens/Circe/circeparada.png");
+    contagem_frames_circe[CIRCE_SPRITE_DANO] = 7;
+    sprites_circe[CIRCE_SPRITE_DANO] = al_load_bitmap("./imagensJogo/personagens/Circe/circeDano.png");
+    contagem_frames_circe[CIRCE_SPRITE_CORVO_PARADO] = 8;
+    sprites_circe[CIRCE_SPRITE_CORVO_PARADO] = al_load_bitmap("./imagensJogo/personagens/Circe/corvo.png");
+    contagem_frames_circe[CIRCE_SPRITE_CIRCE_CORVO] = 8;
+    sprites_circe[CIRCE_SPRITE_CIRCE_CORVO] = al_load_bitmap("./imagensJogo/personagens/Circe/circe_corvo.png");
+    contagem_frames_circe[CIRCE_SPRITE_CORVO_CIRCE] = 8;
+    sprites_circe[CIRCE_SPRITE_CORVO_CIRCE] = al_load_bitmap("./imagensJogo/personagens/Circe/corvo_circe.png");
+    contagem_frames_circe[CIRCE_SPRITE_CORVO_ATACA] = 3;
+    sprites_circe[CIRCE_SPRITE_CORVO_ATACA] = al_load_bitmap("./imagensJogo/personagens/Circe/corvo_ataca.png");
+
 
     //Hermes
     ALLEGRO_BITMAP* hermesParado = al_load_bitmap("./imagensJogo/personagens/Hermes/hermesParado.png");
@@ -268,7 +282,7 @@ int main(void) {
 
     if (!odisseuParado || !odisseuAndando || !odisseuDesembainhar ||
         !odisseuAtacando || !odisseuParadoEspada || !odisseuAndandoEspada ||
-        !circeparada || !circeDano || !hermesParado || !hermesTiraElmo || !sprite_flecha ||
+        !sprites_circe[CIRCE_SPRITE_PARADA] || !sprites_circe[CIRCE_SPRITE_DANO] || !hermesParado || !hermesTiraElmo || !sprite_flecha ||
         !sprite_coracao || !inimigoParado1 || !inimigoParado2 || !inimigoParado3 || !inimigoParado4 || !inimigoParado5 || !inimigoParado6 || 
         !inimigo1_sofre_dano || !inimigo2_sofre_dano || !inimigo3_sofre_dano || !inimigo4_sofre_dano || !inimigo5_sofre_dano || !inimigo6_sofre_dano 
         || !inimigo1_atacando || !inimigo2_atacando || !inimigo3_atacando || !inimigo4_atacando || !inimigo5_atacando || !inimigo6_atacando) {
@@ -311,16 +325,6 @@ int main(void) {
     int total_frames_penelope_parada = 5;
     int largura_frame_penelope_parada = al_get_bitmap_width(Penelope) / total_frames_penelope_parada;
     int altura_frame_penelope_parada = al_get_bitmap_height(Penelope);
-
-
-    //Circe configuração
-    int total_frames_circeparada = 5;
-    int largura_frame_circeparada = al_get_bitmap_width(circeparada) / total_frames_circeparada;
-    int altura_frame_circeparada = al_get_bitmap_height(circeparada);
-
-    int total_frames_dano = 7;
-    int largura_frame_dano = al_get_bitmap_width(circeDano) / total_frames_dano;
-    int altura_frame_dano = al_get_bitmap_height(circeDano);
 
     //Hermes configuração
     int total_frames_hermesParado = 5;
@@ -466,7 +470,9 @@ int main(void) {
         .atacando = false,
         .tem_espada = false,
         .frame_atual = 0,
-        .contador_animacao = 0
+        .contador_animacao = 0,
+        .estado = 0,
+        .estado_progresso = 0
     };
 
         Personagem penelope = {
@@ -661,6 +667,7 @@ int main(void) {
 
     bool jogo_rodando = true;
     bool redesenhar_tela = false;
+    int circe_stall = 120;
     Flecha* listaFlechas = (Flecha*)malloc(sizeof(*listaFlechas));
     int count_flechas = 0, capacidade_flechas = 0;
     if (listaFlechas == NULL) {
@@ -929,29 +936,40 @@ int main(void) {
            //cenário 0
                 if (fase->cenario_atual == 0 && odisseu.x < (LARGURA_TELA / 4.2)) odisseu.x = (LARGURA_TELA / 4.2);
            //cenario 3
-                if (fase->cenario_atual == 3 && odisseu.x > LARGURA_TELA - LARGURA_TELA / 10) odisseu.x = LARGURA_TELA - LARGURA_TELA / 10;
-
-
-
-				//=============CONFIGURAÇÃO DA CIRCE==================
-                if (fase->cenario_atual == 3 && circe.vida > 0) {
-                    circe.contador_animacao++;
-                    int delay_animacao_circe = circe.sofrendo_dano ? 5 : 10;
-                    if (circe.contador_animacao >= delay_animacao_circe) {
-                        if (circe.sofrendo_dano) {
-                            circe.frame_atual++;
-                            if (circe.frame_atual >= total_frames_dano) {
-                                circe.sofrendo_dano = false;
-                                circe.frame_atual = 0;
+                if (fase->cenario_atual == 3) {
+                    if (odisseu.x > LARGURA_TELA - LARGURA_TELA / 10) odisseu.x = LARGURA_TELA - LARGURA_TELA / 10;
+                    if (circe_stall == 0) {
+                        processar_acao_circe(&odisseu, &circe, &circe_stall, tela);
+                        atualizar_circe(&circe,odisseu,tela);
+                    }
+                    if (circe_stall > 0) {
+                        circe_stall--;
+                    }
+                    //=============CONFIGURAÇÃO DA CIRCE==================
+                    if (circe.vida > 0) {
+                        circe.contador_animacao++;
+                        int delay_animacao_circe = circe.sofrendo_dano ? 5 : 10;
+                        if (circe.contador_animacao >= delay_animacao_circe) {
+                            if (circe.sofrendo_dano) {
+                                circe.frame_atual++;
+                                if (circe.frame_atual >= contagem_frames_circe[CIRCE_SPRITE_DANO]) {
+                                    circe.sofrendo_dano = false;
+                                    circe.frame_atual = 0;
+                                }
                             }
+                            else if (circe.estado == 1 || circe.estado == 3) {
+                                circe.frame_atual++;
+                                if (circe.frame_atual >= contagem_frames_circe[CIRCE_SPRITE_CIRCE_CORVO]) {
+                                    circe.frame_atual = 0;
+                                }
+                            }else{
+                                circe.frame_atual = (circe.frame_atual + 1) % contagem_frames_circe[CIRCE_SPRITE_PARADA];
+                            }
+                            
+                            circe.contador_animacao = 0;
                         }
-                        else {
-                            circe.frame_atual = (circe.frame_atual + 1) % total_frames_circeparada;
-                        }
-                        circe.contador_animacao = 0;
                     }
                 }
-
 				//=============CONFIGURAÇÃO DOS ESTADOS DE HERMES==================
 
                 if (fase->cenario_atual == 1) {
@@ -2117,10 +2135,11 @@ int main(void) {
             }
             // Desenhar Circe no último cenário
             if (fase->cenario_atual == 3 && escolha_mapa == 2 && circe.vida > 0) {
-                ALLEGRO_BITMAP* sprite_atual_circe = circe.sofrendo_dano ? circeDano : circeparada;
-                int largura_frame_circe = circe.sofrendo_dano ? largura_frame_dano : largura_frame_circeparada;
-                int altura_frame_circe = circe.sofrendo_dano ? altura_frame_dano : altura_frame_circeparada;
-                int frame_circe = circe.sofrendo_dano ? circe.frame_atual : circe.frame_atual % total_frames_circeparada;
+                ALLEGRO_BITMAP* sprite_atual_circe = sprites_circe[circe.sprite_ativo];
+                int contagem_frames_sprite_atual = contagem_frames_circe[circe.sprite_ativo];
+                int largura_frame_circe = al_get_bitmap_width(sprite_atual_circe) / contagem_frames_sprite_atual;
+                int altura_frame_circe = al_get_bitmap_height(sprite_atual_circe);
+                int frame_circe = circe.frame_atual % contagem_frames_sprite_atual;
 
                 int flagsCirce = circe.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
                 al_draw_scaled_bitmap(
@@ -2152,6 +2171,7 @@ int main(void) {
             redesenhar_tela = false;
         }
     }
+    }
     // Limpeza de eventos e personagens
     //Odisseu
     al_destroy_bitmap(odisseuParado);
@@ -2162,8 +2182,8 @@ int main(void) {
     al_destroy_bitmap(odisseuAndandoEspada);
 
     //Circe
-    al_destroy_bitmap(circeparada);
-    al_destroy_bitmap(circeDano);
+    al_destroy_bitmap(sprites_circe[CIRCE_SPRITE_PARADA]);
+    al_destroy_bitmap(sprites_circe[CIRCE_SPRITE_DANO]);
 
     //Hermes
     al_destroy_bitmap(hermesParado);
