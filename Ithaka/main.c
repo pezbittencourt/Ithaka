@@ -2219,7 +2219,7 @@ int main(void) {
 
             redesenhar_tela = false;
         }
-    }
+    
     }
     // Limpeza de eventos e personagens
     //Odisseu
