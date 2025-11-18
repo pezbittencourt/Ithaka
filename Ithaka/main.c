@@ -16,6 +16,13 @@
 #include "Circe/circe.h"
 #include "Poseidon/poseidon.h"
 
+typedef enum {
+    TELA_MENU,
+    TELA_MAPA,
+    TELA_JOGO,
+    TELA_SAIR
+} TelaSistema;
+
 InformacoesTela obter_resolucao_tela_atual() {
     InformacoesTela tela;
     ALLEGRO_MONITOR_INFO informacoes_monitor;
@@ -735,8 +742,19 @@ int main(void) {
         }
         else if (evento.type == ALLEGRO_EVENT_KEY_DOWN) {
             if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
-                jogo_rodando = false;
-                return 0;
+                // Verificar em qual "tela" estamos
+
+                // Se ainda não carregou o mapa (teoricamente impossível chegar aqui)
+                if (escolha_mapa == 0) {
+                    jogo_rodando = false;
+                    // Vai sair do programa
+                }
+                // Se está jogando alguma fase
+                else if (escolha_mapa > 0) {
+                    printf("[JOGO] ESC pressionado - Voltando ao mapa...\n");
+                    escolha_mapa = exibir_mapa_inicial(tela_jogo);
+                    // Flag para indicar que deve voltar ao mapa
+                }
             }
 
             if (evento.keyboard.keycode == ALLEGRO_KEY_E && !odisseu.andando &&
