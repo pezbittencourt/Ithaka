@@ -14,6 +14,7 @@
 #include "personagem.h"
 #include "Olimpo/olimpo.h"
 #include "Circe/circe.h"
+#include "Poseidon/poseidon.h"
 
 InformacoesTela obter_resolucao_tela_atual() {
     InformacoesTela tela;
@@ -257,6 +258,10 @@ int main(void) {
     //Objetos
     ALLEGRO_BITMAP* sprite_flecha = al_load_bitmap("./imagensJogo/objetos/flecha.png");
     ALLEGRO_BITMAP* sprite_coracao = al_load_bitmap("./imagensJogo/objetos/coracao.png");
+    ALLEGRO_BITMAP* sprite_erro = al_load_bitmap("./imagensJogo/objetos/erro.png");
+    ALLEGRO_BITMAP* sprite_navio = al_load_bitmap("./imagensJogo/objetos/navio.png");
+    ALLEGRO_BITMAP* sprite_agua = al_load_bitmap("./imagensJogo/objetos/agua.png");
+    ALLEGRO_BITMAP* sprite_acerto = al_load_bitmap("./imagensJogo/objetos/acerto.png");
 
     //Caixa de diálogo - Quiz
 
@@ -690,10 +695,39 @@ int main(void) {
         printf(stderr, "alocação de memória para as flechas falhou!\n");
         return -1;
     }
+    //config inicial para fase do poseidon
+    int tabuleiro_jogador[10][10] = { 0 };
+    int tabuleiro_com[10][10] = { 0 };
 
+    bool setup = true;
+    bool turno_jogador = true;
+
+    bool vertical = false;
+
+    bool player_ganha = false;
+    bool com_ganha = false;
+
+    Estado_Computador com = { 0 };
+
+    Navio navios[5] = {
+        {5, false},
+        {4, false},
+        {3, false},
+        {3, false},
+        {2, false}
+    };
+    int contagem_navios = 5;
+
+    com_config_inicial(tabuleiro_com, navios, contagem_navios);
+
+    for (int i = 0; i < contagem_navios; i++) navios[i].placed = false;
 
     while (jogo_rodando) {
         ALLEGRO_EVENT evento;
+        ALLEGRO_KEYBOARD_STATE estado_teclado;
+        ALLEGRO_MOUSE_STATE estado_mouse;
+        bool mouse_left = false;
+        bool mouse_right = false;
         al_wait_for_event(fila_eventos, &evento);
 
         if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
@@ -728,7 +762,7 @@ int main(void) {
                 duracao_ataque = 0;
             }
             // Detectar cliques do mouse
-            if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida) {
+            if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida && escolha_mapa == MAPA_FASE_OLIMPO) {
                 int opcao_clicada = -1;
 
                 // Verificar qual opção foi clicada (!!Arrumar as coordenadas!!)
@@ -784,10 +818,32 @@ int main(void) {
             }
 
         }
+        else if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
+            mouse_left = evento.mouse.button == 1;
+            mouse_right = evento.mouse.button == 2;
+
+            if (escolha_mapa == MAPA_FASE_POSEIDON) {
+                al_get_mouse_state(&estado_mouse);
+                update_battleship(
+                    estado_mouse,
+                    mouse_left,
+                    mouse_right,
+                    tabuleiro_jogador,
+                    tabuleiro_com,
+                    &turno_jogador,
+                    &setup,
+                    navios,
+                    contagem_navios,
+                    &vertical,
+                    &com,
+                    &player_ganha,
+                    &com_ganha,
+                    tela
+                );
+            }
+        }
         
         else if (evento.type == ALLEGRO_EVENT_TIMER) {
-            ALLEGRO_KEYBOARD_STATE estado_teclado;
-            ALLEGRO_MOUSE_STATE estado_mouse;
             al_get_keyboard_state(&estado_teclado);
             al_get_mouse_state(&estado_mouse);
             float odisseu_direcao_x = 0.0f;
@@ -1466,7 +1522,8 @@ int main(void) {
                 }
             }
 
-
+            //Poseidon
+            
            
             
            // Verificar colisão
@@ -1913,7 +1970,7 @@ int main(void) {
 
             // Desenhar Quiz (Arrumar/estudar, Claude ***)
 
-            if (escolha_mapa == 4 && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
+            if (escolha_mapa == MAPA_FASE_OLIMPO && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
                 desenha_quiz(caixa_dialogo, array_opcoes, fonte_quiz,
                     &perguntas[estado.perguntaAtual], &estado);
 
@@ -1941,7 +1998,7 @@ int main(void) {
                 }
             }
             // Verificar se perdeu no quiz
-            else if (escolha_mapa == 4 && estado.perdeu) {
+            else if (escolha_mapa == MAPA_FASE_OLIMPO && estado.perdeu) {
                 al_clear_to_color(al_map_rgb(50, 0, 0));
                 al_draw_text(fonte_quiz, al_map_rgb(255, 0, 0),
                     LARGURA_TELA / 2, ALTURA_TELA / 2 - 50,
@@ -1954,7 +2011,7 @@ int main(void) {
                     ALLEGRO_ALIGN_CENTER, "Pressione ESC para sair");
             }
             // Verificar se completou o quiz
-            else if (escolha_mapa == 4 && estado.perguntaAtual >= estado.numPerguntas) {
+            else if (escolha_mapa == MAPA_FASE_OLIMPO && estado.perguntaAtual >= estado.numPerguntas) {
                 al_clear_to_color(al_map_rgb(0, 50, 0));
                 al_draw_text(fonte_quiz, al_map_rgb(0, 255, 0),
                     LARGURA_TELA / 2, ALTURA_TELA / 2 - 50,
@@ -1967,8 +2024,8 @@ int main(void) {
                     ALLEGRO_ALIGN_CENTER, "Pressione ESC para sair");
             }
 
-            // Selecionar sprite do Odisseu (SOMENTE se NÃO estiver no Olimpo!)
-            if (escolha_mapa != 6) {
+            // Selecionar sprite do Odisseu (SOMENTE se NÃO estiver no Olimpo ou no Poseidon antes de ganhar!)
+            if ((escolha_mapa != MAPA_FASE_OLIMPO && escolha_mapa != MAPA_FASE_POSEIDON) || (escolha_mapa == MAPA_FASE_POSEIDON && player_ganha)) {
 
                 // Selecionar sprite do Odisseu
                 ALLEGRO_BITMAP* sprite_atual_odisseu;
@@ -2309,21 +2366,44 @@ int main(void) {
                 }
             }
 
-            //desenhar coracao de vida
-            for (int i = 0; i < odisseu.vida; i++) {
-                float largura_coracao = (al_get_bitmap_width(sprite_coracao) * 0.1) * (tela.largura / 1920.0f);
-                float altura_coracao = (al_get_bitmap_height(sprite_coracao) * 0.1) * (tela.altura / 1080.0f);
-                float offset_x = (tela.largura * 0.05) + (largura_coracao * (i + 1));
-                float offset_y = tela.altura * 0.05;
-                al_draw_scaled_bitmap(
-                    sprite_coracao,
-                    0, 0,
-                    al_get_bitmap_width(sprite_coracao),
-                    al_get_bitmap_height(sprite_coracao),
-                    offset_x, offset_y,
-                    largura_coracao, altura_coracao, 0
+            if (escolha_mapa == MAPA_FASE_POSEIDON && !player_ganha) {
+                al_get_mouse_state(&estado_mouse);
+                draw_battleship(
+                    sprite_agua,
+                    sprite_navio,
+                    sprite_acerto,
+                    sprite_erro,
+                    tabuleiro_jogador,
+                    tabuleiro_com,
+                    setup,
+                    navios,
+                    contagem_navios,
+                    estado_mouse,
+                    vertical,
+                    player_ganha,
+                    com_ganha,
+                    tela
                 );
             }
+
+            //desenhar coracao de vida
+            if (escolha_mapa != MAPA_FASE_POSEIDON || player_ganha) {
+                for (int i = 0; i < odisseu.vida; i++) {
+                    float largura_coracao = (al_get_bitmap_width(sprite_coracao) * 0.1) * (tela.largura / 1920.0f);
+                    float altura_coracao = (al_get_bitmap_height(sprite_coracao) * 0.1) * (tela.altura / 1080.0f);
+                    float offset_x = (tela.largura * 0.05) + (largura_coracao * (i + 1));
+                    float offset_y = tela.altura * 0.05;
+                    al_draw_scaled_bitmap(
+                        sprite_coracao,
+                        0, 0,
+                        al_get_bitmap_width(sprite_coracao),
+                        al_get_bitmap_height(sprite_coracao),
+                        offset_x, offset_y,
+                        largura_coracao, altura_coracao, 0
+                    );
+                }
+            }
+            
 
             al_flip_display();
 
