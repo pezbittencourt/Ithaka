@@ -12,7 +12,6 @@ void init_fase(Fase* fase, int total_cenarios)
 {
     if (!fase) return;
 
-    // Allocate array of Cenario structs
     fase->cenarios = (Cenario*)malloc(total_cenarios * sizeof(Cenario));
     if (!fase->cenarios) {
         fprintf(stderr, "Erro: não foi possível alocar memória para cenários\n");
@@ -20,7 +19,6 @@ void init_fase(Fase* fase, int total_cenarios)
         return;
     }
 
-    // Initialize all Cenario structs to zero
     for (int i = 0; i < total_cenarios; i++) {
         fase->cenarios[i].fundo = NULL;
         fase->cenarios[i].sobreposicoes = NULL;
@@ -40,12 +38,10 @@ void init_cenario(Cenario* cenario, int total_sobreposicoes, int total_personage
         return;
     }
 
-    // Initialize overlays array
     if (total_sobreposicoes > 0) {
         cenario->sobreposicoes = (ALLEGRO_BITMAP**)malloc(total_sobreposicoes * sizeof(ALLEGRO_BITMAP*));
         if (cenario->sobreposicoes) {
             cenario->total_sobreposicoes = total_sobreposicoes;
-            // Initialize all overlay pointers to NULL
             for (int i = 0; i < total_sobreposicoes; i++) {
                 cenario->sobreposicoes[i] = NULL;
             }
@@ -56,7 +52,6 @@ void init_cenario(Cenario* cenario, int total_sobreposicoes, int total_personage
         }
     }
 
-    // Initialize characters array
     if (total_personagens > 0) {
         cenario->personagens = (Personagem*)malloc(total_personagens * sizeof(Personagem));
         if (cenario->personagens) {
@@ -90,11 +85,9 @@ void free_fase(Fase* fase)
     if (!fase) return;
 
     if (fase->cenarios) {
-        // First free all individual cenarios
         for (int i = 0; i < fase->total_cenarios; i++) {
             free_cenario(&fase->cenarios[i]);
         }
-        // Then free the cenarios array
         free(fase->cenarios);
         fase->cenarios = NULL;
     }

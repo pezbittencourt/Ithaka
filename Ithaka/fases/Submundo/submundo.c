@@ -4,10 +4,8 @@
 bool carregar_cenarios_submundo(Fase* fase)
 {
     if (!fase) return false;
-    // Initialize the fase with 6 scenarios
     init_fase(fase, 1);
 
-    // Verify allocation was successful
     if (!fase->cenarios || fase->total_cenarios < 1) {
         fprintf(stderr, "Erro: falha na inicialização da fase\n");
         return false;

@@ -4,10 +4,8 @@
 bool carregar_cenarios_itaca(Fase* fase)
 {
     if (!fase) return false;
-    // Initialize the fase with 6 scenarios
     init_fase(fase, 3);
 
-    // Verify allocation was successful
     if (!fase->cenarios || fase->total_cenarios < 3) {
         fprintf(stderr, "Erro: falha na inicialização da fase\n");
         return false;

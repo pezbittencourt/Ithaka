@@ -10,10 +10,8 @@ bool carregar_cenarios_polifemo(Fase* fase) {
         return false;
     }
 
-    // Initialize the fase with 6 scenarios
     init_fase(fase, 6);
 
-    // Verify allocation was successful
     if (!fase->cenarios || fase->total_cenarios < 6) {
         fprintf(stderr, "Erro: falha na inicialização da fase\n");
         return false;

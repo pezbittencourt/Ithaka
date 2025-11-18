@@ -205,6 +205,20 @@ int main(void) {
     sprites_circe[CIRCE_SPRITE_CORVO_CIRCE] = al_load_bitmap("./imagensJogo/personagens/Circe/corvo_circe.png");
     contagem_frames_circe[CIRCE_SPRITE_CORVO_ATACA] = 3;
     sprites_circe[CIRCE_SPRITE_CORVO_ATACA] = al_load_bitmap("./imagensJogo/personagens/Circe/corvo_ataca.png");
+    contagem_frames_circe[CIRCE_SPRITE_BATALHA] = 5;
+    sprites_circe[CIRCE_SPRITE_BATALHA] = al_load_bitmap("./imagensJogo/personagens/Circe/circe_batalha.png");
+    contagem_frames_circe[CIRCE_SPRITE_BATALHA_HIT] = 7;
+    sprites_circe[CIRCE_SPRITE_BATALHA_HIT] = al_load_bitmap("./imagensJogo/personagens/Circe/circe_batalha_hit.png");
+    contagem_frames_circe[CIRCE_SPRITE_CIRCE_TIGRE] = 10;
+    sprites_circe[CIRCE_SPRITE_CIRCE_TIGRE] = al_load_bitmap("./imagensJogo/personagens/Circe/circe_tigre.png");
+    contagem_frames_circe[CIRCE_SPRITE_TIGRE_CIRCE] = 10;
+    sprites_circe[CIRCE_SPRITE_TIGRE_CIRCE] = al_load_bitmap("./imagensJogo/personagens/Circe/tigre_circe.png");
+    contagem_frames_circe[CIRCE_SPRITE_TIGRE_PARADO] = 6;
+    sprites_circe[CIRCE_SPRITE_TIGRE_PARADO] = al_load_bitmap("./imagensJogo/personagens/Circe/tigre_parado.png");
+    contagem_frames_circe[CIRCE_SPRITE_TIGRE_ANDANDO] = 6;
+    sprites_circe[CIRCE_SPRITE_TIGRE_ANDANDO] = al_load_bitmap("./imagensJogo/personagens/Circe/tigre_andando.png");
+    contagem_frames_circe[CIRCE_SPRITE_TIGRE_ATAQUE] = 5;
+    sprites_circe[CIRCE_SPRITE_TIGRE_ATAQUE] = al_load_bitmap("./imagensJogo/personagens/Circe/tigre_ataque.png");
 
 
     //Hermes
@@ -458,11 +472,11 @@ int main(void) {
     Personagem circe = {
         .x = LARGURA_TELA - (LARGURA_TELA / 3),
         .y = deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
-        .vida = 3,
+        .vida = 15,
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
-        .olhando_direita = true,
-        .olhando_esquerda = false,
+        .olhando_direita = false,
+        .olhando_esquerda = true,
         .andando = false,
         .desembainhando = false,
         .sofrendo_dano = false,
@@ -472,7 +486,9 @@ int main(void) {
         .frame_atual = 0,
         .contador_animacao = 0,
         .estado = 0,
-        .estado_progresso = 0
+        .estado_progresso = 0,
+        .angulo = 0,
+        .sprite_ativo = CIRCE_SPRITE_BATALHA
     };
 
         Personagem penelope = {
@@ -920,7 +936,7 @@ int main(void) {
             }
             //================================MISSÃO CIRCE=============================================
 			
-            if (escolha_mapa == 2) {
+            if (escolha_mapa == MAPA_FASE_CIRCE) {
                
            //barreiras para não serem ultrapassadas no mapa 2
            //cenário 0
@@ -928,9 +944,11 @@ int main(void) {
            //cenario 3
                 if (fase->cenario_atual == 3) {
                     if (odisseu.x > LARGURA_TELA - LARGURA_TELA / 10) odisseu.x = LARGURA_TELA - LARGURA_TELA / 10;
+                    odisseu.x = odisseu.x < 10 && circe.vida > 0 ? 10 : odisseu.x;
+                    float old_x = circe.x;
                     if (circe_stall == 0) {
                         processar_acao_circe(&odisseu, &circe, &circe_stall, tela);
-                        atualizar_circe(&circe,odisseu,tela);
+                        atualizar_circe(&circe,odisseu,tela, &circe_stall);
                     }
                     if (circe_stall > 0) {
                         circe_stall--;
@@ -941,25 +959,50 @@ int main(void) {
                         int delay_animacao_circe = circe.sofrendo_dano ? 5 : 10;
                         if (circe.contador_animacao >= delay_animacao_circe) {
                             if (circe.sofrendo_dano) {
+                                circe.sprite_ativo = CIRCE_SPRITE_BATALHA_HIT;
                                 circe.frame_atual++;
-                                if (circe.frame_atual >= contagem_frames_circe[CIRCE_SPRITE_DANO]) {
+                                if (circe.frame_atual >= contagem_frames_circe[CIRCE_SPRITE_BATALHA_HIT]) {
+                                    circe.sprite_ativo = CIRCE_SPRITE_BATALHA;
                                     circe.sofrendo_dano = false;
                                     circe.frame_atual = 0;
                                 }
                             }
-                            else if (circe.estado == 1 || circe.estado == 3) {
+                            else if (circe.estado == 1 || (circe.estado == 4 && circe.sprite_ativo == CIRCE_SPRITE_CIRCE_TIGRE)|| circe.estado == 7) {
                                 circe.frame_atual++;
-                                if (circe.frame_atual >= contagem_frames_circe[CIRCE_SPRITE_CIRCE_CORVO]) {
+                                if (circe.frame_atual >= contagem_frames_circe[circe.sprite_ativo]) {
+                                    circe.frame_atual = contagem_frames_circe[circe.sprite_ativo];
+                                }
+                            }
+                            else if (circe.sprite_ativo == CIRCE_SPRITE_TIGRE_ANDANDO) {
+                                float old_dx = fabsf(odisseu.x - old_x);
+                                float new_dx = fabsf(odisseu.x - circe.x);
+                                
+                                if (old_dx < new_dx) {
+                                    circe.frame_atual--;
+                                    if (circe.frame_atual < 0) {
+                                        circe.frame_atual = contagem_frames_circe[circe.sprite_ativo];
+                                    }
+                                }else{
+                                    circe.frame_atual = (circe.frame_atual + 1) % contagem_frames_circe[circe.sprite_ativo];
+                                }
+                            }
+                            else if (circe.atacando && circe.estado == 4) {
+                                circe.frame_atual++;
+                                if (circe.frame_atual >= contagem_frames_circe[CIRCE_SPRITE_TIGRE_ATAQUE]) {
+                                    circe.sprite_ativo = CIRCE_SPRITE_TIGRE_ANDANDO;
+                                    circe.atacando = false;
                                     circe.frame_atual = 0;
                                 }
-                            }else{
-                                circe.frame_atual = (circe.frame_atual + 1) % contagem_frames_circe[CIRCE_SPRITE_PARADA];
+                            }
+                            else {
+                                circe.frame_atual = (circe.frame_atual + 1) % contagem_frames_circe[CIRCE_SPRITE_BATALHA];
                             }
                             
                             circe.contador_animacao = 0;
                         }
                     }
                 }
+
 				//=============CONFIGURAÇÃO DOS ESTADOS DE HERMES==================
 
                 if (fase->cenario_atual == 1) {
@@ -1424,7 +1467,7 @@ int main(void) {
             }
 
 
-
+           
             
            // Verificar colisão
             if (ataque_ativado) {
@@ -1438,7 +1481,7 @@ int main(void) {
                     circe.x, circe.y, circe.largura, circe.altura)) {
 
                     // Só aplicar dano se a Circe ainda não estiver no estado "sofrendo_dano"
-                    if (!circe.sofrendo_dano) {
+                    if (!circe.sofrendo_dano && circe.vulneravel) {
                         circe.sofrendo_dano = true;
                         circe.vida--;
                         circe.frame_atual = 0;
@@ -1514,6 +1557,53 @@ int main(void) {
                 }
                 if (duracao_ataque >= DURACAO_MAXIMA_ATAQUE) ataque_ativado = false;
               }
+
+            //ataques circe
+            if (escolha_mapa == MAPA_FASE_CIRCE) {
+
+                //ataque corvo e colisao tigre
+                if ((circe.estado == 2 || circe.estado == 4) && verificar_colisao(odisseu.x, odisseu.y, odisseu.largura, odisseu.altura,
+                    circe.x, circe.y, circe.largura, circe.altura)) {
+                     
+                    if (odisseu.cooldown_dano <= 0) {
+                        odisseu.sofrendo_dano = true;
+                        odisseu.vida--;
+                        odisseu.frame_atual = 0;
+                        odisseu.cooldown_dano = 120;
+                        if (odisseu.vida <= 0) {
+                            printf("ODISSEU FOI DERROTADO!\n");
+                            jogo_rodando = false;
+                        }
+                    }
+                }
+
+                //ataque tigre
+                if (circe.estado == 4 && circe.atacando && circe_stall == 0 && circe.frame_atual >= 4) {
+                    float area_ataque_circe_x = circe.olhando_direita ?
+                        circe.x + circe.largura * 0.3f : circe.x - circe.largura * 0.3f;
+                    float area_ataque_circe_y = circe.y + circe.altura * 0.1f;
+                    float area_ataque_circe_largura = circe.largura;
+                    float area_ataque_circe_altura = circe.altura * 0.5f;
+
+                    if (verificar_colisao(area_ataque_circe_x, area_ataque_circe_y,
+                        area_ataque_circe_largura, area_ataque_circe_altura,
+                        odisseu.x, odisseu.y, odisseu.largura, odisseu.altura)) {
+
+                        if (odisseu.cooldown_dano <= 0) {
+                            odisseu.sofrendo_dano = true;
+                            odisseu.vida--;
+                            odisseu.frame_atual = 0;
+                            odisseu.cooldown_dano = 120;
+
+                            if (odisseu.vida <= 0) {
+                                printf("ODISSEU FOI DERROTADO!\n");
+                                jogo_rodando = false;
+                            }
+                        }
+                    }
+                }
+            }
+
             // ATAQUES DOS INIMIGOS
             if (escolha_mapa == 3 && fase->cenario_atual == 0) {
                // Verificar ataque do inimigo1
@@ -1730,9 +1820,11 @@ int main(void) {
                         if (verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
                             listaFlechas[i].largura, listaFlechas[i].altura,
                             circe.x, circe.y, circe.largura, circe.altura)) {
-                            circe.sofrendo_dano = true;
-                            circe.vida--;
-                            circe.frame_atual = 0;
+                            if (circe.vulneravel) {
+                                circe.sofrendo_dano = true;
+                                circe.vida--;
+                                circe.frame_atual = 0;
+                            }
                             flecha_colidiu = true;
                         }
                     }
@@ -2191,12 +2283,30 @@ int main(void) {
                 int frame_circe = circe.frame_atual % contagem_frames_sprite_atual;
 
                 int flagsCirce = circe.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
-                al_draw_scaled_bitmap(
-                    sprite_atual_circe,
-                    frame_circe * largura_frame_circe, 0,
-                    largura_frame_circe, altura_frame_circe,
-                    circe.x, circe.y,
-                    circe.largura, circe.altura, flagsCirce);
+                if (circe.angulo == 0) {
+                    al_draw_scaled_bitmap(
+                        sprite_atual_circe,
+                        frame_circe* largura_frame_circe, 0,
+                        largura_frame_circe, altura_frame_circe,
+                        circe.x, circe.y,
+                        circe.largura, circe.altura, flagsCirce);
+                }
+                else {
+                    float circe_scale_x = (float)circe.largura / (float)largura_frame_circe;
+                    float circe_scale_y = (float)circe.altura / (float)altura_frame_circe;
+                    al_draw_tinted_scaled_rotated_bitmap_region(
+                        sprite_atual_circe,
+                        frame_circe* largura_frame_circe,0,
+                        largura_frame_circe,altura_frame_circe,
+                        al_map_rgba_f(1, 1, 1, 1),
+                        largura_frame_circe / 2.0f,altura_frame_circe / 2.0f,
+                        circe.x + circe.largura / 2.0f,
+                        circe.y + circe.altura / 2.0f,
+                        circe_scale_x, circe_scale_y,
+                        circe.angulo,
+                        0
+                    );
+                }
             }
 
             //desenhar coracao de vida
