@@ -454,7 +454,7 @@ int main(void) {
         .x = (escolha_mapa == 2) ? (LARGURA_TELA / 4.2) : (LARGURA_TELA / 30),
         .y = (escolha_mapa == 3) ? deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL)
         : deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
-        .vida = 3,
+        .vida = 14,
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
         .olhando_direita = true,
@@ -477,7 +477,7 @@ int main(void) {
     Personagem circe = {
         .x = LARGURA_TELA - (LARGURA_TELA / 3),
         .y = deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
-        .vida = 15,
+        .vida = 3,
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
         .olhando_direita = false,
@@ -999,8 +999,7 @@ int main(void) {
                 if (fase->cenario_atual == 0 && odisseu.x < (LARGURA_TELA / 4.2)) odisseu.x = (LARGURA_TELA / 4.2);
            //cenario 3
                 if (fase->cenario_atual == 3) {
-                    if (odisseu.x > LARGURA_TELA - LARGURA_TELA / 10) odisseu.x = LARGURA_TELA - LARGURA_TELA / 10;
-                    odisseu.x = odisseu.x < 10 && circe.vida > 0 ? 10 : odisseu.x;
+                    if (circe.vida > 0 && odisseu.x < LARGURA_TELA / -24) odisseu.x = LARGURA_TELA / -24;
                     float old_x = circe.x;
                     if (circe_stall == 0) {
                         processar_acao_circe(&odisseu, &circe, &circe_stall, tela);
@@ -1009,6 +1008,7 @@ int main(void) {
                     if (circe_stall > 0) {
                         circe_stall--;
                     }
+                    //aqui
                     //=============CONFIGURAÇÃO DA CIRCE==================
                     if (circe.vida > 0) {
                         circe.contador_animacao++;

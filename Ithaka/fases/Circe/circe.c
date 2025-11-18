@@ -20,7 +20,7 @@ static void move_to_target(Personagem* circe, bool angulo, float progresso_end)
     float dy = circe->target_y - circe->y;
 
     float distance = sqrtf(dx * dx + dy * dy);
-    float speed = 6.0f;
+    float speed = 3.0f;
     float newx = circe->x + (dx / distance) * speed;
     float newy = circe->y + (dy / distance) * speed;
 
@@ -58,7 +58,7 @@ static void movimento_ataque_corvo(Personagem* circe, InformacoesTela tela) {
 
         float distance = sqrtf(dx * dx + dy * dy);
 
-        float speed = 6.0f;
+        float speed = 3.0f;
         float newx = circe->x + (dx / distance) * speed;
         float newy = circe->y + (dy / distance) * speed;
 
@@ -78,7 +78,7 @@ static void movimento_ataque_corvo(Personagem* circe, InformacoesTela tela) {
     float scale_x = tela.largura * 0.4f;
     float scale_y = tela.altura * 0.7f;
 
-    float angular_progress = circe->estado_progresso * (6.0f * ALLEGRO_PI / 100.0f);
+    float angular_progress = circe->estado_progresso * (3.0f * ALLEGRO_PI / 100.0f);
     float t = angular_progress + (ALLEGRO_PI / 2);
 
     float denominator = 1 + sin(t) * sin(t);
@@ -166,7 +166,7 @@ bool carregar_cenarios_circe(Fase* fase) {
     fase->cenarios[0].fundo = al_load_bitmap("./imagensJogo/cenarios/Circe/fundoCirce1.png");
     fase->cenarios[0].sobreposicoes[0] = al_load_bitmap("./imagensJogo/cenarios/Circe/frenteCirce1.png");
     if (!fase->cenarios[0].fundo) {
-        fprintf(stderr, "❌ Erro ao carregar fundo ou sobreposicoes do cenário 1\n");
+        fprintf(stderr, "Erro ao carregar fundo ou sobreposicoes do cenário 1\n");
         return false;
     }
 
@@ -174,7 +174,7 @@ bool carregar_cenarios_circe(Fase* fase) {
     init_cenario(&fase->cenarios[1], 0, 0);
     fase->cenarios[1].fundo = al_load_bitmap("./imagensJogo/cenarios/Circe/fundoCirce2.png");
     if (!fase->cenarios[1].fundo) {
-        fprintf(stderr, "❌ Erro ao carregar fundo do cenário 2\n");
+        fprintf(stderr, "Erro ao carregar fundo do cenário 2\n");
         return false;
     }
 
@@ -184,7 +184,7 @@ bool carregar_cenarios_circe(Fase* fase) {
     fase->cenarios[2].sobreposicoes[0] = al_load_bitmap("./imagensJogo/cenarios/Circe/frenteCirce3.png");
     fase->cenarios[2].sobreposicoes[1] = al_load_bitmap("./imagensJogo/cenarios/Circe/efeitoFrenteCirce3.png");
     if (!fase->cenarios[2].fundo) {
-        fprintf(stderr, "❌ Erro ao carregar fundo ou sobreposicoes do cenário 3\n");
+        fprintf(stderr, "Erro ao carregar fundo ou sobreposicoes do cenário 3\n");
         return false;
     }
 
@@ -192,7 +192,7 @@ bool carregar_cenarios_circe(Fase* fase) {
     init_cenario(&fase->cenarios[3], 0, 0);
     fase->cenarios[3].fundo = al_load_bitmap("./imagensJogo/cenarios/Circe/fundoCirce4.png");
     if (!fase->cenarios[3].fundo) {
-        fprintf(stderr, "❌ Erro ao carregar fundo do cenário 4\n");
+        fprintf(stderr, "Erro ao carregar fundo do cenário 4\n");
         return false;
     }
 
@@ -205,6 +205,7 @@ void processar_acao_circe(Personagem* odisseu, Personagem* circe, int* circe_sta
     case 0:
         circe->angulo = 0;
         circe->vulneravel = false;
+        circe->estado = (rand() % 2) + 1 == 0  ? 4 : 4;
         circe->estado = (rand() % 2) + 1 == 0  ? 4 : 4;
         circe->sprite_ativo = circe->estado == 1 ? CIRCE_SPRITE_CIRCE_CORVO : CIRCE_SPRITE_CIRCE_TIGRE;
         circe->frame_atual = 0;
