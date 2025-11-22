@@ -151,7 +151,7 @@ void draw_battleship(ALLEGRO_BITMAP* water, ALLEGRO_BITMAP* ship, ALLEGRO_BITMAP
 	int px = (tela.largura / 2) - (320 + 40 / 2);
 	int ex = (tela.largura / 2) + (40 / 2);
 	int gy = (tela.altura / 2) - (320 / 2);
-
+	 
 	for (int y = 0; y < 10; y++)
 		for (int x = 0; x < 10; x++) {
 			int v = player_board[y][x];

@@ -104,7 +104,7 @@ static void movimento_ataque_corvo(Personagem* circe, InformacoesTela tela) {
     float scale_y = tela.altura * 0.7f;
 
     // Progresso angular baseado no progresso do estado
-    float angular_progress = circe->estado_progresso * (3.0f * ALLEGRO_PI / 100.0f);
+    float angular_progress = circe->estado_progresso * (6.0f * ALLEGRO_PI / 100.0f);
     float t = angular_progress + (ALLEGRO_PI / 2); // Deslocamento de fase
 
     // Fórmula para padrão lemniscata (figura-8)
@@ -255,8 +255,7 @@ void processar_acao_circe(Personagem* odisseu, Personagem* circe, int* circe_sta
         circe->vulneravel = false;
 
         // SEMPRE escolhe estado 4 (tigre) - código comentado mostra que era aleatório
-        circe->estado = (rand() % 2) + 1 == 0 ? 4 : 4;
-        circe->estado = (rand() % 2) + 1 == 0 ? 4 : 4;
+        circe->estado = (rand() % 2) + 1 == 0 ? 4 : 1;
 
         // Define sprite baseado no estado escolhido
         circe->sprite_ativo = circe->estado == 1 ? CIRCE_SPRITE_CIRCE_CORVO : CIRCE_SPRITE_CIRCE_TIGRE;

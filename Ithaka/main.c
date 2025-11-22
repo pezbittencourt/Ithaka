@@ -753,6 +753,13 @@ int main(void) {
                 else if (escolha_mapa > 0) {
                     printf("[JOGO] ESC pressionado - Voltando ao mapa...\n");
                     escolha_mapa = exibir_mapa_inicial(tela_jogo);
+                    carregar_cenario(fase, escolha_mapa);
+                    if (!carregar_cenario(fase, escolha_mapa)) {
+                        printf("Erro ao carregar cenários.\n");
+                        al_destroy_display(tela_jogo);
+                        return -1;
+
+                    }
                     // Flag para indicar que deve voltar ao mapa
                 }
             }
