@@ -75,6 +75,9 @@
     <ClCompile Include="fases\Submundo\submundo.c">
       <Filter>fases\Submundo</Filter>
     </ClCompile>
+    <ClCompile Include="util.c">
+      <Filter>Arquivos de Origem</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="menu\menu_inicial.h">
@@ -109,6 +112,9 @@
     </ClInclude>
     <ClInclude Include="fases\Submundo\submundo.h">
       <Filter>fases\Submundo</Filter>
+    </ClInclude>
+    <ClInclude Include="util.h">
+      <Filter>Arquivos de Cabeçalho</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

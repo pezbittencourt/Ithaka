@@ -5,6 +5,7 @@
 #include <stdbool.h>
 #include "../../fase.h"
 #include "../../informacoes_tela.h"
+#include "../../util.h"
 
 #define CIRCE_NUMERO_SPRITES			13
 #define CIRCE_SPRITE_PARADA				0
@@ -27,4 +28,5 @@
 bool carregar_cenarios_circe(Fase* fase);
 void processar_acao_circe(Personagem* odisseu, Personagem* circe, int* circe_stall, InformacoesTela tela);
 void atualizar_circe(Personagem* circe, Personagem odisseu, InformacoesTela tela, int* circe_stall);
+void atualizar_tamanho_circe(Personagem* circe, InformacoesTela tela, bool tigre);
 #endif

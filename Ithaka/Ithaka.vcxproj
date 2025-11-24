@@ -153,6 +153,7 @@
     <ClCompile Include="main.c" />
     <ClCompile Include="mapa\mapa.c" />
     <ClCompile Include="menu\menu_inicial.c" />
+    <ClCompile Include="util.c" />
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="fases\Itaca\Itaca.h" />
@@ -166,6 +167,7 @@
     <ClInclude Include="fases\Circe\circe.h" />
     <ClInclude Include="mapa\mapa.h" />
     <ClInclude Include="menu\menu_inicial.h" />
+    <ClInclude Include="util.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">

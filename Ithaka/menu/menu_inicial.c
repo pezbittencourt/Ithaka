@@ -4,13 +4,7 @@
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
-
-const int ALTURA_TELA_ORIGINAL = 1080;
-const int LARGURA_TELA_ORIGINAL = 1920;
-
-float deixarProporcional(float posicao, float tamanho_tela, float tamanho_tela_original) {
-    return (posicao * tamanho_tela) / tamanho_tela_original;
-}
+#include "../util.h"
 
 bool menu_inicial(ALLEGRO_DISPLAY* display) {
     // Obter dimensões da tela

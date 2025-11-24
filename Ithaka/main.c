@@ -15,6 +15,7 @@
 #include "Olimpo/olimpo.h"
 #include "Circe/circe.h"
 #include "Poseidon/poseidon.h"
+#include "util.h"
 
 typedef enum {
     TELA_MENU,
@@ -22,23 +23,6 @@ typedef enum {
     TELA_JOGO,
     TELA_SAIR
 } TelaSistema;
-
-InformacoesTela obter_resolucao_tela_atual() {
-    InformacoesTela tela;
-    ALLEGRO_MONITOR_INFO informacoes_monitor;
-    al_get_monitor_info(0, &informacoes_monitor);
-    tela.largura = informacoes_monitor.x2 - informacoes_monitor.x1;
-    tela.altura = informacoes_monitor.y2 - informacoes_monitor.y1;
-    return tela;
-}
-
-ALLEGRO_DISPLAY* criar_tela_cheia(InformacoesTela tela) {
-    al_set_new_display_flags(ALLEGRO_FULLSCREEN);
-    ALLEGRO_DISPLAY* tela_jogo = al_create_display(tela.largura, tela.altura);
-    if (tela_jogo) return tela_jogo;
-    al_set_new_display_flags(ALLEGRO_FULLSCREEN_WINDOW);
-    return al_create_display(tela.largura, tela.altura);
-}
 
 static float limitar_valor(float valor, float minimo, float maximo) {
     if (valor < minimo) return minimo;
@@ -142,8 +126,6 @@ int main(void) {
     if (!al_init_primitives_addon()) return -1;
 
     InformacoesTela tela = obter_resolucao_tela_atual();
-    const int ALTURA_TELA_ORIGINAL = 1080;
-    const int LARGURA_TELA_ORIGINAL = 1920;
     const int LARGURA_TELA = tela.largura;
     const float FORCA_DISPARO_MAX = 30.f;
     const int ALTURA_TELA = tela.altura;
@@ -1050,6 +1032,14 @@ int main(void) {
                             }
                             else if (circe.estado == 1 || (circe.estado == 4 && circe.sprite_ativo == CIRCE_SPRITE_CIRCE_TIGRE)|| circe.estado == 7) {
                                 circe.frame_atual++;
+
+                                if (circe.estado == 4 && circe.frame_atual >= 4) {
+                                    atualizar_tamanho_circe(&circe, tela, true);
+                                }
+                                else if (circe.estado == 7 && circe.frame_atual >= 6) {
+                                    atualizar_tamanho_circe(&circe, tela, false);
+                                }
+
                                 if (circe.frame_atual >= contagem_frames_circe[circe.sprite_ativo]) {
                                     circe.frame_atual = contagem_frames_circe[circe.sprite_ativo];
                                 }

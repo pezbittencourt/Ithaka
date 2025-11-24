@@ -6,10 +6,24 @@
 // Tolerância para verificação de posição (evita comparações exatas com float)
 const float POSITION_TOLERANCE = 0.1f;
 
+// Constantes de tamanho e posição das transformações
+const ALTURA_CIRCE = 310;
+const LARGURA_CIRCE = 275;
+const Y_INICIAL = 750;
+
+// Calcula ângulo entre dois pontos
+static float calc_angulo(float x, float y, float x1, float y1) {
+    float distx = x1 - x;
+    float disty = y1 - y;
+    float angulo = atan2f(-disty, distx); // Inverte Y porque o Allegro usa coordenadas invertidas
+
+    return -angulo; // Retorna invertido devido ao sistema de coordenadas do Allegro
+}
+
 // Limita um valor dentro dos limites da tela (com margem de 100px)
-static void clamp_to_screen(float* value, InformacoesTela tela) {
-    if (*value > tela.largura - 100) {
-        *value = tela.largura - 100;
+static void clamp_to_screen(float* value,float largura, InformacoesTela tela) {
+    if (*value > tela.largura - largura) {
+        *value = tela.largura - largura;
     }
     else if (*value < 100) {
         *value = 100;
@@ -104,7 +118,7 @@ static void movimento_ataque_corvo(Personagem* circe, InformacoesTela tela) {
     float scale_y = tela.altura * 0.7f;
 
     // Progresso angular baseado no progresso do estado
-    float angular_progress = circe->estado_progresso * (6.0f * ALLEGRO_PI / 100.0f);
+    float angular_progress = circe->estado_progresso * (3.0f * ALLEGRO_PI / 100.0f);
     float t = angular_progress + (ALLEGRO_PI / 2); // Deslocamento de fase
 
     // Fórmula para padrão lemniscata (figura-8)
@@ -138,7 +152,7 @@ static void movimento_ataque_tigre(Personagem* circe, Personagem odisseu, Inform
     switch (etapa) {
     case 1: { // Etapa 1: Aproximação do alvo
         // Calcula posição alvo (ao lado do Odisseu)
-        float target_x = odisseu.x + (odisseu.x < circe->x ? circe->largura : -circe->largura);
+        float target_x = odisseu.x + (odisseu.x < circe->x ? circe->largura / 2 : -circe->largura / 2);
         float target_y = circe->y;
 
         // Define direção do sprite
@@ -166,8 +180,8 @@ static void movimento_ataque_tigre(Personagem* circe, Personagem odisseu, Inform
         }
 
         // Calcula posição de recuo (mais distante)
-        float target_x = odisseu.x + (odisseu.x < circe->x ? circe->largura * 3.0f : -circe->largura * 3.0f);
-        clamp_to_screen(&target_x, tela); // Garante que não saia da tela
+        float target_x = odisseu.x + (odisseu.x < circe->x ? circe->largura * 1.5f : -circe->largura * 1.5f);
+        clamp_to_screen(&target_x,circe->largura, tela); // Garante que não saia da tela
         float target_y = circe->y;
 
         // Move para posição de recuo
@@ -182,15 +196,6 @@ static void movimento_ataque_tigre(Personagem* circe, Personagem odisseu, Inform
         printf("etapa fora de indice: %d\n", etapa);
         break;
     }
-}
-
-// Calcula ângulo entre dois pontos
-static float calc_angulo(float x, float y, float x1, float y1) {
-    float distx = x1 - x;
-    float disty = y1 - y;
-    float angulo = atan2f(-disty, distx); // Inverte Y porque o Allegro usa coordenadas invertidas
-
-    return -angulo; // Retorna invertido devido ao sistema de coordenadas do Allegro
 }
 
 // Carrega os cenários da fase da Círce
@@ -255,7 +260,7 @@ void processar_acao_circe(Personagem* odisseu, Personagem* circe, int* circe_sta
         circe->vulneravel = false;
 
         // SEMPRE escolhe estado 4 (tigre) - código comentado mostra que era aleatório
-        circe->estado = (rand() % 2) + 1 == 0 ? 4 : 1;
+        circe->estado = (rand() % 2) + 1 == 0 ? 4 : 4;
 
         // Define sprite baseado no estado escolhido
         circe->sprite_ativo = circe->estado == 1 ? CIRCE_SPRITE_CIRCE_CORVO : CIRCE_SPRITE_CIRCE_TIGRE;
@@ -277,7 +282,7 @@ void processar_acao_circe(Personagem* odisseu, Personagem* circe, int* circe_sta
             circe->estado = 3;
             // Define nova posição alvo
             circe->target_x = tela.largura - (tela.largura / 3);
-            circe->target_y = (750 * tela.altura) / 1080;
+            circe->target_y = deixarProporcional(Y_INICIAL, tela.altura, ALTURA_TELA_ORIGINAL);
             circe->estado_progresso = 0;
         }
         break;
@@ -297,7 +302,7 @@ void processar_acao_circe(Personagem* odisseu, Personagem* circe, int* circe_sta
             circe->estado = 5;
             // Define posição alvo
             circe->target_x = tela.largura - (tela.largura / 3);
-            circe->target_y = (750 * tela.altura) / 1080;
+            circe->target_y = deixarProporcional(Y_INICIAL - ALTURA_CIRCE, tela.altura, ALTURA_TELA_ORIGINAL);
             circe->estado_progresso = 0;
         }
         break;
@@ -351,4 +356,13 @@ void atualizar_circe(Personagem* circe, Personagem odisseu, InformacoesTela tela
     default:
         break;
     }
+}
+
+void atualizar_tamanho_circe(Personagem* circe, InformacoesTela tela, bool tigre) {
+    int altura = tigre ? ALTURA_CIRCE * 2 : ALTURA_CIRCE;
+    int posy = tigre ? Y_INICIAL - altura / 2: Y_INICIAL;
+
+    circe->y = deixarProporcional(posy, tela.altura, ALTURA_TELA_ORIGINAL);
+    circe->altura = deixarProporcional(altura, tela.altura, ALTURA_TELA_ORIGINAL);
+    circe->largura = deixarProporcional(altura, tela.largura, LARGURA_TELA_ORIGINAL);
 }
