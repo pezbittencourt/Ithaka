@@ -260,7 +260,7 @@ void processar_acao_circe(Personagem* odisseu, Personagem* circe, int* circe_sta
         circe->vulneravel = false;
 
         // SEMPRE escolhe estado 4 (tigre) - código comentado mostra que era aleatório
-        circe->estado = (rand() % 2) + 1 == 0 ? 4 : 4;
+        circe->estado = (rand() % 2) + 1 == 0 ? 4 : 1;
 
         // Define sprite baseado no estado escolhido
         circe->sprite_ativo = circe->estado == 1 ? CIRCE_SPRITE_CIRCE_CORVO : CIRCE_SPRITE_CIRCE_TIGRE;
