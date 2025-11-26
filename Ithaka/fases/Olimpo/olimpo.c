@@ -137,7 +137,7 @@ void fazendo_as_perguntas(pergunta perguntas[])
 }
 
 //============================================================
-// DESENHO DO QUIZ
+// DESENHO DO QUIZ - COM RETÂNGULOS
 //============================================================
 
 void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
@@ -146,61 +146,155 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
     pergunta* perguntaAtual,
     quiz* estado)
 {
-    if (!caixa_dialogo || !fonte || !perguntaAtual || !estado) return;
+    if (!fonte || !perguntaAtual || !estado) return;
 
-    // Desenha caixa de diálogo de fundo
-    al_draw_bitmap(caixa_dialogo, 0, 0, 0);
+    // Obter dimensões da tela
+    ALLEGRO_DISPLAY* display = al_get_current_display();
+    int largura_tela = al_get_display_width(display);
+    int altura_tela = al_get_display_height(display);
 
-    // Desenha as 4 imagens das opções
+    // ========== CAIXA DE DIÁLOGO PRINCIPAL  ==========
+    int caixa_x = largura_tela * 0.08f;
+    int caixa_y = altura_tela * 0.60f;
+    int caixa_largura = largura_tela * 0.84f;
+    int caixa_altura = altura_tela * 0.32f;
+
+    // Retângulo preto com borda branca
+    al_draw_filled_rectangle(caixa_x, caixa_y,
+        caixa_x + caixa_largura, caixa_y + caixa_altura,
+        al_map_rgb(0, 0, 0));
+    al_draw_rectangle(caixa_x, caixa_y,
+        caixa_x + caixa_largura, caixa_y + caixa_altura,
+        al_map_rgb(255, 255, 255), 3.0f);
+
+    // ========== RETÂNGULOS DAS 4 OPÇÕES (2x2) ==========
+    int opcao_largura = largura_tela * 0.38f;
+    int opcao_altura = altura_tela * 0.12f;
+    int espaco_h = largura_tela * 0.04f;
+    int espaco_v = altura_tela * 0.02f;
+
+    // Posições base (superior esquerda do grid 2x2)
+    int base_x = largura_tela * 0.12f;
+    int base_y = altura_tela * 0.35f;
+
+    // Array com posições das 4 opções
+    int opcoes_x[4] = {
+        base_x,                          // Opção 1 (esquerda cima)
+        base_x + opcao_largura + espaco_h,  // Opção 2 (direita cima)
+        base_x,                          // Opção 3 (esquerda baixo)
+        base_x + opcao_largura + espaco_h   // Opção 4 (direita baixo)
+    };
+
+    int opcoes_y[4] = {
+        base_y,                          // Opção 1
+        base_y,                          // Opção 2
+        base_y + opcao_altura + espaco_v,   // Opção 3
+        base_y + opcao_altura + espaco_v    // Opção 4
+    };
+
+    // Desenhar cada opção
     for (int i = 0; i < 4; i++) {
-        if (array_opcoes[i]) {
-            al_draw_bitmap(array_opcoes[i], 0, 0, 0);
+        ALLEGRO_COLOR cor_fundo;
+        ALLEGRO_COLOR cor_borda = al_map_rgb(255, 255, 255);
+        float espessura_borda = 2.0f;
+
+        // Se a pergunta foi respondida, mostrar feedback visual
+        if (estado->respondida) {
+            if (i == perguntaAtual->respostaCerta) {
+                // Resposta correta - verde
+                cor_fundo = al_map_rgb(0, 100, 0);
+                cor_borda = al_map_rgb(0, 255, 0);
+                espessura_borda = 4.0f;
+            }
+            else if (i == estado->respostaSelecionada) {
+                // Resposta errada selecionada - vermelho
+                cor_fundo = al_map_rgb(100, 0, 0);
+                cor_borda = al_map_rgb(255, 0, 0);
+                espessura_borda = 4.0f;
+            }
+            else {
+                // Outras opções - cinza escuro
+                cor_fundo = al_map_rgb(30, 30, 30);
+            }
         }
+        else {
+            // Antes de responder - preto
+            cor_fundo = al_map_rgb(0, 0, 0);
+        }
+
+        // Desenhar retângulo
+        al_draw_filled_rectangle(
+            opcoes_x[i], opcoes_y[i],
+            opcoes_x[i] + opcao_largura, opcoes_y[i] + opcao_altura,
+            cor_fundo);
+
+        al_draw_rectangle(
+            opcoes_x[i], opcoes_y[i],
+            opcoes_x[i] + opcao_largura, opcoes_y[i] + opcao_altura,
+            cor_borda, espessura_borda);
+
+        // Desenhar texto da opção (centralizado)
+        al_draw_text(fonte, al_map_rgb(255, 255, 255),
+            opcoes_x[i] + opcao_largura / 2,
+            opcoes_y[i] + opcao_altura / 2 - 15,
+            ALLEGRO_ALIGN_CENTER,
+            perguntaAtual->opcoes[i]);
     }
 
-    // Desenha a pergunta (centralizada, assumindo tela 1920x1080)
+    // ========== TEXTO DA PERGUNTA (ACIMA DAS OPÇÕES) ==========
     al_draw_text(fonte, al_map_rgb(255, 255, 255),
-        960, 200,
+        largura_tela / 2, altura_tela * 0.15f,
         ALLEGRO_ALIGN_CENTER,
         perguntaAtual->perguntaFeita);
 
-    // Desenha as 4 opções em layout 2x2
-    // Opção 1 (superior esquerda)
-    al_draw_text(fonte, al_map_rgb(255, 255, 255),
-        480, 450,
-        ALLEGRO_ALIGN_CENTER,
-        perguntaAtual->opcoes[0]);
+    // ========== INFORMAÇÕES DO JOGO ==========
 
-    // Opção 2 (superior direita)
-    al_draw_text(fonte, al_map_rgb(255, 255, 255),
-        1440, 450,
-        ALLEGRO_ALIGN_CENTER,
-        perguntaAtual->opcoes[1]);
-
-    // Opção 3 (inferior esquerda)
-    al_draw_text(fonte, al_map_rgb(255, 255, 255),
-        480, 650,
-        ALLEGRO_ALIGN_CENTER,
-        perguntaAtual->opcoes[2]);
-
-    // Opção 4 (inferior direita)
-    al_draw_text(fonte, al_map_rgb(255, 255, 255),
-        1440, 650,
-        ALLEGRO_ALIGN_CENTER,
-        perguntaAtual->opcoes[3]);
-
-    // Mostra contador de erros
+    // Contador de erros (canto superior esquerdo)
     al_draw_textf(fonte, al_map_rgb(255, 100, 100),
-        100, 50,
+        largura_tela * 0.05f, altura_tela * 0.05f,
         ALLEGRO_ALIGN_LEFT,
         "Erros: %d/3", estado->erros);
 
-    // Mostra número da pergunta
+    // Número da pergunta (canto superior direito)
     al_draw_textf(fonte, al_map_rgb(200, 200, 255),
-        1820, 50,
+        largura_tela * 0.95f, altura_tela * 0.05f,
         ALLEGRO_ALIGN_RIGHT,
         "Pergunta %d/%d",
         estado->perguntaAtual + 1, estado->numPerguntas);
+
+    // ========== FEEDBACK VISUAL APÓS RESPONDER ==========
+    if (estado->respondida) {
+        bool acertou = (estado->respostaSelecionada == perguntaAtual->respostaCerta);
+
+        if (acertou) {
+            // Mensagem de acerto
+            al_draw_filled_rectangle(
+                largura_tela / 2 - 200, altura_tela * 0.25f - 30,
+                largura_tela / 2 + 200, altura_tela * 0.25f + 30,
+                al_map_rgba(0, 150, 0, 220));
+            al_draw_rectangle(
+                largura_tela / 2 - 200, altura_tela * 0.25f - 30,
+                largura_tela / 2 + 200, altura_tela * 0.25f + 30,
+                al_map_rgb(0, 255, 0), 3.0f);
+            al_draw_text(fonte, al_map_rgb(255, 255, 255),
+                largura_tela / 2, altura_tela * 0.25f - 10,
+                ALLEGRO_ALIGN_CENTER, "CORRETO!");
+        }
+        else {
+            // Mensagem de erro
+            al_draw_filled_rectangle(
+                largura_tela / 2 - 200, altura_tela * 0.25f - 30,
+                largura_tela / 2 + 200, altura_tela * 0.25f + 30,
+                al_map_rgba(150, 0, 0, 220));
+            al_draw_rectangle(
+                largura_tela / 2 - 200, altura_tela * 0.25f - 30,
+                largura_tela / 2 + 200, altura_tela * 0.25f + 30,
+                al_map_rgb(255, 0, 0), 3.0f);
+            al_draw_text(fonte, al_map_rgb(255, 255, 255),
+                largura_tela / 2, altura_tela * 0.25f - 10,
+                ALLEGRO_ALIGN_CENTER, "ERRADO!");
+        }
+    }
 }
 
 //============================================================
@@ -209,58 +303,39 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
 
 int verificar_clique_opcao(int mouse_x, int mouse_y, int largura_tela, int altura_tela)
 {
-    // Calcula escala proporcional à resolução
-    float escala_x = largura_tela / 1920.0f;
-    float escala_y = altura_tela / 1080.0f;
+    // Mesmas dimensões usadas no desenho
+    int opcao_largura = largura_tela * 0.38f;
+    int opcao_altura = altura_tela * 0.12f;
+    int espaco_h = largura_tela * 0.04f;
+    int espaco_v = altura_tela * 0.02f;
 
-    // Define as áreas clicáveis (layout 2x2)
-    // Cada área é um retângulo ao redor do texto da opção
+    int base_x = largura_tela * 0.12f;
+    int base_y = altura_tela * 0.35f;
 
-    // Opção 1 (superior esquerda) - centro em (480, 450)
-    int x1 = (int)(280 * escala_x);
-    int y1 = (int)(400 * escala_y);
-    int w1 = (int)(400 * escala_x);
-    int h1 = (int)(100 * escala_y);
+    // Posições das opções
+    int opcoes_x[4] = {
+        base_x,
+        base_x + opcao_largura + espaco_h,
+        base_x,
+        base_x + opcao_largura + espaco_h
+    };
 
-    if (mouse_x >= x1 && mouse_x <= x1 + w1 &&
-        mouse_y >= y1 && mouse_y <= y1 + h1) {
-        return 0;  // Opção 1
+    int opcoes_y[4] = {
+        base_y,
+        base_y,
+        base_y + opcao_altura + espaco_v,
+        base_y + opcao_altura + espaco_v
+    };
+
+    // Verificar qual opção foi clicada
+    for (int i = 0; i < 4; i++) {
+        if (mouse_x >= opcoes_x[i] && mouse_x <= opcoes_x[i] + opcao_largura &&
+            mouse_y >= opcoes_y[i] && mouse_y <= opcoes_y[i] + opcao_altura) {
+            return i;
+        }
     }
 
-    // Opção 2 (superior direita) - centro em (1440, 450)
-    int x2 = (int)(1240 * escala_x);
-    int y2 = (int)(400 * escala_y);
-    int w2 = (int)(400 * escala_x);
-    int h2 = (int)(100 * escala_y);
-
-    if (mouse_x >= x2 && mouse_x <= x2 + w2 &&
-        mouse_y >= y2 && mouse_y <= y2 + h2) {
-        return 1;  // Opção 2
-    }
-
-    // Opção 3 (inferior esquerda) - centro em (480, 650)
-    int x3 = (int)(280 * escala_x);
-    int y3 = (int)(600 * escala_y);
-    int w3 = (int)(400 * escala_x);
-    int h3 = (int)(100 * escala_y);
-
-    if (mouse_x >= x3 && mouse_x <= x3 + w3 &&
-        mouse_y >= y3 && mouse_y <= y3 + h3) {
-        return 2;  // Opção 3
-    }
-
-    // Opção 4 (inferior direita) - centro em (1440, 650)
-    int x4 = (int)(1240 * escala_x);
-    int y4 = (int)(600 * escala_y);
-    int w4 = (int)(400 * escala_x);
-    int h4 = (int)(100 * escala_y);
-
-    if (mouse_x >= x4 && mouse_x <= x4 + w4 &&
-        mouse_y >= y4 && mouse_y <= y4 + h4) {
-        return 3;  // Opção 4
-    }
-
-    return -1;  // Nenhuma opção foi clicada
+    return -1;  // Nenhuma opção clicada
 }
 
 //============================================================
@@ -278,17 +353,14 @@ void processa_resposta(pergunta* perguntas, quiz* estado, int opcaoClicada)
     // Verifica se a resposta está correta
     if (opcaoClicada == perguntas[estado->perguntaAtual].respostaCerta) {
         printf("✓ Resposta CORRETA! Pergunta %d\n", estado->perguntaAtual + 1);
-        // Aqui você pode adicionar som de acerto
     }
     else {
         estado->erros++;
         printf("✗ Resposta ERRADA! Erros: %d/3\n", estado->erros);
-        // Aqui você pode adicionar som de erro
 
         if (estado->erros >= 3) {
             estado->perdeu = true;
             printf("GAME OVER! Você perdeu o quiz.\n");
-            // Aqui você pode adicionar som de game over
         }
     }
 }

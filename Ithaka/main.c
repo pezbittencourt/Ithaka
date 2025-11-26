@@ -252,33 +252,6 @@ int main(void) {
     ALLEGRO_BITMAP* sprite_agua = al_load_bitmap("./imagensJogo/objetos/agua.png");
     ALLEGRO_BITMAP* sprite_acerto = al_load_bitmap("./imagensJogo/objetos/acerto.png");
 
-    //Caixa de diálogo - Quiz
-
-    ALLEGRO_BITMAP* caixa_dialogo = al_load_bitmap("./imagensJogo/dialogo/caixa_de_dialogo.png");
-
-    //Opções - Quiz 
-    ALLEGRO_BITMAP* opcao_1 = al_load_bitmap("./imagensJogo/dialogo/Opcao_1.png");
-    ALLEGRO_BITMAP* opcao_2 = al_load_bitmap("./imagensJogo/dialogo/Opcao_2.png");
-    ALLEGRO_BITMAP* opcao_3 = al_load_bitmap("./imagensJogo/dialogo/Opcao_3.png");
-    ALLEGRO_BITMAP* opcao_4 = al_load_bitmap("./imagensJogo/dialogo/Opcao_4.png");
-
-    //Opções Click - Quiz 
-    ALLEGRO_BITMAP* opcao_click_1 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Click_1.png");
-    ALLEGRO_BITMAP* opcao_click_2 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Click_2.png");
-    ALLEGRO_BITMAP* opcao_click_3 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Click_3.png");
-    ALLEGRO_BITMAP* opcao_click_4 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Click_4.png");
-
-    //Opções Erradas - Quiz 
-    ALLEGRO_BITMAP* opcao_errada_1 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Errada_1.png");
-    ALLEGRO_BITMAP* opcao_errada_2 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Errada_2.png");
-    ALLEGRO_BITMAP* opcao_errada_3 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Errada_3.png");
-    ALLEGRO_BITMAP* opcao_errada_4 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Errada_4.png");
-
-    //Opções Certas - Quiz 
-    ALLEGRO_BITMAP* opcao_certa_1 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Certa_1.png");
-    ALLEGRO_BITMAP* opcao_certa_2 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Certa_2.png");
-    ALLEGRO_BITMAP* opcao_certa_3 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Certa_3.png");
-    ALLEGRO_BITMAP* opcao_certa_4 = al_load_bitmap("./imagensJogo/dialogo/Opcao_Certa_4.png");
 
     //Carregando fontes 
     al_init_font_addon();
@@ -654,14 +627,6 @@ int main(void) {
     .timer_feedback = 0
     };
 
-    //Array com as opcoes ::;
-
-    ALLEGRO_BITMAP* array_opcoes[4] = {
-        opcao_1,
-        opcao_2,
-        opcao_3,
-        opcao_4,
-    };
 
     //-----------------------------------------------------------------------------------------------------------------
 
@@ -768,60 +733,22 @@ int main(void) {
 				ataque_ativado = true;
                 duracao_ataque = 0;
             }
-            // Detectar cliques do mouse
-            if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida && escolha_mapa == MAPA_FASE_OLIMPO) {
-                int opcao_clicada = -1;
 
-                // Verificar qual opção foi clicada (!!Arrumar as coordenadas!!)
-                int mx = evento.mouse.x;
-                int my = evento.mouse.y;
-                // Detectar cliques do mouse
-                if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida) {
-                    int opcao_clicada = -1;
-
-                    // Verificar qual opção foi clicada (!!Arrumar as coordenadas!!)
-                    int mx = evento.mouse.x;
-                    int my = evento.mouse.y;
-
-                    // Exemplo de áreas clicáveis (2x2):
-                    // Linha superior
-                    if (my >= 400 && my <= 550) {
-                        if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
-                            opcao_clicada = 0;  // Opção 1
-                        else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
-                            opcao_clicada = 1;  // Opção 2
-                    }
-                    // Linha inferior
-                    else if (my >= 600 && my <= 750) {
-                        if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
-                            opcao_clicada = 2;  // Opção 3
-                        else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
-                            opcao_clicada = 3;  // Opção 4
-                    }
-
-                    if (opcao_clicada != -1) {
-                        processa_resposta(perguntas, &estado, opcao_clicada);
-                    }
-                }
-                // Exemplo de áreas clicáveis (2x2):
-                // Linha superior
-                if (my >= 400 && my <= 550) {
-                    if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
-                        opcao_clicada = 0;  // Opção 1
-                    else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
-                        opcao_clicada = 1;  // Opção 2
-                }
-                // Linha inferior
-                else if (my >= 600 && my <= 750) {
-                    if (mx >= 100 && mx <= LARGURA_TELA / 2 - 50)
-                        opcao_clicada = 2;  // Opção 3
-                    else if (mx >= LARGURA_TELA / 2 + 50 && mx <= LARGURA_TELA - 100)
-                        opcao_clicada = 3;  // Opção 4
-                }
+            //VERIFICA CLICK DO MOUSE DO QUIZ
+      
+            if (escolha_mapa == MAPA_FASE_OLIMPO && !estado.respondida) {
+                int opcao_clicada = verificar_clique_opcao(
+                    evento.mouse.x,
+                    evento.mouse.y,
+                    LARGURA_TELA,
+                    ALTURA_TELA
+                );
 
                 if (opcao_clicada != -1) {
+                    printf("[QUIZ] Opção %d clicada!\n", opcao_clicada + 1);
                     processa_resposta(perguntas, &estado, opcao_clicada);
                 }
+
             }
 
         }
@@ -854,6 +781,18 @@ int main(void) {
             al_get_keyboard_state(&estado_teclado);
             al_get_mouse_state(&estado_mouse);
             float odisseu_direcao_x = 0.0f;
+
+            //ATUALIZAÇÃO DE TIMER DO QUIZ-----
+
+            if (escolha_mapa == MAPA_FASE_OLIMPO && estado.respondida) {
+                atualizar_timer_quiz(&estado);
+
+                if (estado.timer_feedback == 0) {
+                    proximaPergunta(&estado);
+                }
+            }
+
+            //-----------------------------------
 
             if (!odisseu.desembainhando && !odisseu.atacando && !odisseu.guardando_espada) {
                 if (al_key_down(&estado_teclado, ALLEGRO_KEY_A) || al_key_down(&estado_teclado, ALLEGRO_KEY_LEFT)) {
@@ -1980,336 +1919,345 @@ int main(void) {
         if (redesenhar_tela && al_is_event_queue_empty(fila_eventos)) {
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
-            // Desenhar cenário
-            desenhar_cenario(fase, LARGURA_TELA, ALTURA_TELA);
-
             // Desenhar Quiz (Arrumar/estudar, Claude ***)
 
-            if (escolha_mapa == MAPA_FASE_OLIMPO && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
-                desenha_quiz(caixa_dialogo, array_opcoes, fonte_quiz,
-                    &perguntas[estado.perguntaAtual], &estado);
+            if (escolha_mapa == MAPA_FASE_OLIMPO) {
+                // Desenhar fundo
+                desenhar_cenario(fase, LARGURA_TELA, ALTURA_TELA);
 
-                // Mostrar feedback após responder
-                if (estado.respondida) {
-                    // Verificar se acertou ou errou
-                    bool acertou = (estado.respostaSelecionada == perguntas[estado.perguntaAtual].respostaCerta);
+                // Quiz em andamento
+                if (estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
+                    // Passa NULL para os bitmaps (tiramos)
+                    desenha_quiz(NULL, NULL, fonte_quiz,
+                        &perguntas[estado.perguntaAtual], &estado);
+                }
+                // Game Over
+                else if (estado.perdeu) {
+                    al_clear_to_color(al_map_rgb(20, 0, 0));
 
-                    // Desenhar feedback visual
-                    if (acertou) {
-                        al_draw_text(fonte_quiz, al_map_rgb(0, 255, 0),
-                            LARGURA_TELA / 2, 100,
-                            ALLEGRO_ALIGN_CENTER, "CORRETO!");
-                    }
-                    else {
-                        al_draw_text(fonte_quiz, al_map_rgb(255, 0, 0),
-                            LARGURA_TELA / 2, 100,
-                            ALLEGRO_ALIGN_CENTER, "ERRADO!");
-                    }
+                    // Caixa de game over
+                    al_draw_filled_rectangle(
+                        LARGURA_TELA / 2 - 400, ALTURA_TELA / 2 - 200,
+                        LARGURA_TELA / 2 + 400, ALTURA_TELA / 2 + 200,
+                        al_map_rgb(0, 0, 0));
+                    al_draw_rectangle(
+                        LARGURA_TELA / 2 - 400, ALTURA_TELA / 2 - 200,
+                        LARGURA_TELA / 2 + 400, ALTURA_TELA / 2 + 200,
+                        al_map_rgb(255, 0, 0), 5.0f);
 
-                    // Mostrar mensagem de aguarde
-                    al_draw_text(fonte_quiz, al_map_rgb(255, 255, 0),
-                        LARGURA_TELA / 2, 850,
-                        ALLEGRO_ALIGN_CENTER, "Avançando automaticamente...");
+                    al_draw_text(fonte_quiz, al_map_rgb(255, 0, 0),
+                        LARGURA_TELA / 2, ALTURA_TELA / 2 - 80,
+                        ALLEGRO_ALIGN_CENTER, "GAME OVER!");
+                    al_draw_text(fonte_quiz, al_map_rgb(255, 255, 255),
+                        LARGURA_TELA / 2, ALTURA_TELA / 2,
+                        ALLEGRO_ALIGN_CENTER, "Você errou 3 vezes");
+                    al_draw_text(fonte_quiz, al_map_rgb(200, 200, 200),
+                        LARGURA_TELA / 2, ALTURA_TELA / 2 + 80,
+                        ALLEGRO_ALIGN_CENTER, "Pressione ESC para voltar");
+                }
+                // Quiz completo
+                else if (estado.perguntaAtual >= estado.numPerguntas) {
+                    al_clear_to_color(al_map_rgb(0, 20, 0));
+
+                    // Caixa de vitória
+                    al_draw_filled_rectangle(
+                        LARGURA_TELA / 2 - 400, ALTURA_TELA / 2 - 200,
+                        LARGURA_TELA / 2 + 400, ALTURA_TELA / 2 + 200,
+                        al_map_rgb(0, 0, 0));
+                    al_draw_rectangle(
+                        LARGURA_TELA / 2 - 400, ALTURA_TELA / 2 - 200,
+                        LARGURA_TELA / 2 + 400, ALTURA_TELA / 2 + 200,
+                        al_map_rgb(0, 255, 0), 5.0f);
+
+                    al_draw_text(fonte_quiz, al_map_rgb(0, 255, 0),
+                        LARGURA_TELA / 2, ALTURA_TELA / 2 - 80,
+                        ALLEGRO_ALIGN_CENTER, "PARABÉNS!");
+                    al_draw_textf(fonte_quiz, al_map_rgb(255, 255, 255),
+                        LARGURA_TELA / 2, ALTURA_TELA / 2,
+                        ALLEGRO_ALIGN_CENTER,
+                        "Quiz completo com %d erros!", estado.erros);
+                    al_draw_text(fonte_quiz, al_map_rgb(200, 200, 200),
+                        LARGURA_TELA / 2, ALTURA_TELA / 2 + 80,
+                        ALLEGRO_ALIGN_CENTER, "Pressione ESC para voltar");
                 }
             }
-            // Verificar se perdeu no quiz
-            else if (escolha_mapa == MAPA_FASE_OLIMPO && estado.perdeu) {
-                al_clear_to_color(al_map_rgb(50, 0, 0));
-                al_draw_text(fonte_quiz, al_map_rgb(255, 0, 0),
-                    LARGURA_TELA / 2, ALTURA_TELA / 2 - 50,
-                    ALLEGRO_ALIGN_CENTER, "GAME OVER!");
-                al_draw_text(fonte_quiz, al_map_rgb(255, 255, 255),
-                    LARGURA_TELA / 2, ALTURA_TELA / 2 + 50,
-                    ALLEGRO_ALIGN_CENTER, "Você errou 3 vezes");
-                al_draw_text(fonte_quiz, al_map_rgb(200, 200, 200),
-                    LARGURA_TELA / 2, ALTURA_TELA / 2 + 120,
-                    ALLEGRO_ALIGN_CENTER, "Pressione ESC para sair");
-            }
-            // Verificar se completou o quiz
-            else if (escolha_mapa == MAPA_FASE_OLIMPO && estado.perguntaAtual >= estado.numPerguntas) {
-                al_clear_to_color(al_map_rgb(0, 50, 0));
-                al_draw_text(fonte_quiz, al_map_rgb(0, 255, 0),
-                    LARGURA_TELA / 2, ALTURA_TELA / 2 - 50,
-                    ALLEGRO_ALIGN_CENTER, "PARABÉNS!");
-                al_draw_textf(fonte_quiz, al_map_rgb(255, 255, 255),
-                    LARGURA_TELA / 2, ALTURA_TELA / 2 + 50,
-                    ALLEGRO_ALIGN_CENTER, "Você completou o quiz com %d erros", estado.erros);
-                al_draw_text(fonte_quiz, al_map_rgb(200, 200, 200),
-                    LARGURA_TELA / 2, ALTURA_TELA / 2 + 120,
-                    ALLEGRO_ALIGN_CENTER, "Pressione ESC para sair");
-            }
+
+            else {
+
+                desenhar_cenario(fase, LARGURA_TELA, ALTURA_TELA);
 
             // Selecionar sprite do Odisseu (SOMENTE se NÃO estiver no Olimpo ou no Poseidon antes de ganhar!)
-            if ((escolha_mapa != MAPA_FASE_OLIMPO && escolha_mapa != MAPA_FASE_POSEIDON) || (escolha_mapa == MAPA_FASE_POSEIDON && player_ganha)) {
+                if ((escolha_mapa != MAPA_FASE_OLIMPO && escolha_mapa != MAPA_FASE_POSEIDON) || (escolha_mapa == MAPA_FASE_POSEIDON && player_ganha)) {
 
-                // Selecionar sprite do Odisseu
-                ALLEGRO_BITMAP* sprite_atual_odisseu;
-                int largura_frame_odisseu, altura_frame_odisseu;
-                int estado_odisseu = 0;
+                    // Selecionar sprite do Odisseu
+                    ALLEGRO_BITMAP* sprite_atual_odisseu;
+                    int largura_frame_odisseu, altura_frame_odisseu;
+                    int estado_odisseu = 0;
 
-                if (odisseu.desembainhando || odisseu.guardando_espada) estado_odisseu = 2;
-                else if (odisseu.atacando) estado_odisseu = 3;
-                else if (odisseu.andando) estado_odisseu = odisseu.tem_espada ? 5 : 1;
-                else estado_odisseu = odisseu.tem_espada ? 4 : 0;
+                    if (odisseu.desembainhando || odisseu.guardando_espada) estado_odisseu = 2;
+                    else if (odisseu.atacando) estado_odisseu = 3;
+                    else if (odisseu.andando) estado_odisseu = odisseu.tem_espada ? 5 : 1;
+                    else estado_odisseu = odisseu.tem_espada ? 4 : 0;
 
-                switch (estado_odisseu) {
-                case 2:
-                    sprite_atual_odisseu = odisseuDesembainhar;
-                    largura_frame_odisseu = largura_frame_desembainhar;
-                    altura_frame_odisseu = altura_frame_desembainhar;
-                    break;
-                case 3:
-                    sprite_atual_odisseu = odisseuAtacando;
-                    largura_frame_odisseu = largura_frame_Odisseu_atacando;
-                    altura_frame_odisseu = altura_frame_Odisseu_atacando;
-                    break;
-                case 1:
-                    sprite_atual_odisseu = odisseuAndando;
-                    largura_frame_odisseu = largura_frame_Odisseu_andando;
-                    altura_frame_odisseu = altura_frame_Odisseu_andando;
-                    break;
-                case 5:
-                    sprite_atual_odisseu = odisseuAndandoEspada;
-                    largura_frame_odisseu = largura_frame_Odisseu_andando_espada;
-                    altura_frame_odisseu = altura_frame_Odisseu_andando_espada;
-                    break;
-                case 4:
-                    sprite_atual_odisseu = odisseuParadoEspada;
-                    largura_frame_odisseu = largura_frame_Odisseu_parado_espada;
-                    altura_frame_odisseu = altura_frame_Odisseu_parado_espada;
-                    break;
-                case 0:
-                default:
-                    sprite_atual_odisseu = odisseuParado;
-                    largura_frame_odisseu = largura_frame_Odisseu_parado;
-                    altura_frame_odisseu = altura_frame_Odisseu_parado;
-                    break;
-                }
-
-                // Desenhar Odisseu
-                int flagsOdisseu = odisseu.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
-                al_draw_scaled_bitmap(
-                    sprite_atual_odisseu,
-                    odisseu.frame_atual * largura_frame_odisseu, 0,
-                    largura_frame_odisseu, altura_frame_odisseu,
-                    odisseu.x, odisseu.y,
-                    odisseu.largura, odisseu.altura,
-                    flagsOdisseu);
-
-                //desenha linha de disparo das flechas
-                if (odisseu.disparando) {
-                    al_draw_spline(pontosArco, al_map_rgb(0, 0, 255), 3.0f);
-                }
-
-                //desenhar flechas
-                for (int j = 0; j < count_flechas; j++) {
-                    al_draw_scaled_rotated_bitmap(
-                        sprite_flecha,
-                        0 + LARGURA_FLECHA / 2, 0 + ALTURA_FLECHA / 2,
-                        listaFlechas[j].x + LARGURA_FLECHA / 2, listaFlechas[j].y + ALTURA_FLECHA / 2,
-                        1, 1,
-                        listaFlechas[j].angulo,
-                        0
-                    );
-                }
-                if (escolha_mapa == 3) {
-                    // DESENHO DOS INIMIGOS NO CENÁRIO 0 (Inimigos 1, 2 e 3)
-                    if (fase->cenario_atual == 0) {
-                        // INIMIGO 1
-
-                        if (inimigo1.vida > 0) {
-                            ALLEGRO_BITMAP* sprite_inimigo1;
-                            int largura_inimigo1, altura_inimigo1;
-
-                            if (inimigo1.atacando) {
-                                sprite_inimigo1 = inimigo1_atacando;
-                                largura_inimigo1 = largura_frame_inimigo1_atacando;
-                                altura_inimigo1 = altura_frame_inimigo1_atacando;
-                            }
-                            else if (inimigo1.sofrendo_dano) {
-                                sprite_inimigo1 = inimigo1_sofre_dano;
-                                largura_inimigo1 = largura_frame_inimigo1_dano;
-                                altura_inimigo1 = altura_frame_inimigo1_dano;
-                            }
-                            else {
-                                sprite_inimigo1 = inimigoParado1;
-                                largura_inimigo1 = largura_frame_inimigo1_parado;
-                                altura_inimigo1 = altura_frame_inimigo1_parado;
-                            }
-
-                            int flags_inimigo1 = inimigo1.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
-                            al_draw_scaled_bitmap(sprite_inimigo1,
-                                inimigo1.frame_atual * largura_inimigo1, 0,
-                                largura_inimigo1, altura_inimigo1,
-                                inimigo1.x, inimigo1.y,
-                                inimigo1.largura, inimigo1.altura,
-                                flags_inimigo1);
-                        }
-
-                        // INIMIGO 2
-                        if (inimigo2.vida > 0) {
-                            ALLEGRO_BITMAP* sprite_inimigo2;
-                            int largura_inimigo2, altura_inimigo2;
-
-                            if (inimigo2.atacando) {
-                                sprite_inimigo2 = inimigo2_atacando;
-                                largura_inimigo2 = largura_frame_inimigo2_atacando;
-                                altura_inimigo2 = altura_frame_inimigo2_atacando;
-                            }
-                            else if (inimigo2.sofrendo_dano) {
-                                sprite_inimigo2 = inimigo2_sofre_dano;
-                                largura_inimigo2 = largura_frame_inimigo2_dano;
-                                altura_inimigo2 = altura_frame_inimigo2_dano;
-                            }
-                            else {
-                                sprite_inimigo2 = inimigoParado2;
-                                largura_inimigo2 = largura_frame_inimigo2_parado;
-                                altura_inimigo2 = altura_frame_inimigo2_parado;
-                            }
-
-                            int flags_inimigo2 = inimigo2.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
-                            al_draw_scaled_bitmap(sprite_inimigo2,
-                                inimigo2.frame_atual * largura_inimigo2, 0,
-                                largura_inimigo2, altura_inimigo2,
-                                inimigo2.x, inimigo2.y,
-                                inimigo2.largura, inimigo2.altura,
-                                flags_inimigo2);
-                        }
-
-
-                        // INIMIGO 3
-                        if (inimigo3.vida > 0) {
-                            ALLEGRO_BITMAP* sprite_inimigo3;
-                            int largura_inimigo3, altura_inimigo3;
-
-                            if (inimigo3.atacando) {
-                                sprite_inimigo3 = inimigo3_atacando;
-                                largura_inimigo3 = largura_frame_inimigo3_atacando;
-                                altura_inimigo3 = altura_frame_inimigo3_atacando;
-                            }
-                            else if (inimigo3.sofrendo_dano) {
-                                sprite_inimigo3 = inimigo3_sofre_dano;
-                                largura_inimigo3 = largura_frame_inimigo3_dano;
-                                altura_inimigo3 = altura_frame_inimigo3_dano;
-                            }
-                            else {
-                                sprite_inimigo3 = inimigoParado3;
-                                largura_inimigo3 = largura_frame_inimigo3_parado;
-                                altura_inimigo3 = altura_frame_inimigo3_parado;
-                            }
-
-                            int flags_inimigo3 = inimigo3.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
-                            al_draw_scaled_bitmap(sprite_inimigo3,
-                                inimigo3.frame_atual * largura_inimigo3, 0,
-                                largura_inimigo3, altura_inimigo3,
-                                inimigo3.x, inimigo3.y,
-                                inimigo3.largura, inimigo3.altura,
-                                flags_inimigo3);
-                        }
+                    switch (estado_odisseu) {
+                    case 2:
+                        sprite_atual_odisseu = odisseuDesembainhar;
+                        largura_frame_odisseu = largura_frame_desembainhar;
+                        altura_frame_odisseu = altura_frame_desembainhar;
+                        break;
+                    case 3:
+                        sprite_atual_odisseu = odisseuAtacando;
+                        largura_frame_odisseu = largura_frame_Odisseu_atacando;
+                        altura_frame_odisseu = altura_frame_Odisseu_atacando;
+                        break;
+                    case 1:
+                        sprite_atual_odisseu = odisseuAndando;
+                        largura_frame_odisseu = largura_frame_Odisseu_andando;
+                        altura_frame_odisseu = altura_frame_Odisseu_andando;
+                        break;
+                    case 5:
+                        sprite_atual_odisseu = odisseuAndandoEspada;
+                        largura_frame_odisseu = largura_frame_Odisseu_andando_espada;
+                        altura_frame_odisseu = altura_frame_Odisseu_andando_espada;
+                        break;
+                    case 4:
+                        sprite_atual_odisseu = odisseuParadoEspada;
+                        largura_frame_odisseu = largura_frame_Odisseu_parado_espada;
+                        altura_frame_odisseu = altura_frame_Odisseu_parado_espada;
+                        break;
+                    case 0:
+                    default:
+                        sprite_atual_odisseu = odisseuParado;
+                        largura_frame_odisseu = largura_frame_Odisseu_parado;
+                        altura_frame_odisseu = altura_frame_Odisseu_parado;
+                        break;
                     }
 
-                    // DESENHO DOS INIMIGOS NO CENÁRIO 1 (Inimigos 4, 5 e 6)
-                    if (fase->cenario_atual == 1) {
-                        // INIMIGO 4
-                        if (inimigo4.vida > 0) {
-                            ALLEGRO_BITMAP* sprite_inimigo4;
-                            int largura_inimigo4, altura_inimigo4;
+                    // Desenhar Odisseu
+                    int flagsOdisseu = odisseu.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+                    al_draw_scaled_bitmap(
+                        sprite_atual_odisseu,
+                        odisseu.frame_atual * largura_frame_odisseu, 0,
+                        largura_frame_odisseu, altura_frame_odisseu,
+                        odisseu.x, odisseu.y,
+                        odisseu.largura, odisseu.altura,
+                        flagsOdisseu);
 
-                            if (inimigo4.atacando) {
-                                sprite_inimigo4 = inimigo4_atacando;
-                                largura_inimigo4 = largura_frame_inimigo4_atacando;
-                                altura_inimigo4 = altura_frame_inimigo4_atacando;
-                            }
-                            else if (inimigo4.sofrendo_dano) {
-                                sprite_inimigo4 = inimigo4_sofre_dano;
-                                largura_inimigo4 = largura_frame_inimigo4_dano;
-                                altura_inimigo4 = altura_frame_inimigo4_dano;
-                            }
-                            else {
-                                sprite_inimigo4 = inimigoParado4;
-                                largura_inimigo4 = largura_frame_inimigo4_parado;
-                                altura_inimigo4 = altura_frame_inimigo4_parado;
-                            }
-
-                            int flags_inimigo4 = inimigo4.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
-                            al_draw_scaled_bitmap(sprite_inimigo4,
-                                inimigo4.frame_atual * largura_inimigo4, 0,
-                                largura_inimigo4, altura_inimigo4,
-                                inimigo4.x, inimigo4.y,
-                                inimigo4.largura, inimigo4.altura,
-                                flags_inimigo4);
-                        }
-
-                        // INIMIGO 5
-                        if (inimigo5.vida > 0) {
-                            ALLEGRO_BITMAP* sprite_inimigo5;
-                            int largura_inimigo5, altura_inimigo5;
-
-                            if (inimigo5.atacando) {
-                                sprite_inimigo5 = inimigo5_atacando;
-                                largura_inimigo5 = largura_frame_inimigo5_atacando;
-                                altura_inimigo5 = altura_frame_inimigo5_atacando;
-                            }
-                            else if (inimigo5.sofrendo_dano) {
-                                sprite_inimigo5 = inimigo5_sofre_dano;
-                                largura_inimigo5 = largura_frame_inimigo5_dano;
-                                altura_inimigo5 = altura_frame_inimigo5_dano;
-                            }
-                            else {
-                                sprite_inimigo5 = inimigoParado5;
-                                largura_inimigo5 = largura_frame_inimigo5_parado;
-                                altura_inimigo5 = altura_frame_inimigo5_parado;
-                            }
-
-                            int flags_inimigo5 = inimigo5.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
-                            al_draw_scaled_bitmap(sprite_inimigo5,
-                                inimigo5.frame_atual * largura_inimigo5, 0,
-                                largura_inimigo5, altura_inimigo5,
-                                inimigo5.x, inimigo5.y,
-                                inimigo5.largura, inimigo5.altura,
-                                flags_inimigo5);
-                        }
-
-                        // INIMIGO 6
-                        if (inimigo6.vida > 0) {
-                            ALLEGRO_BITMAP* sprite_inimigo6;
-                            int largura_inimigo6, altura_inimigo6;
-
-                            if (inimigo6.atacando) {
-                                sprite_inimigo6 = inimigo6_atacando;
-                                largura_inimigo6 = largura_frame_inimigo6_atacando;
-                                altura_inimigo6 = altura_frame_inimigo6_atacando;
-                            }
-                            else if (inimigo6.sofrendo_dano) {
-                                sprite_inimigo6 = inimigo6_sofre_dano;
-                                largura_inimigo6 = largura_frame_inimigo6_dano;
-                                altura_inimigo6 = altura_frame_inimigo6_dano;
-                            }
-                            else {
-                                sprite_inimigo6 = inimigoParado6;
-                                largura_inimigo6 = largura_frame_inimigo6_parado;
-                                altura_inimigo6 = altura_frame_inimigo6_parado;
-                            }
-
-                            int flags_inimigo6 = inimigo6.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
-                            al_draw_scaled_bitmap(sprite_inimigo6,
-                                inimigo6.frame_atual * largura_inimigo6, 0,
-                                largura_inimigo6, altura_inimigo6,
-                                inimigo6.x, inimigo6.y,
-                                inimigo6.largura, inimigo6.altura,
-                                flags_inimigo6);
-                        }
+                    //desenha linha de disparo das flechas
+                    if (odisseu.disparando) {
+                        al_draw_spline(pontosArco, al_map_rgb(255, 0, 0), 3.0f);
                     }
-                    if (fase->cenario_atual == 2) {
-                        // Desenhar Penelope
-                        int flagsPenelope = penelope.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
-                        al_draw_scaled_bitmap(
-                            Penelope,
-                            penelope.frame_atual * largura_frame_penelope_parada, 0,
-                            largura_frame_penelope_parada, altura_frame_penelope_parada,
-                            penelope.x, penelope.y,
-                            penelope.largura, penelope.altura,
-                            flagsPenelope);
+
+                    //desenhar flechas
+                    for (int j = 0; j < count_flechas; j++) {
+                        al_draw_scaled_rotated_bitmap(
+                            sprite_flecha,
+                            0 + LARGURA_FLECHA / 2, 0 + ALTURA_FLECHA / 2,
+                            listaFlechas[j].x + LARGURA_FLECHA / 2, listaFlechas[j].y + ALTURA_FLECHA / 2,
+                            1, 1,
+                            listaFlechas[j].angulo,
+                            0
+                        );
+                    }
+                    if (escolha_mapa == 3) {
+                        // DESENHO DOS INIMIGOS NO CENÁRIO 0 (Inimigos 1, 2 e 3)
+                        if (fase->cenario_atual == 0) {
+                            // INIMIGO 1
+
+                            if (inimigo1.vida > 0) {
+                                ALLEGRO_BITMAP* sprite_inimigo1;
+                                int largura_inimigo1, altura_inimigo1;
+
+                                if (inimigo1.atacando) {
+                                    sprite_inimigo1 = inimigo1_atacando;
+                                    largura_inimigo1 = largura_frame_inimigo1_atacando;
+                                    altura_inimigo1 = altura_frame_inimigo1_atacando;
+                                }
+                                else if (inimigo1.sofrendo_dano) {
+                                    sprite_inimigo1 = inimigo1_sofre_dano;
+                                    largura_inimigo1 = largura_frame_inimigo1_dano;
+                                    altura_inimigo1 = altura_frame_inimigo1_dano;
+                                }
+                                else {
+                                    sprite_inimigo1 = inimigoParado1;
+                                    largura_inimigo1 = largura_frame_inimigo1_parado;
+                                    altura_inimigo1 = altura_frame_inimigo1_parado;
+                                }
+
+                                int flags_inimigo1 = inimigo1.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+                                al_draw_scaled_bitmap(sprite_inimigo1,
+                                    inimigo1.frame_atual * largura_inimigo1, 0,
+                                    largura_inimigo1, altura_inimigo1,
+                                    inimigo1.x, inimigo1.y,
+                                    inimigo1.largura, inimigo1.altura,
+                                    flags_inimigo1);
+                            }
+
+                            // INIMIGO 2
+                            if (inimigo2.vida > 0) {
+                                ALLEGRO_BITMAP* sprite_inimigo2;
+                                int largura_inimigo2, altura_inimigo2;
+
+                                if (inimigo2.atacando) {
+                                    sprite_inimigo2 = inimigo2_atacando;
+                                    largura_inimigo2 = largura_frame_inimigo2_atacando;
+                                    altura_inimigo2 = altura_frame_inimigo2_atacando;
+                                }
+                                else if (inimigo2.sofrendo_dano) {
+                                    sprite_inimigo2 = inimigo2_sofre_dano;
+                                    largura_inimigo2 = largura_frame_inimigo2_dano;
+                                    altura_inimigo2 = altura_frame_inimigo2_dano;
+                                }
+                                else {
+                                    sprite_inimigo2 = inimigoParado2;
+                                    largura_inimigo2 = largura_frame_inimigo2_parado;
+                                    altura_inimigo2 = altura_frame_inimigo2_parado;
+                                }
+
+                                int flags_inimigo2 = inimigo2.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+                                al_draw_scaled_bitmap(sprite_inimigo2,
+                                    inimigo2.frame_atual * largura_inimigo2, 0,
+                                    largura_inimigo2, altura_inimigo2,
+                                    inimigo2.x, inimigo2.y,
+                                    inimigo2.largura, inimigo2.altura,
+                                    flags_inimigo2);
+                            }
+
+
+                            // INIMIGO 3
+                            if (inimigo3.vida > 0) {
+                                ALLEGRO_BITMAP* sprite_inimigo3;
+                                int largura_inimigo3, altura_inimigo3;
+
+                                if (inimigo3.atacando) {
+                                    sprite_inimigo3 = inimigo3_atacando;
+                                    largura_inimigo3 = largura_frame_inimigo3_atacando;
+                                    altura_inimigo3 = altura_frame_inimigo3_atacando;
+                                }
+                                else if (inimigo3.sofrendo_dano) {
+                                    sprite_inimigo3 = inimigo3_sofre_dano;
+                                    largura_inimigo3 = largura_frame_inimigo3_dano;
+                                    altura_inimigo3 = altura_frame_inimigo3_dano;
+                                }
+                                else {
+                                    sprite_inimigo3 = inimigoParado3;
+                                    largura_inimigo3 = largura_frame_inimigo3_parado;
+                                    altura_inimigo3 = altura_frame_inimigo3_parado;
+                                }
+
+                                int flags_inimigo3 = inimigo3.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+                                al_draw_scaled_bitmap(sprite_inimigo3,
+                                    inimigo3.frame_atual * largura_inimigo3, 0,
+                                    largura_inimigo3, altura_inimigo3,
+                                    inimigo3.x, inimigo3.y,
+                                    inimigo3.largura, inimigo3.altura,
+                                    flags_inimigo3);
+                            }
+                        }
+
+                        // DESENHO DOS INIMIGOS NO CENÁRIO 1 (Inimigos 4, 5 e 6)
+                        if (fase->cenario_atual == 1) {
+                            // INIMIGO 4
+                            if (inimigo4.vida > 0) {
+                                ALLEGRO_BITMAP* sprite_inimigo4;
+                                int largura_inimigo4, altura_inimigo4;
+
+                                if (inimigo4.atacando) {
+                                    sprite_inimigo4 = inimigo4_atacando;
+                                    largura_inimigo4 = largura_frame_inimigo4_atacando;
+                                    altura_inimigo4 = altura_frame_inimigo4_atacando;
+                                }
+                                else if (inimigo4.sofrendo_dano) {
+                                    sprite_inimigo4 = inimigo4_sofre_dano;
+                                    largura_inimigo4 = largura_frame_inimigo4_dano;
+                                    altura_inimigo4 = altura_frame_inimigo4_dano;
+                                }
+                                else {
+                                    sprite_inimigo4 = inimigoParado4;
+                                    largura_inimigo4 = largura_frame_inimigo4_parado;
+                                    altura_inimigo4 = altura_frame_inimigo4_parado;
+                                }
+
+                                int flags_inimigo4 = inimigo4.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+                                al_draw_scaled_bitmap(sprite_inimigo4,
+                                    inimigo4.frame_atual * largura_inimigo4, 0,
+                                    largura_inimigo4, altura_inimigo4,
+                                    inimigo4.x, inimigo4.y,
+                                    inimigo4.largura, inimigo4.altura,
+                                    flags_inimigo4);
+                            }
+
+                            // INIMIGO 5
+                            if (inimigo5.vida > 0) {
+                                ALLEGRO_BITMAP* sprite_inimigo5;
+                                int largura_inimigo5, altura_inimigo5;
+
+                                if (inimigo5.atacando) {
+                                    sprite_inimigo5 = inimigo5_atacando;
+                                    largura_inimigo5 = largura_frame_inimigo5_atacando;
+                                    altura_inimigo5 = altura_frame_inimigo5_atacando;
+                                }
+                                else if (inimigo5.sofrendo_dano) {
+                                    sprite_inimigo5 = inimigo5_sofre_dano;
+                                    largura_inimigo5 = largura_frame_inimigo5_dano;
+                                    altura_inimigo5 = altura_frame_inimigo5_dano;
+                                }
+                                else {
+                                    sprite_inimigo5 = inimigoParado5;
+                                    largura_inimigo5 = largura_frame_inimigo5_parado;
+                                    altura_inimigo5 = altura_frame_inimigo5_parado;
+                                }
+
+                                int flags_inimigo5 = inimigo5.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+                                al_draw_scaled_bitmap(sprite_inimigo5,
+                                    inimigo5.frame_atual * largura_inimigo5, 0,
+                                    largura_inimigo5, altura_inimigo5,
+                                    inimigo5.x, inimigo5.y,
+                                    inimigo5.largura, inimigo5.altura,
+                                    flags_inimigo5);
+                            }
+
+                            // INIMIGO 6
+                            if (inimigo6.vida > 0) {
+                                ALLEGRO_BITMAP* sprite_inimigo6;
+                                int largura_inimigo6, altura_inimigo6;
+
+                                if (inimigo6.atacando) {
+                                    sprite_inimigo6 = inimigo6_atacando;
+                                    largura_inimigo6 = largura_frame_inimigo6_atacando;
+                                    altura_inimigo6 = altura_frame_inimigo6_atacando;
+                                }
+                                else if (inimigo6.sofrendo_dano) {
+                                    sprite_inimigo6 = inimigo6_sofre_dano;
+                                    largura_inimigo6 = largura_frame_inimigo6_dano;
+                                    altura_inimigo6 = altura_frame_inimigo6_dano;
+                                }
+                                else {
+                                    sprite_inimigo6 = inimigoParado6;
+                                    largura_inimigo6 = largura_frame_inimigo6_parado;
+                                    altura_inimigo6 = altura_frame_inimigo6_parado;
+                                }
+
+                                int flags_inimigo6 = inimigo6.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+                                al_draw_scaled_bitmap(sprite_inimigo6,
+                                    inimigo6.frame_atual * largura_inimigo6, 0,
+                                    largura_inimigo6, altura_inimigo6,
+                                    inimigo6.x, inimigo6.y,
+                                    inimigo6.largura, inimigo6.altura,
+                                    flags_inimigo6);
+                            }
+                        }
+                        if (fase->cenario_atual == 2) {
+                            // Desenhar Penelope
+                            int flagsPenelope = penelope.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+                            al_draw_scaled_bitmap(
+                                Penelope,
+                                penelope.frame_atual * largura_frame_penelope_parada, 0,
+                                largura_frame_penelope_parada, altura_frame_penelope_parada,
+                                penelope.x, penelope.y,
+                                penelope.largura, penelope.altura,
+                                flagsPenelope);
+                        }
                     }
                 }
             }
@@ -2475,26 +2423,6 @@ int main(void) {
 
 	al_destroy_bitmap(sprite_flecha);
 	al_destroy_bitmap(sprite_coracao);
-
-    //diálogo e quiz
-
-    al_destroy_bitmap(caixa_dialogo);
-    al_destroy_bitmap(opcao_1);
-    al_destroy_bitmap(opcao_2);
-    al_destroy_bitmap(opcao_3);
-    al_destroy_bitmap(opcao_4);
-    al_destroy_bitmap(opcao_click_1);
-    al_destroy_bitmap(opcao_click_2);
-    al_destroy_bitmap(opcao_click_3);
-    al_destroy_bitmap(opcao_click_4);
-    al_destroy_bitmap(opcao_errada_1);
-    al_destroy_bitmap(opcao_errada_2);
-    al_destroy_bitmap(opcao_errada_3);
-    al_destroy_bitmap(opcao_errada_4);
-    al_destroy_bitmap(opcao_certa_1);
-    al_destroy_bitmap(opcao_certa_2);
-    al_destroy_bitmap(opcao_certa_3);
-    al_destroy_bitmap(opcao_certa_4);
 
     
     //Todo o resto
