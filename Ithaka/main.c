@@ -256,7 +256,7 @@ int main(void) {
     //Carregando fontes 
     al_init_font_addon();
     al_init_ttf_addon();
-    ALLEGRO_FONT* fonte_quiz = al_load_ttf_font("arial.ttf", 24, 0);
+    ALLEGRO_FONT* fonte_quiz = al_load_ttf_font("./fontes/arial.ttf", 24, 0);
   
 
 
@@ -826,9 +826,12 @@ int main(void) {
                         .tempo_de_vida = 0.0f
                     };
                     f.angulo = atan2f(f.y - estado_mouse.y, f.x + estado_mouse.x);
-                    f.vx = odisseu.forca_disparo * cosf(f.angulo),
-                        f.vy = odisseu.forca_disparo * sinf(f.angulo),
-                        adicionarFlecha(&listaFlechas, &count_flechas, &capacidade_flechas, f);
+                    f.vx = odisseu.forca_disparo * cosf(f.angulo);
+                    if (estado_mouse.x < f.x) {
+                        f.vx = -f.vx;
+                    }
+                    f.vy = odisseu.forca_disparo * sinf(f.angulo);
+                    adicionarFlecha(&listaFlechas, &count_flechas, &capacidade_flechas, f);
                 }
                 odisseu.disparando = false;
                 odisseu.forca_disparo = 0.0f;
@@ -1055,7 +1058,7 @@ int main(void) {
             }
 
             //================================== MISSÃO CALYPSO ============================================
-            if (escolha_mapa == 6 && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
+            if (escolha_mapa == MAPA_FASE_OLIMPO && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
 
                 // Detectar cliques do mouse
                 if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida) {
@@ -2350,7 +2353,7 @@ int main(void) {
             }
 
             //desenhar coracao de vida
-            if (escolha_mapa != MAPA_FASE_POSEIDON || player_ganha) {
+            if ((escolha_mapa != MAPA_FASE_POSEIDON && escolha_mapa != MAPA_FASE_OLIMPO) || player_ganha) {
                 for (int i = 0; i < odisseu.vida; i++) {
                     float largura_coracao = (al_get_bitmap_width(sprite_coracao) * 0.1) * (tela.largura / 1920.0f);
                     float altura_coracao = (al_get_bitmap_height(sprite_coracao) * 0.1) * (tela.altura / 1080.0f);
