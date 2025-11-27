@@ -153,11 +153,13 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
     int largura_tela = al_get_display_width(display);
     int altura_tela = al_get_display_height(display);
 
+    al_reset_clipping_rectangle();
+
     // ========== CAIXA DE DIÁLOGO PRINCIPAL  ==========
-    int caixa_x = largura_tela * 0.08f;
-    int caixa_y = altura_tela * 0.60f;
-    int caixa_largura = largura_tela * 0.84f;
-    int caixa_altura = altura_tela * 0.32f;
+    int caixa_x = largura_tela * 0.06f;
+    int caixa_y = altura_tela * 0.70f;
+    int caixa_largura = largura_tela * 0.87f;
+    int caixa_altura = altura_tela * 0.25f;
 
     // Retângulo preto com borda branca
     al_draw_filled_rectangle(caixa_x, caixa_y,
@@ -168,14 +170,14 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
         al_map_rgb(255, 255, 255), 3.0f);
 
     // ========== RETÂNGULOS DAS 4 OPÇÕES (2x2) ==========
-    int opcao_largura = largura_tela * 0.38f;
-    int opcao_altura = altura_tela * 0.12f;
-    int espaco_h = largura_tela * 0.04f;
+    int opcao_largura = largura_tela * 0.30f;
+    int opcao_altura = altura_tela * 0.10f;
+    int espaco_h = largura_tela * 0.02f;
     int espaco_v = altura_tela * 0.02f;
 
     // Posições base (superior esquerda do grid 2x2)
-    int base_x = largura_tela * 0.12f;
-    int base_y = altura_tela * 0.35f;
+    int base_x = largura_tela * 0.20f;
+    int base_y = altura_tela * 0.43f;
 
     // Array com posições das 4 opções
     int opcoes_x[4] = {
@@ -201,19 +203,19 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
         // Se a pergunta foi respondida, mostrar feedback visual
         if (estado->respondida) {
             if (i == perguntaAtual->respostaCerta) {
-                // Resposta correta - verde
+                // Resposta certa - verde :D
                 cor_fundo = al_map_rgb(0, 100, 0);
                 cor_borda = al_map_rgb(0, 255, 0);
                 espessura_borda = 4.0f;
             }
             else if (i == estado->respostaSelecionada) {
-                // Resposta errada selecionada - vermelho
+                // Resposta errada - vermelho >:(
                 cor_fundo = al_map_rgb(100, 0, 0);
                 cor_borda = al_map_rgb(255, 0, 0);
                 espessura_borda = 4.0f;
             }
             else {
-                // Outras opções - cinza escuro
+                //  cinza escuro
                 cor_fundo = al_map_rgb(30, 30, 30);
             }
         }
@@ -222,47 +224,62 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
             cor_fundo = al_map_rgb(0, 0, 0);
         }
 
-        // Desenhar retângulo
+        // Desenha o retângulo preenchido
         al_draw_filled_rectangle(
             opcoes_x[i], opcoes_y[i],
             opcoes_x[i] + opcao_largura, opcoes_y[i] + opcao_altura,
             cor_fundo);
 
+        // Desenha a borda
         al_draw_rectangle(
             opcoes_x[i], opcoes_y[i],
             opcoes_x[i] + opcao_largura, opcoes_y[i] + opcao_altura,
             cor_borda, espessura_borda);
-
-        // Desenhar texto da opção (centralizado)
-        al_draw_text(fonte, al_map_rgb(255, 255, 255),
-            opcoes_x[i] + opcao_largura / 2,
-            opcoes_y[i] + opcao_altura / 2 - 15,
-            ALLEGRO_ALIGN_CENTER,
-            perguntaAtual->opcoes[i]);
     }
 
-    // ========== TEXTO DA PERGUNTA (ACIMA DAS OPÇÕES) ==========
-    al_draw_text(fonte, al_map_rgb(255, 255, 255),
-        largura_tela / 2, altura_tela * 0.15f,
-        ALLEGRO_ALIGN_CENTER,
-        perguntaAtual->perguntaFeita);
+    al_reset_clipping_rectangle();
 
-    // ========== INFORMAÇÕES DO JOGO ==========
 
-    // Contador de erros (canto superior esquerdo)
-    al_draw_textf(fonte, al_map_rgb(255, 100, 100),
+        //Desenha os textos
+       
+        int altura_fonte = al_get_font_line_height(fonte);
+        for (int i = 0; i < 4; i++) {
+            int centro_x = opcoes_x[i] + (opcao_largura / 2);
+            int centro_y = opcoes_y[i] + (opcao_altura / 2);
+
+            // Desenhar texto da opção (centralizado)
+            al_draw_text(fonte, al_map_rgb(255, 255, 255),
+                centro_x,
+                centro_y - (altura_fonte / 2),  // Centraliza baseado na altura real da fonte
+                ALLEGRO_ALIGN_CENTER,
+                perguntaAtual->opcoes[i]);
+        }
+
+    // ========== TEXTO DA PERGUNTA ==========
+        int centro_caixa_y = caixa_y + (caixa_altura / 2);
+
+        al_draw_text(fonte, al_map_rgb(255, 255, 255),
+            largura_tela / 2,
+            centro_caixa_y - (altura_fonte / 2),
+            ALLEGRO_ALIGN_CENTER,
+            perguntaAtual->perguntaFeita);
+
+    // ========== INFORMAÇÕES DA TELA ==========
+
+    // Conta erros (cima esquerda)
+    al_draw_textf(fonte, al_map_rgb(0, 0, 0),
         largura_tela * 0.05f, altura_tela * 0.05f,
         ALLEGRO_ALIGN_LEFT,
         "Erros: %d/3", estado->erros);
 
     // Número da pergunta (canto superior direito)
-    al_draw_textf(fonte, al_map_rgb(200, 200, 255),
+    al_draw_textf(fonte, al_map_rgb(0, 0, 0),
         largura_tela * 0.95f, altura_tela * 0.05f,
         ALLEGRO_ALIGN_RIGHT,
         "Pergunta %d/%d",
         estado->perguntaAtual + 1, estado->numPerguntas);
 
-    // ========== FEEDBACK VISUAL APÓS RESPONDER ==========
+    // ========== MENSAGEM APÓS RESPONDER ==========
     if (estado->respondida) {
         bool acertou = (estado->respostaSelecionada == perguntaAtual->respostaCerta);
 
@@ -276,9 +293,12 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
                 largura_tela / 2 - 200, altura_tela * 0.25f - 30,
                 largura_tela / 2 + 200, altura_tela * 0.25f + 30,
                 al_map_rgb(0, 255, 0), 3.0f);
+
+            al_reset_clipping_rectangle();
+
             al_draw_text(fonte, al_map_rgb(255, 255, 255),
                 largura_tela / 2, altura_tela * 0.25f - 10,
-                ALLEGRO_ALIGN_CENTER, "CORRETO!");
+                ALLEGRO_ALIGN_CENTER, "PARABÉNS! ACERTOU!");
         }
         else {
             // Mensagem de erro
@@ -290,10 +310,15 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
                 largura_tela / 2 - 200, altura_tela * 0.25f - 30,
                 largura_tela / 2 + 200, altura_tela * 0.25f + 30,
                 al_map_rgb(255, 0, 0), 3.0f);
+
+            al_reset_clipping_rectangle(); 
+
             al_draw_text(fonte, al_map_rgb(255, 255, 255),
                 largura_tela / 2, altura_tela * 0.25f - 10,
-                ALLEGRO_ALIGN_CENTER, "ERRADO!");
+                ALLEGRO_ALIGN_CENTER, "ERRADO!!");
         }
+
+        al_reset_clipping_rectangle();
     }
 }
 
@@ -304,13 +329,14 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
 int verificar_clique_opcao(int mouse_x, int mouse_y, int largura_tela, int altura_tela)
 {
     // Mesmas dimensões usadas no desenho
-    int opcao_largura = largura_tela * 0.38f;
-    int opcao_altura = altura_tela * 0.12f;
-    int espaco_h = largura_tela * 0.04f;
+    int opcao_largura = largura_tela * 0.30f;
+    int opcao_altura = altura_tela * 0.10f;
+    int espaco_h = largura_tela * 0.02f;
     int espaco_v = altura_tela * 0.02f;
 
-    int base_x = largura_tela * 0.12f;
-    int base_y = altura_tela * 0.35f;
+
+    int base_x = largura_tela * 0.20f;
+    int base_y = altura_tela * 0.43f;
 
     // Posições das opções
     int opcoes_x[4] = {
@@ -360,7 +386,7 @@ void processa_resposta(pergunta* perguntas, quiz* estado, int opcaoClicada)
 
         if (estado->erros >= 3) {
             estado->perdeu = true;
-            printf("GAME OVER! Você perdeu o quiz.\n");
+            printf("GAME OVER! Você perdeu o quiz dos Deuses.\n");
         }
     }
 }

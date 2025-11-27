@@ -1084,8 +1084,6 @@ int main(void) {
                 }
             }
 
-
-
             //===================================== MISSÃO ÍTACA =====================================//
             else if (escolha_mapa == 3) {
 
@@ -1922,7 +1920,7 @@ int main(void) {
         if (redesenhar_tela && al_is_event_queue_empty(fila_eventos)) {
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
-            // Desenhar Quiz (Arrumar/estudar, Claude ***)
+            //--------------------------------- Desenha Quiz ----------------------------------------------//
 
             if (escolha_mapa == MAPA_FASE_OLIMPO) {
                 // Desenhar fundo
@@ -1953,7 +1951,7 @@ int main(void) {
                         ALLEGRO_ALIGN_CENTER, "GAME OVER!");
                     al_draw_text(fonte_quiz, al_map_rgb(255, 255, 255),
                         LARGURA_TELA / 2, ALTURA_TELA / 2,
-                        ALLEGRO_ALIGN_CENTER, "Você errou 3 vezes");
+                        ALLEGRO_ALIGN_CENTER, "Você errou 3 vezes, Atena. Odisseu nunca será liberto.");
                     al_draw_text(fonte_quiz, al_map_rgb(200, 200, 200),
                         LARGURA_TELA / 2, ALTURA_TELA / 2 + 80,
                         ALLEGRO_ALIGN_CENTER, "Pressione ESC para voltar");
@@ -1963,6 +1961,7 @@ int main(void) {
                     al_clear_to_color(al_map_rgb(0, 20, 0));
 
                     // Caixa de vitória
+                    //Retângulo
                     al_draw_filled_rectangle(
                         LARGURA_TELA / 2 - 400, ALTURA_TELA / 2 - 200,
                         LARGURA_TELA / 2 + 400, ALTURA_TELA / 2 + 200,
@@ -1974,14 +1973,14 @@ int main(void) {
 
                     al_draw_text(fonte_quiz, al_map_rgb(0, 255, 0),
                         LARGURA_TELA / 2, ALTURA_TELA / 2 - 80,
-                        ALLEGRO_ALIGN_CENTER, "PARABÉNS!");
-                    al_draw_textf(fonte_quiz, al_map_rgb(255, 255, 255),
+                        ALLEGRO_ALIGN_CENTER, "PARABÉNS, ATENA.");
+                    al_draw_text(fonte_quiz, al_map_rgb(255, 255, 255),
                         LARGURA_TELA / 2, ALTURA_TELA / 2,
-                        ALLEGRO_ALIGN_CENTER,
-                        "Quiz completo com %d erros!", estado.erros);
+                        ALLEGRO_ALIGN_CENTER, "Você reafirmou seu conhecimento e libertou Odisseu.");
                     al_draw_text(fonte_quiz, al_map_rgb(200, 200, 200),
                         LARGURA_TELA / 2, ALTURA_TELA / 2 + 80,
                         ALLEGRO_ALIGN_CENTER, "Pressione ESC para voltar");
+
                 }
             }
 
