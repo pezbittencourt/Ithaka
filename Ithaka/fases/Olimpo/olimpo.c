@@ -40,7 +40,7 @@ bool carregar_cenarios_olimpo(Fase* fase)
 void fazendo_as_perguntas(pergunta perguntas[])
 {
     // Pergunta 1
-    strcpy(perguntas[0].perguntaFeita, "No mito de Prometeu, o que o titã roubou dos deuses para dar aos mortais?");
+    strcpy(perguntas[0].perguntaFeita, "No mito de Prometeu, o que o tita roubou dos deuses para dar aos mortais?");
     strcpy(perguntas[0].opcoes[0], "Fogo");
     strcpy(perguntas[0].opcoes[1], "Poder eterno");
     strcpy(perguntas[0].opcoes[2], "Vinho");
@@ -48,55 +48,55 @@ void fazendo_as_perguntas(pergunta perguntas[])
     perguntas[0].respostaCerta = 0;
 
     // Pergunta 2
-    strcpy(perguntas[1].perguntaFeita, "Qual foi a única coisa que restou na caixa após Pandora a abrir?");
+    strcpy(perguntas[1].perguntaFeita, "Qual foi a unica coisa que restou na caixa apos Pandora a abrir?");
     strcpy(perguntas[1].opcoes[0], "Amor");
-    strcpy(perguntas[1].opcoes[1], "Luxúria");
-    strcpy(perguntas[1].opcoes[2], "Esperança");
-    strcpy(perguntas[1].opcoes[3], "Miséria");
+    strcpy(perguntas[1].opcoes[1], "Luxuria");
+    strcpy(perguntas[1].opcoes[2], "Esperanca");
+    strcpy(perguntas[1].opcoes[3], "Miseria");
     perguntas[1].respostaCerta = 2;
 
     // Pergunta 3
-    strcpy(perguntas[2].perguntaFeita, "De quem Ícaro era filho?");
-    strcpy(perguntas[2].opcoes[0], "Páris");
+    strcpy(perguntas[2].perguntaFeita, "De quem Icaro era filho?");
+    strcpy(perguntas[2].opcoes[0], "Paris");
     strcpy(perguntas[2].opcoes[1], "Teseu");
-    strcpy(perguntas[2].opcoes[2], "Dédalo");
+    strcpy(perguntas[2].opcoes[2], "Dedalo");
     strcpy(perguntas[2].opcoes[3], "Narciso");
     perguntas[2].respostaCerta = 2;
 
     // Pergunta 4
-    strcpy(perguntas[3].perguntaFeita, "Qual foi o estopim para a Guerra de Tróia?");
+    strcpy(perguntas[3].perguntaFeita, "Qual foi o estopim para a Guerra de Troia?");
     strcpy(perguntas[3].opcoes[0], "O assassinato de Menelau");
     strcpy(perguntas[3].opcoes[1], "O sequestro de Helena");
     strcpy(perguntas[3].opcoes[2], "Conflitos territoriais");
-    strcpy(perguntas[3].opcoes[3], "O assassinato de Páris");
+    strcpy(perguntas[3].opcoes[3], "O assassinato de Paris");
     perguntas[3].respostaCerta = 1;
 
     // Pergunta 5
-    strcpy(perguntas[4].perguntaFeita, "Qual foi a condição de Eros para viver com Psiquê?");
+    strcpy(perguntas[4].perguntaFeita, "Qual foi a condição de Eros para viver com Psique?");
     strcpy(perguntas[4].opcoes[0], "Ela nunca poderia ver seu rosto");
     strcpy(perguntas[4].opcoes[1], "Eles nunca poderiam se tocar");
-    strcpy(perguntas[4].opcoes[2], "Psiquê jamais teria filhos");
+    strcpy(perguntas[4].opcoes[2], "Psique jamais teria filhos");
     strcpy(perguntas[4].opcoes[3], "Nunca houve condição");
     perguntas[4].respostaCerta = 0;
 
     // Pergunta 6
-    strcpy(perguntas[5].perguntaFeita, "Qual membro de Urano gerou Vênus ao tocar o mar?");
+    strcpy(perguntas[5].perguntaFeita, "Qual membro de Urano gerou Venus ao tocar o mar?");
     strcpy(perguntas[5].opcoes[0], "Sua perna direita");
     strcpy(perguntas[5].opcoes[1], "Seu braço esquerdo");
-    strcpy(perguntas[5].opcoes[2], "Seu pé esquerdo");
-    strcpy(perguntas[5].opcoes[3], "Seu órgão reprodutor");
+    strcpy(perguntas[5].opcoes[2], "Seu pe esquerdo");
+    strcpy(perguntas[5].opcoes[3], "Seu orgao reprodutor");
     perguntas[5].respostaCerta = 3;
 
     // Pergunta 7
     strcpy(perguntas[6].perguntaFeita, "De que forma Narciso morreu?");
     strcpy(perguntas[6].opcoes[0], "Afogado no rio");
-    strcpy(perguntas[6].opcoes[1], "Amaldiçoado por Afrodite");
+    strcpy(perguntas[6].opcoes[1], "Amaldicoado por Afrodite");
     strcpy(perguntas[6].opcoes[2], "Comeu fruto proibido");
     strcpy(perguntas[6].opcoes[3], "Preso em seu reflexo");
     perguntas[6].respostaCerta = 3;
 
     // Pergunta 8
-    strcpy(perguntas[7].perguntaFeita, "Qual criatura habitava o labirinto de Dédalo?");
+    strcpy(perguntas[7].perguntaFeita, "Qual criatura habitava o labirinto de Dedalo?");
     strcpy(perguntas[7].opcoes[0], "Harpia");
     strcpy(perguntas[7].opcoes[1], "Centauro");
     strcpy(perguntas[7].opcoes[2], "Quimera");
@@ -104,10 +104,10 @@ void fazendo_as_perguntas(pergunta perguntas[])
     perguntas[7].respostaCerta = 3;
 
     // Pergunta 9
-    strcpy(perguntas[8].perguntaFeita, "Qual foi o castigo de Sísifo?");
+    strcpy(perguntas[8].perguntaFeita, "Qual foi o castigo de Sisifo?");
     strcpy(perguntas[8].opcoes[0], "Vagar cego eternamente");
     strcpy(perguntas[8].opcoes[1], "Empurrar pedra montanha acima");
-    strcpy(perguntas[8].opcoes[2], "Órgãos devorados por corvos");
+    strcpy(perguntas[8].opcoes[2], "Orgaos devorados por corvos");
     strcpy(perguntas[8].opcoes[3], "Preso por correntes");
     perguntas[8].respostaCerta = 1;
 
@@ -120,7 +120,7 @@ void fazendo_as_perguntas(pergunta perguntas[])
     perguntas[9].respostaCerta = 2;
 
     // Pergunta 11
-    strcpy(perguntas[10].perguntaFeita, "Qual titã foi condenado a segurar o céu?");
+    strcpy(perguntas[10].perguntaFeita, "Qual tita foi condenado a segurar o ceu?");
     strcpy(perguntas[10].opcoes[0], "Prometeu");
     strcpy(perguntas[10].opcoes[1], "Atlas");
     strcpy(perguntas[10].opcoes[2], "Cronos");
@@ -128,10 +128,10 @@ void fazendo_as_perguntas(pergunta perguntas[])
     perguntas[10].respostaCerta = 1;
 
     // Pergunta 12
-    strcpy(perguntas[11].perguntaFeita, "Qual foi o castigo de Tântalo?");
-    strcpy(perguntas[11].opcoes[0], "Fome e sede em abundância");
-    strcpy(perguntas[11].opcoes[1], "Fígado devorado por cobra");
-    strcpy(perguntas[11].opcoes[2], "Membros servidos às almas");
+    strcpy(perguntas[11].perguntaFeita, "Qual foi o castigo de Tantalo?");
+    strcpy(perguntas[11].opcoes[0], "Fome e sede em abundancia");
+    strcpy(perguntas[11].opcoes[1], "Figado devorado por cobra");
+    strcpy(perguntas[11].opcoes[2], "Membros servidos as almas");
     strcpy(perguntas[11].opcoes[3], "Acorrentado eternamente");
     perguntas[11].respostaCerta = 0;
 }
@@ -148,20 +148,16 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
 {
     if (!fonte || !perguntaAtual || !estado) return;
 
-    // Obter dimensões da tela
     ALLEGRO_DISPLAY* display = al_get_current_display();
     int largura_tela = al_get_display_width(display);
     int altura_tela = al_get_display_height(display);
 
-    al_reset_clipping_rectangle();
-
-    // ========== CAIXA DE DIÁLOGO PRINCIPAL  ==========
+    // ========== CAIXA DE DIÁLOGO PRINCIPAL ==========
     int caixa_x = largura_tela * 0.06f;
     int caixa_y = altura_tela * 0.70f;
     int caixa_largura = largura_tela * 0.87f;
     int caixa_altura = altura_tela * 0.25f;
 
-    // Retângulo preto com borda branca
     al_draw_filled_rectangle(caixa_x, caixa_y,
         caixa_x + caixa_largura, caixa_y + caixa_altura,
         al_map_rgb(0, 0, 0));
@@ -175,116 +171,105 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
     int espaco_h = largura_tela * 0.02f;
     int espaco_v = altura_tela * 0.02f;
 
-    // Posições base (superior esquerda do grid 2x2)
     int base_x = largura_tela * 0.20f;
     int base_y = altura_tela * 0.43f;
 
-    // Array com posições das 4 opções
     int opcoes_x[4] = {
-        base_x,                          // Opção 1 (esquerda cima)
-        base_x + opcao_largura + espaco_h,  // Opção 2 (direita cima)
-        base_x,                          // Opção 3 (esquerda baixo)
-        base_x + opcao_largura + espaco_h   // Opção 4 (direita baixo)
+        base_x,
+        base_x + opcao_largura + espaco_h,
+        base_x,
+        base_x + opcao_largura + espaco_h
     };
 
     int opcoes_y[4] = {
-        base_y,                          // Opção 1
-        base_y,                          // Opção 2
-        base_y + opcao_altura + espaco_v,   // Opção 3
-        base_y + opcao_altura + espaco_v    // Opção 4
+        base_y,
+        base_y,
+        base_y + opcao_altura + espaco_v,
+        base_y + opcao_altura + espaco_v
     };
 
-    // Desenhar cada opção
+    // ========== DESENHAR RETÂNGULOS DAS OPÇÕES ==========
     for (int i = 0; i < 4; i++) {
         ALLEGRO_COLOR cor_fundo;
         ALLEGRO_COLOR cor_borda = al_map_rgb(255, 255, 255);
         float espessura_borda = 2.0f;
 
-        // Se a pergunta foi respondida, mostrar feedback visual
         if (estado->respondida) {
             if (i == perguntaAtual->respostaCerta) {
-                // Resposta certa - verde :D
                 cor_fundo = al_map_rgb(0, 100, 0);
                 cor_borda = al_map_rgb(0, 255, 0);
                 espessura_borda = 4.0f;
             }
             else if (i == estado->respostaSelecionada) {
-                // Resposta errada - vermelho >:(
                 cor_fundo = al_map_rgb(100, 0, 0);
                 cor_borda = al_map_rgb(255, 0, 0);
                 espessura_borda = 4.0f;
             }
             else {
-                //  cinza escuro
                 cor_fundo = al_map_rgb(30, 30, 30);
             }
         }
         else {
-            // Antes de responder - preto
             cor_fundo = al_map_rgb(0, 0, 0);
         }
 
-        // Desenha o retângulo preenchido
         al_draw_filled_rectangle(
             opcoes_x[i], opcoes_y[i],
             opcoes_x[i] + opcao_largura, opcoes_y[i] + opcao_altura,
             cor_fundo);
 
-        // Desenha a borda
         al_draw_rectangle(
             opcoes_x[i], opcoes_y[i],
             opcoes_x[i] + opcao_largura, opcoes_y[i] + opcao_altura,
             cor_borda, espessura_borda);
     }
 
-    al_reset_clipping_rectangle();
+    // ========== DESENHAR TEXTOS DAS OPÇÕES (MULTILINE EIN) ==========
+    int altura_fonte = al_get_font_line_height(fonte);
+    float max_largura_opcao = opcao_largura * 0.85f; 
 
+    for (int i = 0; i < 4; i++) {
+        int centro_x = opcoes_x[i] + (opcao_largura / 2);
+        int topo_y = opcoes_y[i] + 20;  // Pequena margem do topo
 
-        //Desenha os textos
-       
-        int altura_fonte = al_get_font_line_height(fonte);
-        for (int i = 0; i < 4; i++) {
-            int centro_x = opcoes_x[i] + (opcao_largura / 2);
-            int centro_y = opcoes_y[i] + (opcao_altura / 2);
-
-            // Desenhar texto da opção (centralizado)
-            al_draw_text(fonte, al_map_rgb(255, 255, 255),
-                centro_x,
-                centro_y - (altura_fonte / 2),  // Centraliza baseado na altura real da fonte
-                ALLEGRO_ALIGN_CENTER,
-                perguntaAtual->opcoes[i]);
-        }
-
-    // ========== TEXTO DA PERGUNTA ==========
-        int centro_caixa_y = caixa_y + (caixa_altura / 2);
-
-        al_draw_text(fonte, al_map_rgb(255, 255, 255),
-            largura_tela / 2,
-            centro_caixa_y - (altura_fonte / 2),
+        al_draw_multiline_text(fonte, al_map_rgb(255, 255, 255),
+            centro_x,
+            topo_y,
+            max_largura_opcao,
+            altura_fonte,  
             ALLEGRO_ALIGN_CENTER,
-            perguntaAtual->perguntaFeita);
+            perguntaAtual->opcoes[i]);
+    }
 
-    // ========== INFORMAÇÕES DA TELA ==========
+    // ========== TEXTO DA PERGUNTA COM MULTILINE ==========
+    float max_largura_pergunta = caixa_largura * 0.95f;  // 95% da largura da caixa
+    int topo_pergunta_y = caixa_y + 60;  // Pequena margem do topo
 
-    // Conta erros (cima esquerda)
-    al_draw_textf(fonte, al_map_rgb(0, 0, 0),
+    al_draw_multiline_text(fonte, al_map_rgb(255, 255, 255),
+        largura_tela / 2,
+        topo_pergunta_y,
+        max_largura_pergunta,
+        altura_fonte + 2,
+        ALLEGRO_ALIGN_CENTER,
+        perguntaAtual->perguntaFeita);
+
+    // ========== INFORMAÇÕES (ERROS E NÚMERO DA PERGUNTA) ==========
+    al_draw_textf(fonte, al_map_rgb(255, 255, 255),
         largura_tela * 0.05f, altura_tela * 0.05f,
         ALLEGRO_ALIGN_LEFT,
         "Erros: %d/3", estado->erros);
 
-    // Número da pergunta (canto superior direito)
-    al_draw_textf(fonte, al_map_rgb(0, 0, 0),
+    al_draw_textf(fonte, al_map_rgb(255, 255, 255),
         largura_tela * 0.95f, altura_tela * 0.05f,
         ALLEGRO_ALIGN_RIGHT,
         "Pergunta %d/%d",
         estado->perguntaAtual + 1, estado->numPerguntas);
 
-    // ========== MENSAGEM APÓS RESPONDER ==========
+    // ========== MENSAGEM DE FEEDBACK (ACERTO/ERRO) ==========
     if (estado->respondida) {
         bool acertou = (estado->respostaSelecionada == perguntaAtual->respostaCerta);
 
         if (acertou) {
-            // Mensagem de acerto
             al_draw_filled_rectangle(
                 largura_tela / 2 - 200, altura_tela * 0.25f - 30,
                 largura_tela / 2 + 200, altura_tela * 0.25f + 30,
@@ -293,15 +278,11 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
                 largura_tela / 2 - 200, altura_tela * 0.25f - 30,
                 largura_tela / 2 + 200, altura_tela * 0.25f + 30,
                 al_map_rgb(0, 255, 0), 3.0f);
-
-            al_reset_clipping_rectangle();
-
             al_draw_text(fonte, al_map_rgb(255, 255, 255),
                 largura_tela / 2, altura_tela * 0.25f - 10,
-                ALLEGRO_ALIGN_CENTER, "PARABÉNS! ACERTOU!");
+                ALLEGRO_ALIGN_CENTER, "PARABENS! ACERTOU!");
         }
         else {
-            // Mensagem de erro
             al_draw_filled_rectangle(
                 largura_tela / 2 - 200, altura_tela * 0.25f - 30,
                 largura_tela / 2 + 200, altura_tela * 0.25f + 30,
@@ -310,15 +291,10 @@ void desenha_quiz(ALLEGRO_BITMAP* caixa_dialogo,
                 largura_tela / 2 - 200, altura_tela * 0.25f - 30,
                 largura_tela / 2 + 200, altura_tela * 0.25f + 30,
                 al_map_rgb(255, 0, 0), 3.0f);
-
-            al_reset_clipping_rectangle(); 
-
             al_draw_text(fonte, al_map_rgb(255, 255, 255),
                 largura_tela / 2, altura_tela * 0.25f - 10,
-                ALLEGRO_ALIGN_CENTER, "ERRADO!!");
+                ALLEGRO_ALIGN_CENTER, "ERRADO!");
         }
-
-        al_reset_clipping_rectangle();
     }
 }
 
