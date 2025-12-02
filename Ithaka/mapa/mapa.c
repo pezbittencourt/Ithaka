@@ -15,7 +15,7 @@ typedef struct {
     ALLEGRO_COLOR cor_destaque;
 } AreaMapa;
 
-int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
+int exibir_mapa_inicial(ALLEGRO_DISPLAY* display, int mapas_disponiveis) {
     int tela_largura = al_get_display_width(display);
     int tela_altura = al_get_display_height(display);
 
@@ -83,7 +83,7 @@ int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
             .y = 768 * escala_y,
             .largura = 130 * escala_x,
             .altura = 135 * escala_y,
-            .fase_id = MAPA_FASE_OLIMPO,
+            .fase_id = MAPA_FASE_CALYPSO,
             .nome = "OLIMPO",
             .mouse_sobre = false,
             .cor_normal = al_map_rgba(255, 255, 100, 150),
@@ -92,13 +92,6 @@ int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
     };
 
     int num_areas = sizeof(areas) / sizeof(areas[0]);
-
-    for (int i = 0; i < num_areas; i++) {
-        printf("[MAPA] Área %s: X=%.0f Y=%.0f L=%.0f A=%.0f\n",
-            areas[i].nome,
-            areas[i].x, areas[i].y,
-            areas[i].largura, areas[i].altura);
-    }
 
     ALLEGRO_BITMAP* mapa = al_load_bitmap("./imagensJogo/cenarios/mapa/mapaInicial.png");
     if (!mapa) {
@@ -138,7 +131,7 @@ int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
             if (evento.keyboard.keycode == ALLEGRO_KEY_ESCAPE) {
                 printf("[MAPA] ESC pressionado - Voltando ao menu\n");
                 rodando = false;
-                escolha = MAPA_VOLTAR_MENU;
+                escolha = MAPA_SAIR;
             }
         }
         else if (evento.type == ALLEGRO_EVENT_MOUSE_AXES) {
@@ -147,6 +140,9 @@ int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
             bool mudou_estado = false;
 
             for (int i = 0; i < num_areas; i++) {
+                if (areas[i].fase_id > mapas_disponiveis) {
+                    continue;
+                }
                 bool estava_sobre = areas[i].mouse_sobre;
                 areas[i].mouse_sobre = (mouse_x >= areas[i].x &&
                     mouse_x <= areas[i].x + areas[i].largura &&
@@ -172,6 +168,9 @@ int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
                 bool clicou_em_algo = false;
 
                 for (int i = 0; i < num_areas; i++) {
+                    if (areas[i].fase_id > mapas_disponiveis) {
+                        continue;
+                    }
                     if (mouse_x >= areas[i].x && mouse_x <= areas[i].x + areas[i].largura &&
                         mouse_y >= areas[i].y && mouse_y <= areas[i].y + areas[i].altura) {
 
@@ -206,6 +205,9 @@ int exibir_mapa_inicial(ALLEGRO_DISPLAY* display) {
             );
 
             for (int i = 0; i < num_areas; i++) {
+                if (areas[i].fase_id > mapas_disponiveis) {
+                    continue;
+                }
                 if (areas[i].mouse_sobre) {
                     al_draw_filled_rectangle(
                         areas[i].x, areas[i].y,

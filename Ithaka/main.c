@@ -134,6 +134,8 @@ int main(void) {
     const int ALTURA_SPRITE = 250, LARGURA_SPRITE = 250;
     int ALTURA_PERSONAGEM = deixarProporcional(ALTURA_SPRITE + 60, ALTURA_TELA, ALTURA_TELA_ORIGINAL);
     int LARGURA_PERSONAGEM = deixarProporcional(LARGURA_SPRITE + 25, LARGURA_TELA, LARGURA_TELA_ORIGINAL);
+    int mapas_disponiveis = 4;
+    int sleep_turno = 0;
 
     ALLEGRO_DISPLAY* tela_jogo = criar_tela_cheia(tela);
     if (!tela_jogo) {
@@ -148,10 +150,11 @@ int main(void) {
     }
 
     // Exibir mapa 
-    int escolha_mapa = exibir_mapa_inicial(tela_jogo);
+    int escolha_mapa = exibir_mapa_inicial(tela_jogo, mapas_disponiveis);
     if (!escolha_mapa) {
         printf("Usuário voltou do mapa.\n");
         al_destroy_display(tela_jogo);
+
         return 0; // Usuário pressionou ESC no mapa
     }
 
@@ -247,16 +250,14 @@ int main(void) {
     //Objetos
     ALLEGRO_BITMAP* sprite_flecha = al_load_bitmap("./imagensJogo/objetos/flecha.png");
     ALLEGRO_BITMAP* sprite_coracao = al_load_bitmap("./imagensJogo/objetos/coracao.png");
-    ALLEGRO_BITMAP* sprite_erro = al_load_bitmap("./imagensJogo/objetos/erro.png");
-    ALLEGRO_BITMAP* sprite_navio = al_load_bitmap("./imagensJogo/objetos/navio.png");
-    ALLEGRO_BITMAP* sprite_agua = al_load_bitmap("./imagensJogo/objetos/agua.png");
-    ALLEGRO_BITMAP* sprite_acerto = al_load_bitmap("./imagensJogo/objetos/acerto.png");
 
 
     //Carregando fontes 
     al_init_font_addon();
     al_init_ttf_addon();
     ALLEGRO_FONT* fonte_quiz = al_load_ttf_font("./fontes/arial.ttf", 24, 0);
+    ALLEGRO_FONT* font_titulo = al_load_ttf_font("./fontes/arial.ttf", 48, 0);
+
   
 
 
@@ -413,8 +414,8 @@ int main(void) {
     //===========================INICIALIZAÇÃO DOS PERSONAGENS===========================
 
     Personagem odisseu = {
-        .x = (escolha_mapa == 2) ? (LARGURA_TELA / 4.2) : (LARGURA_TELA / 30),
-        .y = (escolha_mapa == 3) ? deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL)
+        .x = (escolha_mapa == MAPA_FASE_CIRCE) ? (LARGURA_TELA / 4.2) : (LARGURA_TELA / 30),
+        .y = (escolha_mapa == MAPA_FASE_ITACA) ? deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL)
         : deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
         .vida = 14,
         .largura = LARGURA_PERSONAGEM,
@@ -683,6 +684,9 @@ int main(void) {
         bool mouse_left = false;
         bool mouse_right = false;
         al_wait_for_event(fila_eventos, &evento);
+        if (escolha_mapa == MAPA_VOLTAR_MENU) {
+            escolha_mapa = exibir_mapa_inicial(tela_jogo, mapas_disponiveis);
+        }
 
         if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
             jogo_rodando = false;
@@ -692,22 +696,30 @@ int main(void) {
                 // Verificar em qual "tela" estamos
 
                 // Se ainda não carregou o mapa (teoricamente impossível chegar aqui)
-                if (escolha_mapa == 0) {
-                    jogo_rodando = false;
-                    // Vai sair do programa
-                }
                 // Se está jogando alguma fase
-                else if (escolha_mapa > 0) {
+                if (escolha_mapa > 0) {
                     printf("[JOGO] ESC pressionado - Voltando ao mapa...\n");
-                    escolha_mapa = exibir_mapa_inicial(tela_jogo);
-                    carregar_cenario(fase, escolha_mapa);
-                    if (!carregar_cenario(fase, escolha_mapa)) {
-                        printf("Erro ao carregar cenários.\n");
-                        al_destroy_display(tela_jogo);
-                        return -1;
+                    destruir_cenarios(fase);
+                    destruir_sprites(fase);
+                    free_fase(fase);
 
+                    escolha_mapa = exibir_mapa_inicial(tela_jogo, mapas_disponiveis);
+                    if (escolha_mapa != MAPA_SAIR) {
+                        if (!carregar_cenario(fase, escolha_mapa)) {
+                            printf("Erro ao carregar cenários.\n");
+                            al_destroy_display(tela_jogo);
+                            return -1;
+
+                        }
+                    }
+                    else {
+                        jogo_rodando = menu_inicial(tela_jogo);
+                        escolha_mapa = MAPA_VOLTAR_MENU;
                     }
                     // Flag para indicar que deve voltar ao mapa
+                } else {
+                    jogo_rodando = menu_inicial(tela_jogo);
+                    escolha_mapa = MAPA_VOLTAR_MENU;
                 }
             }
 
@@ -736,7 +748,7 @@ int main(void) {
 
             //VERIFICA CLICK DO MOUSE DO QUIZ
       
-            if (escolha_mapa == MAPA_FASE_OLIMPO && !estado.respondida) {
+            if (escolha_mapa == MAPA_FASE_CALYPSO && !estado.respondida) {
                 int opcao_clicada = verificar_clique_opcao(
                     evento.mouse.x,
                     evento.mouse.y,
@@ -756,7 +768,7 @@ int main(void) {
             mouse_left = evento.mouse.button == 1;
             mouse_right = evento.mouse.button == 2;
 
-            if (escolha_mapa == MAPA_FASE_POSEIDON) {
+            if (escolha_mapa == MAPA_FASE_POSEIDON && turno_jogador) {
                 al_get_mouse_state(&estado_mouse);
                 update_battleship(
                     estado_mouse,
@@ -774,6 +786,7 @@ int main(void) {
                     &com_ganha,
                     tela
                 );
+                sleep_turno = 60;
             }
         }
         
@@ -784,7 +797,7 @@ int main(void) {
 
             //ATUALIZAÇÃO DE TIMER DO QUIZ-----
 
-            if (escolha_mapa == MAPA_FASE_OLIMPO && estado.respondida) {
+            if (escolha_mapa == MAPA_FASE_CALYPSO && estado.respondida) {
                 atualizar_timer_quiz(&estado);
 
                 if (estado.timer_feedback == 0) {
@@ -858,10 +871,10 @@ int main(void) {
 
 
             //BARREIRA MAPA 1 - POLIFEMO
-            if (fase->cenario_atual == 5 && escolha_mapa == 1 && odisseu.x > LARGURA_TELA - LARGURA_TELA / 10) odisseu.x = LARGURA_TELA - LARGURA_TELA / 10;
+            if (fase->cenario_atual == 5 && escolha_mapa == MAPA_FASE_POLIFEMO && odisseu.x > LARGURA_TELA - LARGURA_TELA / 10) odisseu.x = LARGURA_TELA - LARGURA_TELA / 10;
 
             //BARREIRA MAPA 5 - SUBMUNDO
-            if (fase->cenario_atual == 0 && escolha_mapa == 5 && odisseu.x > LARGURA_TELA / 3.5) odisseu.x = LARGURA_TELA / 3.5;
+            if (fase->cenario_atual == 0 && escolha_mapa == MAPA_FASE_SUBMUNDO && odisseu.x > LARGURA_TELA / 3.5) odisseu.x = LARGURA_TELA / 3.5;
 
            
 
@@ -1058,7 +1071,7 @@ int main(void) {
             }
 
             //================================== MISSÃO CALYPSO ============================================
-            if (escolha_mapa == MAPA_FASE_OLIMPO && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
+            if (escolha_mapa == MAPA_FASE_CALYPSO && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
 
                 // Detectar cliques do mouse
                 if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida) {
@@ -1085,7 +1098,7 @@ int main(void) {
             }
 
             //===================================== MISSÃO ÍTACA =====================================//
-            else if (escolha_mapa == 3) {
+            else if (escolha_mapa == MAPA_FASE_ITACA) {
 
                 //========================== RESTRIÇÕES DE MOVIMENTO ==========================//
                 
@@ -1499,7 +1512,7 @@ int main(void) {
                         circe.frame_atual = 0;
                     }
                 }
-                if (escolha_mapa == 3) {
+                if (escolha_mapa == MAPA_FASE_ITACA) {
 
                     if (fase->cenario_atual == 0) {
                         // Inimigo 1 RECEBE dano
@@ -1617,7 +1630,7 @@ int main(void) {
             }
 
             // ATAQUES DOS INIMIGOS
-            if (escolha_mapa == 3 && fase->cenario_atual == 0) {
+            if (escolha_mapa == MAPA_FASE_ITACA && fase->cenario_atual == 0) {
                // Verificar ataque do inimigo1
                 if (inimigo1.acerto && inimigo1.vida > 0) {
                     float area_ataque_inimigo1_x = inimigo1.olhando_direita ?
@@ -1712,7 +1725,7 @@ int main(void) {
                     inimigo3.acerto = false;
                 }
             }
-            if (fase->cenario_atual == 1 && escolha_mapa == 3 && inimigo1.vida == 0 && inimigo2.vida == 0 && inimigo3.vida == 0) {
+            if (fase->cenario_atual == 1 && escolha_mapa == MAPA_FASE_ITACA && inimigo1.vida == 0 && inimigo2.vida == 0 && inimigo3.vida == 0) {
                 
                 if (inimigo4.acerto && inimigo4.vida > 0) {
                     float area_ataque_inimigo4_x = inimigo4.olhando_direita ?
@@ -1828,7 +1841,7 @@ int main(void) {
                     listaFlechas[i].vy -= GRAVIDADE;
 
                     // Verificar colisão com Circe
-                    if (escolha_mapa == 2 && fase->cenario_atual == 3 && circe.vida > 0) {
+                    if (escolha_mapa == MAPA_FASE_CIRCE && fase->cenario_atual == 3 && circe.vida > 0) {
                         if (verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
                             listaFlechas[i].largura, listaFlechas[i].altura,
                             circe.x, circe.y, circe.largura, circe.altura)) {
@@ -1842,7 +1855,7 @@ int main(void) {
                     }
 
                     // Verificar colisão com inimigos 1, 2, 3
-                    if (escolha_mapa == 3 && fase->cenario_atual == 0) {
+                    if (escolha_mapa == MAPA_FASE_ITACA && fase->cenario_atual == 0) {
                         if (inimigo1.vida > 0 && verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
                             listaFlechas[i].largura, listaFlechas[i].altura,
                             inimigo1.x, inimigo1.y, inimigo1.largura, inimigo1.altura)) {
@@ -1872,7 +1885,7 @@ int main(void) {
                     }
 
                     // Verificar colisão com inimigos 4, 5, 6
-                    if (escolha_mapa == 3 && fase->cenario_atual == 1 &&
+                    if (escolha_mapa == MAPA_FASE_ITACA && fase->cenario_atual == 1 &&
                         inimigo1.vida == 0 && inimigo2.vida == 0 && inimigo3.vida == 0) {
 
                         if (inimigo4.vida > 0 && verificar_colisao(listaFlechas[i].x, listaFlechas[i].y,
@@ -1922,7 +1935,7 @@ int main(void) {
 
             //--------------------------------- Desenha Quiz ----------------------------------------------//
 
-            if (escolha_mapa == MAPA_FASE_OLIMPO) {
+            if (escolha_mapa == MAPA_FASE_CALYPSO) {
                 // Desenhar fundo
                 desenhar_cenario(fase, LARGURA_TELA, ALTURA_TELA);
 
@@ -1989,7 +2002,7 @@ int main(void) {
                 desenhar_cenario(fase, LARGURA_TELA, ALTURA_TELA);
 
             // Selecionar sprite do Odisseu (SOMENTE se NÃO estiver no Olimpo ou no Poseidon antes de ganhar!)
-                if ((escolha_mapa != MAPA_FASE_OLIMPO && escolha_mapa != MAPA_FASE_POSEIDON) || (escolha_mapa == MAPA_FASE_POSEIDON && player_ganha)) {
+                if ((escolha_mapa != MAPA_FASE_CALYPSO && escolha_mapa != MAPA_FASE_POSEIDON) || (escolha_mapa == MAPA_FASE_POSEIDON && player_ganha)) {
 
                     // Selecionar sprite do Odisseu
                     ALLEGRO_BITMAP* sprite_atual_odisseu;
@@ -2061,7 +2074,7 @@ int main(void) {
                             0
                         );
                     }
-                    if (escolha_mapa == 3) {
+                    if (escolha_mapa == MAPA_FASE_ITACA) {
                         // DESENHO DOS INIMIGOS NO CENÁRIO 0 (Inimigos 1, 2 e 3)
                         if (fase->cenario_atual == 0) {
                             // INIMIGO 1
@@ -2266,7 +2279,7 @@ int main(void) {
             desenhar_sobreposicoes(fase, LARGURA_TELA, ALTURA_TELA);
 
             // Desenhar Hermes no cenário 7 (mesmo comportamento visual do Odisseu parado)
-            if (fase->cenario_atual == 1 && escolha_mapa == 2) {
+            if (fase->cenario_atual == 1 && escolha_mapa == MAPA_FASE_CIRCE) {
                 ALLEGRO_BITMAP* sprite_hermes;
                 int largura_frame_hermes;
                 int altura_frame_hermes;
@@ -2297,7 +2310,7 @@ int main(void) {
                     flagsHermes);
             }
             // Desenhar Circe no último cenário
-            if (fase->cenario_atual == 3 && escolha_mapa == 2 && circe.vida > 0) {
+            if (fase->cenario_atual == 3 && escolha_mapa == MAPA_FASE_CIRCE && circe.vida > 0) {
                 ALLEGRO_BITMAP* sprite_atual_circe = sprites_circe[circe.sprite_ativo];
                 int contagem_frames_sprite_atual = contagem_frames_circe[circe.sprite_ativo];
                 int largura_frame_circe = al_get_bitmap_width(sprite_atual_circe) / contagem_frames_sprite_atual;
@@ -2333,11 +2346,9 @@ int main(void) {
 
             if (escolha_mapa == MAPA_FASE_POSEIDON && !player_ganha) {
                 al_get_mouse_state(&estado_mouse);
-                draw_battleship(
-                    sprite_agua,
-                    sprite_navio,
-                    sprite_acerto,
-                    sprite_erro,
+                draw_battleship(fase,
+                    fonte_quiz,
+                    font_titulo,
                     tabuleiro_jogador,
                     tabuleiro_com,
                     setup,
@@ -2345,14 +2356,40 @@ int main(void) {
                     contagem_navios,
                     estado_mouse,
                     vertical,
+                    turno_jogador,
                     player_ganha,
                     com_ganha,
                     tela
                 );
+
+                if (!turno_jogador) {
+                    if (sleep_turno == 0) {
+                        update_battleship(
+                            estado_mouse,
+                            false,
+                            false,
+                            tabuleiro_jogador,
+                            tabuleiro_com,
+                            &turno_jogador,
+                            &setup,
+                            navios,
+                            contagem_navios,
+                            &vertical,
+                            &com,
+                            &player_ganha,
+                            &com_ganha,
+                            tela
+                        );
+                    }
+                    else {
+                        sleep_turno--;
+                    }
+                    
+                }
             }
 
             //desenhar coracao de vida
-            if ((escolha_mapa != MAPA_FASE_POSEIDON && escolha_mapa != MAPA_FASE_OLIMPO) || player_ganha) {
+            if ((escolha_mapa != MAPA_FASE_POSEIDON && escolha_mapa != MAPA_FASE_CALYPSO) || player_ganha) {
                 for (int i = 0; i < odisseu.vida; i++) {
                     float largura_coracao = (al_get_bitmap_width(sprite_coracao) * 0.1) * (tela.largura / 1920.0f);
                     float altura_coracao = (al_get_bitmap_height(sprite_coracao) * 0.1) * (tela.altura / 1080.0f);
@@ -2428,7 +2465,7 @@ int main(void) {
 
     
     //Todo o resto
-    destruir_cenarios(fase);
+
     al_destroy_font(fonte_quiz);
     al_destroy_timer(temporizador);
     al_destroy_event_queue(fila_eventos);

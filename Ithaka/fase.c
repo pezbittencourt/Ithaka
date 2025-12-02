@@ -10,6 +10,11 @@
 
 void init_fase(Fase* fase, int total_cenarios)
 {
+    init_fase_sprites(fase, total_cenarios, 0);
+}
+
+void init_fase_sprites(Fase* fase, int total_cenarios,int total_sprites)
+{
     if (!fase) return;
 
     fase->cenarios = (Cenario*)malloc(total_cenarios * sizeof(Cenario));
@@ -29,6 +34,15 @@ void init_fase(Fase* fase, int total_cenarios)
 
     fase->total_cenarios = total_cenarios;
     fase->cenario_atual = 0;
+
+
+    fase->total_sprites = total_sprites;
+    fase->sprites = (ALLEGRO_BITMAP**) malloc(total_sprites * sizeof(ALLEGRO_BITMAP*));
+    if (!fase->cenarios) {
+        fprintf(stderr, "Erro: não foi possível alocar memória para sprites\n");
+        fase->total_sprites = 0;
+        return;
+    }
 }
 
 void init_cenario(Cenario* cenario, int total_sobreposicoes, int total_personagens)
@@ -91,6 +105,12 @@ void free_fase(Fase* fase)
         free(fase->cenarios);
         fase->cenarios = NULL;
     }
+    if (fase->sprites) {
+        free(fase->sprites);
+        fase->sprites = NULL;
+    }
+
+    fase->total_sprites = 0;
     fase->total_cenarios = 0;
     fase->cenario_atual = 0;
 }
@@ -107,11 +127,12 @@ bool carregar_cenario(Fase* fase, int escolha_fase) {
     case MAPA_FASE_ITACA:
         carregar_cenarios_itaca(fase);
         break;
-    case MAPA_FASE_OLIMPO:
+    case MAPA_FASE_CALYPSO:
         carregar_cenarios_olimpo(fase);
         break;
     case MAPA_FASE_POSEIDON:
         carregar_cenarios_poseidon(fase);
+        carregar_sprites_poseidon(fase);
         break;
     case MAPA_FASE_SUBMUNDO:
         carregar_cenarios_submundo(fase);
@@ -213,6 +234,11 @@ void destruir_cenarios(Fase* fase) {
         }
         free_cenario(cenario);
     }
+}
 
-    free_fase(fase);
+void destruir_sprites(Fase* fase)
+{
+    for (int i = 0; i < fase->total_sprites; i++) {
+        al_destroy_bitmap(fase->sprites[i]);
+    }
 }
