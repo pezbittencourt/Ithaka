@@ -8,7 +8,7 @@ typedef struct Personagem {
     int largura, altura, frame_atual, contador_animacao, vida, estado, sprite_ativo;
     bool olhando_direita, olhando_esquerda, andando, desembainhando,
         sofrendo_dano, guardando_espada, atacando, acerto, tem_espada, disparando,
-        vulneravel;
+        vulneravel,tem_arco,puxando_arco,guardando_arco;
     int frame_contador;
     int velocidade_animacao;
     int num_frames;

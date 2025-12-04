@@ -186,6 +186,7 @@ int main(void) {
     ALLEGRO_BITMAP* odisseuParadoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParadoEspada.png");
     ALLEGRO_BITMAP* odisseuAndandoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiAndandoEspada.png");
     ALLEGRO_BITMAP* odisseuMirando = al_load_bitmap("./imagensJogo/personagens/Odisseu/odisseuMirando.png");
+    ALLEGRO_BITMAP* odisseuPuxandoArco = al_load_bitmap("./imagensJogo/personagens/Odisseu/odisseuPuxaArco.png");
 
     //Penelope
 	ALLEGRO_BITMAP* Penelope = al_load_bitmap("./imagensJogo/personagens/Penelope/penelope.png");
@@ -312,6 +313,10 @@ int main(void) {
     int total_frames_Odisseu_mirando = 3;
     int largura_frame_Odisseu_mirando = al_get_bitmap_width(odisseuMirando) / total_frames_Odisseu_mirando;
     int altura_frame_Odisseu_mirando = al_get_bitmap_height(odisseuMirando);
+
+    int total_frames_odisseu_puxa_arco = 7;
+    int largura_frame_Odisseu_puxa_arco = al_get_bitmap_width(odisseuPuxandoArco) / total_frames_odisseu_puxa_arco;
+    int altura_frame_Odisseu_puxa_arco = al_get_bitmap_height(odisseuPuxandoArco);
 
 
     //Penelope configuração
@@ -443,7 +448,10 @@ int main(void) {
         .contador_animacao = 0,
         .disparando = false,
         .forca_disparo = 0.0f,
-        .cooldown_dano = 0
+        .cooldown_dano = 0,
+        .tem_arco = false,
+        .puxando_arco = false,
+        .guardando_arco = false
     };
     const int y_chao = odisseu.y + ALTURA_PERSONAGEM;
 
@@ -738,16 +746,29 @@ int main(void) {
             }
 
             if (evento.keyboard.keycode == ALLEGRO_KEY_E && !odisseu.andando &&
-                !odisseu.desembainhando && !odisseu.atacando && !odisseu.tem_espada) {
+                !odisseu.desembainhando && !odisseu.atacando && !odisseu.tem_espada && !odisseu.tem_arco) {
                 odisseu.desembainhando = true;
                 odisseu.frame_atual = 0;
                 odisseu.contador_animacao = 0;
             }
 
             if (evento.keyboard.keycode == ALLEGRO_KEY_E && !odisseu.andando &&
-                !odisseu.desembainhando && !odisseu.atacando && odisseu.tem_espada) {
+                !odisseu.desembainhando && !odisseu.atacando && odisseu.tem_espada && !odisseu.tem_arco) {
                 odisseu.guardando_espada = true;
                 odisseu.frame_atual = total_frames_desembainhar - 1;
+                odisseu.contador_animacao = 0;
+            }
+
+            if (evento.keyboard.keycode == ALLEGRO_KEY_F && !odisseu.andando && !odisseu.tem_espada
+                && !odisseu.desembainhando && !odisseu.disparando && !odisseu.tem_arco) {
+                odisseu.puxando_arco = true;
+                odisseu.frame_atual = 0;
+                odisseu.contador_animacao = 0;
+            }
+            if (evento.keyboard.keycode == ALLEGRO_KEY_F && !odisseu.andando && !odisseu.tem_espada
+                && !odisseu.desembainhando && !odisseu.disparando && odisseu.tem_arco) {
+                odisseu.guardando_arco = true;
+                odisseu.frame_atual = total_frames_odisseu_puxa_arco - 1;
                 odisseu.contador_animacao = 0;
             }
         }
@@ -836,7 +857,7 @@ int main(void) {
                 float comprimento = sqrtf(odisseu_direcao_x * odisseu_direcao_x);
                 odisseu_direcao_x /= comprimento;
             }
-            if (!odisseu.tem_espada && al_mouse_button_down(&estado_mouse, ALLEGRO_MOUSE_BUTTON_LEFT)) {
+            if (!odisseu.tem_espada && odisseu.tem_arco && al_mouse_button_down(&estado_mouse, ALLEGRO_MOUSE_BUTTON_LEFT)) {
                 if (!odisseu.disparando) {
                     odisseu.frame_atual = 0;
                 }
@@ -901,6 +922,8 @@ int main(void) {
             else if (odisseu.guardando_espada) estado_animacao = 2;
             else if (odisseu.atacando) estado_animacao = 3;
             else if (odisseu.disparando) estado_animacao = 4;
+            else if (odisseu.puxando_arco) estado_animacao = 5;
+            else if (odisseu.guardando_arco) estado_animacao = 6;
 
             switch (estado_animacao) {
             case 1: // Desembainhar
@@ -949,6 +972,30 @@ int main(void) {
                     odisseu.contador_animacao = 0;
                 }
                
+            case 5: // puxa arco
+                odisseu.contador_animacao++;
+                if (odisseu.contador_animacao >= VELOCIDADE_ANIMACAO_DESEMBAINHAR) {
+                    odisseu.frame_atual++;
+                    if (odisseu.frame_atual >= total_frames_odisseu_puxa_arco) {
+                        odisseu.puxando_arco = false;
+                        odisseu.frame_atual = 0;
+                        odisseu.tem_arco = true;
+                    }
+                    odisseu.contador_animacao = 0;
+                }
+                break;
+            case 6:
+                odisseu.contador_animacao++;
+                if (odisseu.contador_animacao >= VELOCIDADE_ANIMACAO_DESEMBAINHAR) {
+                    odisseu.frame_atual--;
+                    if (odisseu.frame_atual < 0) {
+                        odisseu.guardando_arco = false;
+                        odisseu.frame_atual = 0;
+                        odisseu.tem_arco = false;
+                    }
+                    odisseu.contador_animacao = 0;
+                }
+                break;
             case 0: // Andar ou parado
             default:
                 odisseu.contador_animacao++;
@@ -2042,6 +2089,7 @@ int main(void) {
                     int estado_odisseu = 0;
 
                     if (odisseu.desembainhando || odisseu.guardando_espada) estado_odisseu = 2;
+                    else if (odisseu.puxando_arco || odisseu.guardando_arco) estado_odisseu = 7;
                     else if (odisseu.atacando) estado_odisseu = 3;
                     else if (odisseu.disparando) estado_odisseu = 6;
                     else if (odisseu.andando) estado_odisseu = odisseu.tem_espada ? 5 : 1;
@@ -2079,6 +2127,11 @@ int main(void) {
                         sprite_atual_odisseu = odisseuParadoEspada;
                         largura_frame_odisseu = largura_frame_Odisseu_parado_espada;
                         altura_frame_odisseu = altura_frame_Odisseu_parado_espada;
+                        break;
+                    case 7:
+                        sprite_atual_odisseu = odisseuPuxandoArco;
+                        largura_frame_odisseu = largura_frame_Odisseu_puxa_arco;
+                        altura_frame_odisseu = altura_frame_Odisseu_puxa_arco;
                         break;
                     case 0:
                     default:
