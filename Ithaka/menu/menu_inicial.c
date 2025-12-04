@@ -1,24 +1,35 @@
 ﻿#include "menu_inicial.h"
 #include <allegro5/allegro.h>
 #include <allegro5/allegro_image.h>
+#include <allegro5/allegro_video.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <math.h>
 #include "../util.h"
 
-bool menu_inicial(ALLEGRO_DISPLAY* display) {
+bool menu_inicial(ALLEGRO_DISPLAY* display, bool tocandoVideo) {
     // Obter dimensões da tela
     int tela_largura = al_get_display_width(display);
     int tela_altura = al_get_display_height(display);
+    bool flag_video = false;
+
+
+
+
+    //Cinematic troia 
+    ALLEGRO_VIDEO* troia = al_open_video("./imagensJogo/cenarios/mapa/cinematicTroia.ogv");
 
     ALLEGRO_EVENT_QUEUE* fila_eventos = al_create_event_queue();
     al_register_event_source(fila_eventos, al_get_keyboard_event_source());
     al_register_event_source(fila_eventos, al_get_mouse_event_source());
+    al_register_event_source(fila_eventos, al_get_video_event_source(troia));
 
     // Timer para animação
     ALLEGRO_TIMER* timer = al_create_timer(0.08);
     al_register_event_source(fila_eventos, al_get_timer_event_source(timer));
     al_start_timer(timer);
+
+
 
     // Carregar imagens
     ALLEGRO_BITMAP* fundo_menu = al_load_bitmap("./imagensJogo/cenarios/menu/Fundo_Menu.png");
@@ -26,12 +37,19 @@ bool menu_inicial(ALLEGRO_DISPLAY* display) {
     ALLEGRO_BITMAP* fundo_branco = al_load_bitmap("./imagensJogo/cenarios/menu/Fundo_Branco_Transparente.png");
     ALLEGRO_BITMAP* click_sair = al_load_bitmap("./imagensJogo/cenarios/menu/click_Sair.png");
     ALLEGRO_BITMAP* click_iniciar = al_load_bitmap("./imagensJogo/cenarios/menu/click_Iniciar.png");
+    ALLEGRO_BITMAP* frame_video;
+    ALLEGRO_MIXER* mixer = al_get_default_mixer();
 
     if (!fundo_menu || !ithaka_Logo || !fundo_branco || !click_sair || !click_iniciar) {
         fprintf(stderr, "Erro ao carregar imagens do menu.\n");
         al_destroy_event_queue(fila_eventos);
         al_destroy_timer(timer);
         return false;
+    }
+
+
+    if (!troia) {
+        printf("Erro ao carregar cinematic de troia");
     }
 
     // Configuração dos frames
@@ -93,8 +111,15 @@ bool menu_inicial(ALLEGRO_DISPLAY* display) {
             // Detectar cliques
             if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && evento.mouse.button == 1) {
                 if (mouse_sobre_iniciar) {
-                    rodando = false;
-                    resultado = true; // Iniciar jogo
+                    if (tocandoVideo == true) {
+                        flag_video = true;
+                        al_start_video(troia, al_get_default_mixer());
+                    }
+                    else{
+                        rodando = false;
+                        resultado = true; // Iniciar jogo
+                }
+                   
                 }
                 else if (mouse_sobre_sair) {
                     rodando = false;
@@ -105,36 +130,51 @@ bool menu_inicial(ALLEGRO_DISPLAY* display) {
 
         // Atualizar animação
         if (evento.type == ALLEGRO_EVENT_TIMER) {
-            // click_iniciar
-            if (mouse_sobre_iniciar && frame_iniciar < num_frames - 1) frame_iniciar++;
-            else if (!mouse_sobre_iniciar && frame_iniciar > 0) frame_iniciar--;
+            if (!flag_video) {
+                // click_iniciar
+                if (mouse_sobre_iniciar && frame_iniciar < num_frames - 1) frame_iniciar++;
+                else if (!mouse_sobre_iniciar && frame_iniciar > 0) frame_iniciar--;
 
-            // click_sair
-            if (mouse_sobre_sair && frame_menu < num_frames - 1) frame_menu++;
-            else if (!mouse_sobre_sair && frame_menu > 0) frame_menu--;
+                // click_sair
+                if (mouse_sobre_sair && frame_menu < num_frames - 1) frame_menu++;
+                else if (!mouse_sobre_sair && frame_menu > 0) frame_menu--;
 
-            // Desenhar
-            al_clear_to_color(al_map_rgb(0, 0, 0));
-            al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu),
-                0, 0, tela_largura, tela_altura, 0);
-            al_draw_scaled_bitmap(ithaka_Logo, 0, 0, al_get_bitmap_width(ithaka_Logo), al_get_bitmap_height(ithaka_Logo),
-                0, 0, tela_largura, tela_altura, 0);
-            al_draw_scaled_bitmap(fundo_branco, 0, 0, al_get_bitmap_width(fundo_branco), al_get_bitmap_height(fundo_branco),
-                0, 0, tela_largura, tela_altura, 0);
+                // Desenhar
+                al_clear_to_color(al_map_rgb(0, 0, 0));
+                al_draw_scaled_bitmap(fundo_menu, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu),
+                    0, 0, tela_largura, tela_altura, 0);
+                al_draw_scaled_bitmap(ithaka_Logo, 0, 0, al_get_bitmap_width(ithaka_Logo), al_get_bitmap_height(ithaka_Logo),
+                    0, 0, tela_largura, tela_altura, 0);
+                al_draw_scaled_bitmap(fundo_branco, 0, 0, al_get_bitmap_width(fundo_branco), al_get_bitmap_height(fundo_branco),
+                    0, 0, tela_largura, tela_altura, 0);
 
-            // Desenhar sprites
+                // Desenhar sprites
 
-           al_draw_scaled_bitmap(click_sair, frame_menu * largura_frame_menu, 0, largura_frame_menu, altura_frame_menu, 0, 0,
-               largura_menu_scaled, altura_menu_scaled, 0 );
+                al_draw_scaled_bitmap(click_sair, frame_menu * largura_frame_menu, 0, largura_frame_menu, altura_frame_menu, 0, 0,
+                    largura_menu_scaled, altura_menu_scaled, 0);
 
-           al_draw_scaled_bitmap(click_iniciar, frame_iniciar * largura_frame_iniciar, 0, largura_frame_iniciar, altura_frame_iniciar, 0, 0,
-               largura_iniciar_scaled, altura_iniciar_scaled, 0 );
+                al_draw_scaled_bitmap(click_iniciar, frame_iniciar * largura_frame_iniciar, 0, largura_frame_iniciar, altura_frame_iniciar, 0, 0,
+                    largura_iniciar_scaled, altura_iniciar_scaled, 0);
 
-       
+
+
+                al_flip_display();
+            }
+        }
+        else if (evento.type == ALLEGRO_EVENT_VIDEO_FRAME_SHOW) {
+            frame_video = al_get_video_frame(troia);
+            al_draw_scaled_bitmap(frame_video, 0, 0, al_get_bitmap_width(fundo_menu), al_get_bitmap_height(fundo_menu),0, 0, tela_largura, tela_altura, 0);
 
             al_flip_display();
         }
+
+        else if (evento.type == ALLEGRO_EVENT_VIDEO_FINISHED) {
+            rodando = false;
+            resultado = true;
+        }
     }
+    
+
 
     // Limpar recursos
     al_destroy_bitmap(fundo_menu);
@@ -144,6 +184,7 @@ bool menu_inicial(ALLEGRO_DISPLAY* display) {
     al_destroy_bitmap(click_iniciar);
     al_destroy_timer(timer);
     al_destroy_event_queue(fila_eventos);
+    al_close_video(troia);
 
     return resultado;
 }

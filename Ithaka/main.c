@@ -2,6 +2,7 @@
 #include <allegro5/allegro_image.h>
 #include <allegro5/allegro_font.h>
 #include <allegro5/allegro_ttf.h>
+#include <allegro5/allegro_video.h>
 #include <stdio.h>
 #include <stdbool.h>
 #include <allegro5/allegro_primitives.h>
@@ -124,6 +125,10 @@ int main(void) {
     if (!al_install_mouse()) return -1;
     if (!al_init_image_addon()) return -1;
     if (!al_init_primitives_addon()) return -1;
+    if (!al_init_video_addon()) return -1;
+    al_install_audio(); 
+    al_init_acodec_addon(); 
+    al_reserve_samples(16);
 
     InformacoesTela tela = obter_resolucao_tela_atual();
     const int LARGURA_TELA = tela.largura;
@@ -143,7 +148,7 @@ int main(void) {
         return -1;
     }
 
-    if (!menu_inicial(tela_jogo)) {
+    if (!menu_inicial(tela_jogo, true)) {
         printf("Jogo encerrado.\n");
         al_destroy_display(tela_jogo);
         return 0; // Saída normal, não é erro
@@ -172,6 +177,7 @@ int main(void) {
 
     // Carregar sprites
 
+
     //Odisseu
     ALLEGRO_BITMAP* odisseuParado = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParado.png");
     ALLEGRO_BITMAP* odisseuAndando = al_load_bitmap("./imagensJogo/personagens/Odisseu/andandoSemEspada.png");
@@ -179,6 +185,7 @@ int main(void) {
     ALLEGRO_BITMAP* odisseuAtacando = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiAtacando.png");
     ALLEGRO_BITMAP* odisseuParadoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiParadoEspada.png");
     ALLEGRO_BITMAP* odisseuAndandoEspada = al_load_bitmap("./imagensJogo/personagens/Odisseu/odiAndandoEspada.png");
+    ALLEGRO_BITMAP* odisseuMirando = al_load_bitmap("./imagensJogo/personagens/Odisseu/odisseuMirando.png");
 
     //Penelope
 	ALLEGRO_BITMAP* Penelope = al_load_bitmap("./imagensJogo/personagens/Penelope/penelope.png");
@@ -301,6 +308,10 @@ int main(void) {
     int total_frames_Odisseu_atacando = 6;
     int largura_frame_Odisseu_atacando = al_get_bitmap_width(odisseuAtacando) / total_frames_Odisseu_atacando;
     int altura_frame_Odisseu_atacando = al_get_bitmap_height(odisseuAtacando);
+
+    int total_frames_Odisseu_mirando = 3;
+    int largura_frame_Odisseu_mirando = al_get_bitmap_width(odisseuMirando) / total_frames_Odisseu_mirando;
+    int altura_frame_Odisseu_mirando = al_get_bitmap_height(odisseuMirando);
 
 
     //Penelope configuração
@@ -640,6 +651,8 @@ int main(void) {
     al_register_event_source(fila_eventos, al_get_timer_event_source(temporizador));
     al_register_event_source(fila_eventos, al_get_mouse_event_source());
     al_start_timer(temporizador);
+  
+
 
     bool jogo_rodando = true;
     bool redesenhar_tela = false;
@@ -686,6 +699,7 @@ int main(void) {
         al_wait_for_event(fila_eventos, &evento);
         if (escolha_mapa == MAPA_VOLTAR_MENU) {
             escolha_mapa = exibir_mapa_inicial(tela_jogo, mapas_disponiveis);
+
         }
 
         if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
@@ -713,12 +727,12 @@ int main(void) {
                         }
                     }
                     else {
-                        jogo_rodando = menu_inicial(tela_jogo);
+                        jogo_rodando = menu_inicial(tela_jogo, false);
                         escolha_mapa = MAPA_VOLTAR_MENU;
                     }
                     // Flag para indicar que deve voltar ao mapa
                 } else {
-                    jogo_rodando = menu_inicial(tela_jogo);
+                    jogo_rodando = menu_inicial(tela_jogo, false);
                     escolha_mapa = MAPA_VOLTAR_MENU;
                 }
             }
@@ -823,6 +837,9 @@ int main(void) {
                 odisseu_direcao_x /= comprimento;
             }
             if (!odisseu.tem_espada && al_mouse_button_down(&estado_mouse, ALLEGRO_MOUSE_BUTTON_LEFT)) {
+                if (!odisseu.disparando) {
+                    odisseu.frame_atual = 0;
+                }
                 odisseu.disparando = true;
                 if (odisseu.forca_disparo <= FORCA_DISPARO_MAX - 0.75f) {
                     odisseu.forca_disparo += 0.75f;
@@ -883,6 +900,7 @@ int main(void) {
             if (odisseu.desembainhando) estado_animacao = 1;
             else if (odisseu.guardando_espada) estado_animacao = 2;
             else if (odisseu.atacando) estado_animacao = 3;
+            else if (odisseu.disparando) estado_animacao = 4;
 
             switch (estado_animacao) {
             case 1: // Desembainhar
@@ -921,15 +939,29 @@ int main(void) {
                     odisseu.contador_animacao = 0;
                 }
                 break;
+            case 4:
+                odisseu.contador_animacao++;
+                if (odisseu.contador_animacao >= 10) {
+                    odisseu.frame_atual++;
+                    if (odisseu.frame_atual >= total_frames_Odisseu_mirando) {
+                        odisseu.frame_atual = 0;
+                    }
+                    odisseu.contador_animacao = 0;
+                }
+               
             case 0: // Andar ou parado
             default:
                 odisseu.contador_animacao++;
                 if (odisseu.contador_animacao >= 10) {
                     odisseu.frame_atual++;
                     if (odisseu.andando)
-                        odisseu.frame_atual %= (odisseu.tem_espada ? total_frames_Odisseu_andando_espada : total_frames_Odisseu_andando);
+                        if (odisseu.frame_atual >= (odisseu.tem_espada ? total_frames_Odisseu_andando_espada : total_frames_Odisseu_andando)) {
+                            odisseu.frame_atual = 0;
+                        }
                     else
-                        odisseu.frame_atual %= (odisseu.tem_espada ? total_frames_Odisseu_parado_espada : total_frames_Odisseu_parado);
+                        if (odisseu.frame_atual >= (odisseu.tem_espada ? total_frames_Odisseu_parado_espada : total_frames_Odisseu_parado)) {
+                            odisseu.frame_atual = 0;
+                        }                   
                     odisseu.contador_animacao = 0;
                 }
                 break;
@@ -1929,7 +1961,7 @@ int main(void) {
 
             redesenhar_tela = true;
         }
-
+  
         if (redesenhar_tela && al_is_event_queue_empty(fila_eventos)) {
             al_clear_to_color(al_map_rgb(0, 0, 0));
 
@@ -2011,6 +2043,7 @@ int main(void) {
 
                     if (odisseu.desembainhando || odisseu.guardando_espada) estado_odisseu = 2;
                     else if (odisseu.atacando) estado_odisseu = 3;
+                    else if (odisseu.disparando) estado_odisseu = 6;
                     else if (odisseu.andando) estado_odisseu = odisseu.tem_espada ? 5 : 1;
                     else estado_odisseu = odisseu.tem_espada ? 4 : 0;
 
@@ -2030,6 +2063,13 @@ int main(void) {
                         largura_frame_odisseu = largura_frame_Odisseu_andando;
                         altura_frame_odisseu = altura_frame_Odisseu_andando;
                         break;
+
+                    case 6:
+                        sprite_atual_odisseu = odisseuMirando;
+                        largura_frame_odisseu = largura_frame_Odisseu_mirando;
+                        altura_frame_odisseu = altura_frame_Odisseu_mirando;
+                        break;
+
                     case 5:
                         sprite_atual_odisseu = odisseuAndandoEspada;
                         largura_frame_odisseu = largura_frame_Odisseu_andando_espada;
@@ -2074,6 +2114,10 @@ int main(void) {
                             0
                         );
                     }
+                   
+
+
+
                     if (escolha_mapa == MAPA_FASE_ITACA) {
                         // DESENHO DOS INIMIGOS NO CENÁRIO 0 (Inimigos 1, 2 e 3)
                         if (fase->cenario_atual == 0) {
