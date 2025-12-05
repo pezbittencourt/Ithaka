@@ -1,0 +1,7 @@
+D|Circe_5|0|Circe|#ab0c31|Ok, você me derrotou. Eu sou uma mulher de palavras, você e seus homens podem ir.
+D|Circe_1|1|Circe|#ab0c31|Mas antes… Pressinto eventos negativos envolvendo seu retorno para Ítaca, Odisseu.
+E|Ody_Normal|2|Odisseu|#ffffff|O que isso significa?
+D|Circe_2|3|Circe|#ab0c31|Não sei ao certo. Meus poderes não me permitem enxergar com detalhes, porém conheço alguém que com toda certeza conseguirá.
+D|Circe_2|3|Circe|#ab0c31|Tiresias, o profeta do Submundo. Fale com ele, e conseguirá mais informações sobre sua viajem.
+E|Ody_Normal|2|Odisseu|#ffffff|O Submundo? como chegarei lá?!
+D|Circe_4|4|Circe|#ab0c31|Posso não conseguir te guiar até sua casa, mas a situação é diferente quando se trata do Submundo. Boa sorte, Odisseu, você irá precisar.

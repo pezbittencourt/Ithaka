@@ -1,0 +1,8 @@
+D|Circe_4|0|Circe|#ab0c31|Olha só quem temos aqui… Nunca te alertaram sobre pedir permissão para entrar na residência alheia?
+E|Ody_SorrisoSacana|1|Odisseu|#ffffff|Peço perdão pela minha intromissão, senhorita, porém chegou ao meu conhecimento que alguns de meus homens estão com você
+E|Ody_Feliz|2|Odisseu|#ffffff|Vejo que estão em uma forma… diferente da habitual. Poderia libertá-los para que possamos voltar a nossa viagem?
+D|Circe_6|3|Circe|#ab0c31|Diferente do habitual? Não vejo nenhuma diferença entre suas formas atuais e as que chegaram aqui.
+D|Circe_5|4|Circe|#ab0c31|Creio que não irei poder te ajudar com isso… Aqueles que passam por meu palácio permanecem aqui para sempre.
+D|Circe_4|0|Circe|#ab0c31|E isso, é claro, também inclui você.
+E|Ody_Normal|5|Odisseu|#ffffff|É uma pena, Circe. Porém não possuo o desejo de permanecer em local nenhum que não seja ao lado da minha família, e planejo dar a todos meus tripulantes o mesmo destino.
+D|circe_3|6|Circe|#ab0c31|Então venha. Mostre ser merecedor de sua liberdade e me derrote em uma batalha. Caso ganhe, você e seus homens serão livres!

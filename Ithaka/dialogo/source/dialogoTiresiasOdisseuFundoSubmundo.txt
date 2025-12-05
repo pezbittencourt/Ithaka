@@ -1,0 +1,8 @@
+D|Tiresias_Dialogo_3|0|Tirésias|#0a6263|Você demorou, Odisseu. Mas acredito que ninguém chegue até aqui de maneira fácil.
+E|Ody_Normal|1|Odisseu|#ffffff|Nada nesses anos tem sido fácil. Só preciso saber de uma coisa, profeta. Como volto para casa, para Penélope e Telêmaco?
+D|Tiresias_Dialogo_2|2|Tirésias|#0a6263|Veio até mim esperando que eu te desse um caminho pronto mas seu retorno exige mais que isso. O que te espera ainda é difícil.
+E|Ody_bravo|3|Odisseu|#ffffff|Já enfrentei mares, ciclopes e deuses. O que mais pode me impedir? Preciso voltar para minha família.
+D|Tiresias_Dialogo_3|0|Tirésias|#0a6263|O mar ainda não terminou com você. Poseidon continuará te perseguindo, cada onda será uma mão tentando arrasta-lo para longe de casa. Ele não se esquecer de seu filho. A fúria de um deus te acompanhará até o fim.
+D|Tiresias_Dialogo_1|4|Tirésias|#0a6263|Você mudou, Odisseu. O homem que partiu não é o mesmo que retorna, e talvez nunca volte a ser. A viagem deixou marcas, memórias e escolhas que não podem ser esquecidas.
+E|Ody_Normal|1|Odisseu|#ffffff|Carrego isso comigo todos os dias, mas não posso falhar. Preciso voltar para a minha família.
+D|Tiresias_Dialogo_3|0|Tirésias|#0a6263|Então se mantenha firme. O caminho não será fácil, mas Penélope ainda o espera e Telêmaco ainda te chama de pai, é por eles que deve seguir, é isso que deve guiar todos seus passos.

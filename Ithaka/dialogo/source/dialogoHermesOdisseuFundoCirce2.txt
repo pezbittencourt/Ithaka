@@ -1,0 +1,13 @@
+D|Hermes_dialogo_2|0|Hermes|#eaff00|Olá Odisseu, rei de Ítaca. Que grande honra te ver por essas bandas!
+E|Ody_SorrisoSacana|1|Odisseu|#ffffff|Hermes?! O que faz aqui?!
+D|Hermes_dialogo_1|2|Hermes|#eaff00|Digamos que este é um local que visito com frequência… Presumo que esteja aqui para salvar seus homens da Circe, estou certo?
+D|Hermes_dialogo_moli|3|Hermes|#eaff00|Antes de seguir em frente, Odisseu, leve isto, moli. Vai te ajudar no que está por vir
+E|Ody_Normal|4|Odisseu|#ffffff|Moli? Que tipo de ajuda?
+D|Hermes_dialogo_2|0|Hermes|#eaff00|É uma erva que bloqueia a magia de Circe. Com isso, sua mente fica imune. Nada de ilusões e encantamentos.
+E|Ody_SorrisoSacana|1|Odisseu|#ffffff|Parece importante. Mas imagino que não seja só pegar e ir embora.
+D|Hermes_dialogo_1|2|Hermes|#eaff00|Imaginou certo. Quero ter certeza de que você está atento.Então vamos jogar um jogo: Eu me escondo na floresta e você precisa me achar. Simples assim!
+E|Ody_Normal|4|Odisseu|#ffffff|Você quer que eu procure um deus? Isso não costuma acabar bem pra ninguém.
+D|Hermes_dialogo_2|0|Hermes|#eaff00|É exatamente por isso que eu quero ver se sua percepção ainda está boa. Me encontrar faz parte da proteção. Se você não conseguir, a moli não vai surtir efeito total e com Circe, isso pode te custar caro.
+E|Ody_Feliz|5|Odisseu|#ffffff|Ok ok, então o que eu devo fazer agora?
+D|Hermes_dialogo_1|2|Hermes|#eaff00|Nada além de observar. Eu vou desaparecer pela floresta e você vai ter que me encontrar. Quando não me ouvir mais, a busca começa. Boa sorte!!
+D|Hermes_dialogo_moli|3|Hermes|#eaff00|Parabéns mortal, você mostrou merecer a proteção da Moli. Boa sorte bom a Circe,ela consegue ser… difícil quando quer.

@@ -1,0 +1,13 @@
+E|Ody_Final_choque|0|Odisseu|#ffffff|Penélope…
+D|Pen_choque|1|Penélope|#ad09ad|Odisseu…
+D|Pen_1|2|Penélope|#ad09ad|Pelos deuses, é realmente você?
+E|Ody_Final_2|3|Odisseu|#ffffff|Penélope, meu amor, depois de todo esse tempo… Depois de todas as batalhas, todas as tempestades, eu finalmente estou aqui.
+D|Pen_2|4|Penélope|#ad09ad|20 anos esperando, sem saber se você ainda estava vivo.. Eu acreditei que voltaria, mesmo com tudo e todos dizendo o contrário.
+E|Ody_Final_1|5|Odisseu|#ffffff|Cada dia longe de você era um peso maior do que qualquer tortura enviada pelos deuses.Cada erro, cada atrocidade que vi e cometi…
+E|Ody_Final_2|3|Odisseu|#ffffff|Tudo foi para que eu conseguisse voltar para você e para nosso filho.. Mesmo que eu não seja o mesmo homem pelo qual se apaixonou há 20 anos.
+D|Pen_choque|1|Penélope|#ad09ad|....
+D|Pen_1|2|Penélope|#ad09ad|Você mudou, é verdade. Vejo isso nos seus olhos e na sua voz.Mas ainda assim, eu ainda vejo você.
+D|Pen_3|6|Penélope|#ad09ad|Eu vejo você, Odisseu, o mesmo homem pelo qual me apaixonei a 20 anos
+E|Ody_Final_3|7|Odisseu|#ffffff|E eu vejo você, Penélope, a mesma mulher que roubou meu coração quando jovem. Agora que estou de volta, nada pode nos separar.
+E|Ody_Final_4|8|Odisseu|#ffffff|Eu te amo, sempre irei te amar.
+D|Pen_4|9|Penélope|#ad09ad|Te amarei eternamente até os dias finais de nossas vidas, meu amor, e sempre irei te esperar.

@@ -1,0 +1,12 @@
+E|Atena_1|0|Atena|#ffe77a|Pai, eu sei sobre o castigo que ofertou a Odisseu naquela ilha.
+E|Atena_3|1|Atena|#ffe77a|Não precisamos de enrolações para que o senhor se recorde de que sou sua mentora, muito menos de queestamos falando de um dos mais valorosos guerreiros de toda a Grécia.
+E|Atena_2|2|Atena|#ffe77a|Sei que não é de minha natureza implorar favores,porém venho aqui pedir para que o senhor o liberte das garras de Calypso.
+D|Zeus_1|3|Zeus|#ffd20a|,Atena, minha filha, o que a faz pensar que a vida de um mortal importa para mim o suficiente para que eu altere seu destino?
+D|Zeus_2|4|Zeus|#ffd20a|Odisseu viveu sua vida e tomou decisões que o levaram a onde está. Diversos outros guerreiros passaram por terrores semelhantes, e todos finalizaram suas vidas sem nenhuma intervenção divina. O que o torna diferente?
+E|Atena_2|2|Atena|#ffe77a|Odisseu é um bom rei, responsável pela vitória grega em Tróia após 10 anos de guerra utilizando sua inteligência.
+E|Atena_4|5|Atena|#ffe77a|E agora, passa mais 7 anos longe de seu filho e sua esposa Penélope.. Já não basta como punição a perda de toda sua tripulação?
+D|Zeus_2|4|Zeus|#ffd20a|Se quer tanto salvá-lo, eu o farei. Porém, antes prove que merece.
+E|Atena_2|2|Atena|#ffe77a|…Como…?
+D|Zeus_3|6|Zeus|#ffd20a|Você é a deusa da Sabedoria, minha filha. Prove seu valor e responda corretamente às perguntas que lhe serão feitas.
+D|Zeus_4|7|Zeus|#ffd20a|Mas saiba que, caso erre três vezes,Odisseu nunca mais sairá daquela ilha.
+E|Atena_3|1|Atena|#ffe77a|Desafio aceito.
