@@ -149,7 +149,7 @@ int main(void) {
         return -1;
     }
 
-    if (!menu_inicial(tela_jogo, false)) {
+    if (!menu_inicial(tela_jogo, true)) {
         printf("Jogo encerrado.\n");
         al_destroy_display(tela_jogo);
         return 0; // Saída normal, não é erro
