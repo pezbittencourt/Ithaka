@@ -148,7 +148,7 @@ int main(void) {
         return -1;
     }
 
-    if (!menu_inicial(tela_jogo, true)) {
+    if (!menu_inicial(tela_jogo, false)) {
         printf("Jogo encerrado.\n");
         al_destroy_display(tela_jogo);
         return 0; // Saída normal, não é erro
@@ -221,6 +221,12 @@ int main(void) {
     contagem_frames_circe[CIRCE_SPRITE_TIGRE_ATAQUE] = 5;
     sprites_circe[CIRCE_SPRITE_TIGRE_ATAQUE] = al_load_bitmap("./imagensJogo/personagens/Circe/tigre_ataque.png");
 
+
+    //Porcos
+
+    ALLEGRO_BITMAP* porcoParado1 = al_load_bitmap("./imagensJogo/cenarios/Circe/porco1.png");
+    ALLEGRO_BITMAP* porcoParado2 = al_load_bitmap("./imagensJogo/cenarios/Circe/porco2.png");
+    ALLEGRO_BITMAP* porcoParado3 = al_load_bitmap("./imagensJogo/cenarios/Circe/porco3.png");
 
     //Hermes
     ALLEGRO_BITMAP* hermesParado = al_load_bitmap("./imagensJogo/personagens/Hermes/hermesParado.png");
@@ -426,6 +432,17 @@ int main(void) {
     int altura_frame_inimigo6_atacando = al_get_bitmap_height(inimigo6_atacando);
 
 
+    //config porco
+    int  total_frames_porcos_parados = 4;
+    int largura_frame_Porco1_parado = al_get_bitmap_width(porcoParado1) / total_frames_porcos_parados;
+    int altura_frame_Porco1_parado = al_get_bitmap_height(porcoParado1);
+
+    //porco 2
+    int largura_frame_Porco2_parado = al_get_bitmap_width(porcoParado2) / total_frames_porcos_parados;
+    int altura_frame_Porco2_parado = al_get_bitmap_height(porcoParado2);
+    //porco 3
+    int largura_frame_Porco3_parado = al_get_bitmap_width(porcoParado3) / total_frames_porcos_parados;
+    int altura_frame_Porco3_parado = al_get_bitmap_height(porcoParado3);
 
     //===========================INICIALIZAÇÃO DOS PERSONAGENS===========================
 
@@ -453,6 +470,7 @@ int main(void) {
         .puxando_arco = false,
         .guardando_arco = false
     };
+
     const int y_chao = odisseu.y + ALTURA_PERSONAGEM;
 
 
@@ -478,7 +496,7 @@ int main(void) {
         .sprite_ativo = CIRCE_SPRITE_BATALHA
     };
 
-        Personagem penelope = {
+    Personagem penelope = {
         .x = LARGURA_TELA - (LARGURA_TELA / 2.2),
         .y = deixarProporcional(650, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
         .largura = LARGURA_PERSONAGEM,
@@ -623,6 +641,58 @@ int main(void) {
     .num_frames = 4
     };
 
+    Personagem porco1 = {
+   .x = LARGURA_TELA / 1.45,
+   .y = deixarProporcional(820, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+   .vida = 3,
+   .largura = deixarProporcional(LARGURA_SPRITE + 15, LARGURA_TELA, LARGURA_TELA_ORIGINAL),
+   .altura = deixarProporcional(ALTURA_SPRITE + 5, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+   .olhando_direita = true,
+   .olhando_esquerda = false,
+   .sofrendo_dano = false,
+   .atacando = false,
+   .acerto = false,
+   .cooldown_ataque = 0,
+   .frame_atual = 0,
+   .contador_animacao = 0,
+   .frame_contador = 0,
+   .velocidade_animacao = 10,
+   .num_frames = 4
+    };
+
+    Personagem porco2 = {
+   .x = LARGURA_TELA / 1.9,
+   .y = deixarProporcional(820, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+   .vida = 3,
+   .largura = deixarProporcional(LARGURA_SPRITE + 15, LARGURA_TELA, LARGURA_TELA_ORIGINAL),
+   .altura = deixarProporcional(ALTURA_SPRITE + 5, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+   .olhando_direita = true,
+   .olhando_esquerda = false,
+   .frame_atual = 0,
+   .contador_animacao = 0,
+   .frame_contador = 0,
+   .velocidade_animacao = 10,
+   .num_frames = 4
+     };
+
+     Personagem porco3 = {
+   .x = LARGURA_TELA / 3,
+   .y = deixarProporcional(820, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+   .vida = 3,
+    .largura = deixarProporcional(LARGURA_SPRITE + 15, LARGURA_TELA, LARGURA_TELA_ORIGINAL),
+   .altura = deixarProporcional(ALTURA_SPRITE + 5, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
+   .olhando_direita = true,
+   .olhando_esquerda = false,
+   .sofrendo_dano = false,
+   .atacando = false,
+   .acerto = false,
+   .cooldown_ataque = 0,
+   .frame_atual = 0,
+   .contador_animacao = 0,
+   .frame_contador = 0,
+   .velocidade_animacao = 10,
+   .num_frames = 4
+     };
 
     static bool hermes_animacao_concluida = false;
     bool ataque_ativado = false;
@@ -907,10 +977,6 @@ int main(void) {
 			//barreira inicial de todos os mapas
             if (fase->cenario_atual == 0 && odisseu.x < LARGURA_TELA / -24) odisseu.x = LARGURA_TELA / -24;
 
-
-            //BARREIRA MAPA 1 - POLIFEMO
-            if (fase->cenario_atual == 5 && escolha_mapa == MAPA_FASE_POLIFEMO && odisseu.x > LARGURA_TELA - LARGURA_TELA / 10) odisseu.x = LARGURA_TELA - LARGURA_TELA / 10;
-
             //BARREIRA MAPA 5 - SUBMUNDO
             if (fase->cenario_atual == 0 && escolha_mapa == MAPA_FASE_SUBMUNDO && odisseu.x > LARGURA_TELA / 3.5) odisseu.x = LARGURA_TELA / 3.5;
 
@@ -1036,6 +1102,39 @@ int main(void) {
             if (escolha_mapa == MAPA_FASE_CIRCE) {
                
            //barreiras para não serem ultrapassadas no mapa 2
+           
+                if (fase->cenario_atual == 2) {
+
+                    // Direção dos porquinho
+                    porco1.olhando_direita = (odisseu.x < porco1.x);
+                    porco2.olhando_direita = (odisseu.x < porco2.x);
+                    porco3.olhando_direita = (odisseu.x < porco3.x);
+
+                    if (porco1.vida > 0 && !porco1.sofrendo_dano) {
+                        porco1.contador_animacao++;
+                        if (porco1.contador_animacao >= porco1.velocidade_animacao) {
+                            porco1.frame_atual = (porco1.frame_atual + 1) % porco1.num_frames;
+                            porco1.contador_animacao = 0;
+                        }
+                    }
+
+                    if (porco2.vida > 0 && !porco2.sofrendo_dano) {
+                        porco2.contador_animacao++;
+                        if (porco2.contador_animacao >= porco2.velocidade_animacao) {
+                            porco2.frame_atual = (porco2.frame_atual + 1) % porco2.num_frames;
+                            porco2.contador_animacao = 0;
+                        }
+
+                    }
+                    if (porco3.vida > 0 && !porco3.sofrendo_dano) {
+                        porco3.contador_animacao++;
+                        if (porco3.contador_animacao >= porco3.velocidade_animacao) {
+                            porco3.frame_atual = (porco3.frame_atual + 1) % porco3.num_frames;
+                            porco3.contador_animacao = 0;
+                        }
+                    }
+                }
+
            //cenário 0
                 if (fase->cenario_atual == 0 && odisseu.x < (LARGURA_TELA / 4.2)) odisseu.x = (LARGURA_TELA / 4.2);
            //cenario 3
@@ -2406,6 +2505,75 @@ int main(void) {
                     Hermes.largura, Hermes.altura,
                     flagsHermes);
             }
+            //desenha os porquinhos
+            if (fase->cenario_atual == 2 && escolha_mapa == MAPA_FASE_CIRCE) {
+                ALLEGRO_BITMAP* sprite_porco1;
+                int largura_frame_porco1;
+                int altura_frame_porco1;
+                int total_frames_porco1;
+
+                sprite_porco1 = porcoParado1;
+                largura_frame_porco1 = largura_frame_Porco1_parado;
+                altura_frame_porco1 = altura_frame_Porco1_parado;
+                total_frames_porco1 = total_frames_porcos_parados;
+
+
+                int frame_porco1= porco1.frame_atual % total_frames_porco1;
+                int flagsPorco1 = porco1.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+
+                al_draw_scaled_bitmap(
+                    sprite_porco1,
+                    frame_porco1* largura_frame_porco1, 0,
+                    largura_frame_porco1,altura_frame_porco1,
+                    porco1.x, porco1.y,
+                    porco1.largura, porco1.altura,
+                    flagsPorco1);
+
+                ALLEGRO_BITMAP* sprite_porco2;
+                int largura_frame_porco2;
+                int altura_frame_porco2;
+                int total_frames_porco2;
+
+                sprite_porco2 = porcoParado2;
+                largura_frame_porco2 = largura_frame_Porco2_parado;
+                altura_frame_porco2 = altura_frame_Porco2_parado;
+                total_frames_porco2 = total_frames_porcos_parados;
+
+
+                int frame_porco2 = porco2.frame_atual % total_frames_porco2;
+                int flagsporco2 = porco2.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+
+                al_draw_scaled_bitmap(
+                    sprite_porco2,
+                    frame_porco2* largura_frame_porco2, 0,
+                    largura_frame_porco2, altura_frame_porco2,
+                    porco2.x, porco2.y,
+                    porco2.largura, porco2.altura,
+                    flagsporco2);
+
+                ALLEGRO_BITMAP* sprite_porco3;
+                int largura_frame_porco3;
+                int altura_frame_porco3;
+                int total_frames_porco3;
+
+                sprite_porco3 = porcoParado3;
+                largura_frame_porco3 = largura_frame_Porco3_parado;
+                altura_frame_porco3 = altura_frame_Porco3_parado;
+                total_frames_porco3 = total_frames_porcos_parados;
+
+
+                int frame_porco3 = porco3.frame_atual % total_frames_porco3;
+                int flagsporco3 = porco3.olhando_direita ? 0 : ALLEGRO_FLIP_HORIZONTAL;
+
+                al_draw_scaled_bitmap(
+                    sprite_porco3,
+                    frame_porco3* largura_frame_porco3, 0,
+                    largura_frame_porco3, altura_frame_porco3,
+                    porco3.x, porco3.y,
+                    porco3.largura, porco3.altura,
+                    flagsporco3);
+            }
+            
             // Desenhar Circe no último cenário
             if (fase->cenario_atual == 3 && escolha_mapa == MAPA_FASE_CIRCE && circe.vida > 0) {
                 ALLEGRO_BITMAP* sprite_atual_circe = sprites_circe[circe.sprite_ativo];
