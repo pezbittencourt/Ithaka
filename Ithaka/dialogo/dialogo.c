@@ -32,17 +32,14 @@ bool carregar_dialogo(char* caminho_source, ArrayTextBox* arr_text_box)
 	}
 
 	while (fgets(buffer_linha, sizeof(buffer_linha), source_dialogo)) {
-        printf("%s\n", buffer_linha);
 		char* partes[6]; //0-esquerda ou direita, 1-sprite, 2-indice sprite, 3-Titulo, 4-Cor titulo, 5-texto
 		int i = 0;
 		char* parte = strtok(buffer_linha, "|");
 		while (parte != NULL) {
-            printf("partes[%d]: %s\n", i, parte);
 			partes[i] = parte;
 			parte = strtok(NULL, "|");
 			i++;
 		}
-        printf("\n");
 		int indice = atoi(partes[2]);
 
 		if (indice > sprites_carregados - 1) {

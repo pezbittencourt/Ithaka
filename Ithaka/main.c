@@ -804,10 +804,19 @@ int main(void) {
                 // Se ainda não carregou o mapa (teoricamente impossível chegar aqui)
                 // Se está jogando alguma fase
                 if (escolha_mapa > 0) {
+
                     printf("[JOGO] ESC pressionado - Voltando ao mapa...\n");
                     destruir_cenarios(fase);
                     destruir_sprites(fase);
                     free_fase(fase);
+
+                    //reseta o quiz
+                    estado.erros = 0;
+                    estado.perdeu = false;
+                    estado.perguntaAtual = 0;
+                    estado.respostaSelecionada = -1;
+                    estado.perdeu = false;
+                    estado.timer_feedback = 0;
 
                     escolha_mapa = exibir_mapa_inicial(tela_jogo, mapas_disponiveis);
                     if (escolha_mapa != MAPA_SAIR) {
@@ -865,23 +874,6 @@ int main(void) {
                 duracao_ataque = 0;
             }
 
-            //VERIFICA CLICK DO MOUSE DO QUIZ
-      
-            if (escolha_mapa == MAPA_FASE_CALYPSO && !estado.respondida) {
-                int opcao_clicada = verificar_clique_opcao(
-                    evento.mouse.x,
-                    evento.mouse.y,
-                    LARGURA_TELA,
-                    ALTURA_TELA
-                );
-
-                if (opcao_clicada != -1) {
-                    printf("[QUIZ] Opção %d clicada!\n", opcao_clicada + 1);
-                    processa_resposta(perguntas, &estado, opcao_clicada);
-                }
-
-            }
-
         }
         else if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP) {
             mouse_left = evento.mouse.button == 1;
@@ -907,6 +899,23 @@ int main(void) {
                 );
                 sleep_turno = 60;
             }
+
+            //VERIFICA CLICK DO MOUSE DO QUIZ
+
+            if (escolha_mapa == MAPA_FASE_CALYPSO && !estado.respondida) {
+                int opcao_clicada = verificar_clique_opcao(
+                    evento.mouse.x,
+                    evento.mouse.y,
+                    LARGURA_TELA,
+                    ALTURA_TELA
+                );
+
+                if (opcao_clicada != -1) {
+                    printf("[QUIZ] Opção %d clicada!\n", opcao_clicada + 1);
+                    processa_resposta(perguntas, &estado, opcao_clicada);
+                }
+
+            }
         }
         
         else if (evento.type == ALLEGRO_EVENT_TIMER) {
@@ -928,9 +937,11 @@ int main(void) {
                 Cenario cenario = fase->cenarios[fase->cenario_atual];
                 if (cenario.dialogo_caminho != NULL && !cenario.dialogo_completo) {
                     ArrayTextBox textos = { .tamanho = 0 };
+                    al_pause_event_queue(fila_eventos, true);
                     carregar_dialogo(cenario.dialogo_caminho, &textos);
                     desenhar_dialogo(tela_jogo, cenario, textos);
                     fase->cenarios[fase->cenario_atual].dialogo_completo = true;
+                    al_pause_event_queue(fila_eventos, false);
                 }
                 if (escolha_mapa == MAPA_FASE_SUBMUNDO || escolha_mapa == MAPA_FASE_ITACA) {
                     escolha_mapa = MAPA_VOLTAR_MENU;
@@ -1095,14 +1106,16 @@ int main(void) {
                 odisseu.contador_animacao++;
                 if (odisseu.contador_animacao >= 10) {
                     odisseu.frame_atual++;
-                    if (odisseu.andando)
+                    if (odisseu.andando) {
                         if (odisseu.frame_atual >= (odisseu.tem_espada ? total_frames_Odisseu_andando_espada : total_frames_Odisseu_andando)) {
                             odisseu.frame_atual = 0;
                         }
-                    else
+                    }
+                    else {
                         if (odisseu.frame_atual >= (odisseu.tem_espada ? total_frames_Odisseu_parado_espada : total_frames_Odisseu_parado)) {
                             odisseu.frame_atual = 0;
-                        }                   
+                        }
+                    }
                     odisseu.contador_animacao = 0;
                 }
                 break;
@@ -1234,10 +1247,12 @@ int main(void) {
                         }
                     }
                     else {
+                        al_pause_event_queue(fila_eventos, true);
                         Cenario cenario = fase->cenarios[fase->cenario_atual];
                         ArrayTextBox textos = { .tamanho = 0 };
                         carregar_dialogo("./dialogo/source/dialogoCirceOdisseuPosLutaFundoCirce4.txt", &textos);
                         desenhar_dialogo(tela_jogo, cenario, textos);
+                        al_pause_event_queue(fila_eventos, false);
                         escolha_mapa = MAPA_VOLTAR_MENU;
                         mapas_disponiveis++;
                     }
@@ -1288,10 +1303,9 @@ int main(void) {
             if (escolha_mapa == MAPA_FASE_CALYPSO && estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
 
                 // Detectar cliques do mouse
-                if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_DOWN && !estado.respondida) {
+                if (evento.type == ALLEGRO_EVENT_MOUSE_BUTTON_UP && !estado.respondida) {
                     int mx = evento.mouse.x;
                     int my = evento.mouse.y;
-
                     // Usar função melhorada de detecção de cliques
                     int opcao_clicada = verificar_clique_opcao(mx, my, LARGURA_TELA, ALTURA_TELA);
 
@@ -2154,7 +2168,7 @@ int main(void) {
                 desenhar_cenario(fase, LARGURA_TELA, ALTURA_TELA);
 
                 // Quiz em andamento
-                if (estado.perguntaAtual < estado.numPerguntas && !estado.perdeu) {
+                if (estado.perguntaAtual < estado.numPerguntas - 1 && !estado.perdeu) {
                     // Passa NULL para os bitmaps (tiramos)
                     desenha_quiz(NULL, NULL, fonte_quiz,
                         &perguntas[estado.perguntaAtual], &estado);
@@ -2184,7 +2198,7 @@ int main(void) {
                         ALLEGRO_ALIGN_CENTER, "Pressione ESC para voltar");
                 }
                 // Quiz completo
-                else if (estado.perguntaAtual >= estado.numPerguntas) {
+                else{
                     al_clear_to_color(al_map_rgb(0, 20, 0));
 
                     // Caixa de vitória
