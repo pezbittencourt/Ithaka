@@ -157,8 +157,10 @@ bool menu_inicial(ALLEGRO_DISPLAY* display, bool tocandoVideo) {
                     largura_iniciar_scaled, altura_iniciar_scaled, 0);
 
 
-
                 al_flip_display();
+            }
+            else {
+                al_hide_mouse_cursor(display);
             }
         }
         else if (evento.type == ALLEGRO_EVENT_VIDEO_FRAME_SHOW) {
@@ -171,6 +173,7 @@ bool menu_inicial(ALLEGRO_DISPLAY* display, bool tocandoVideo) {
         else if (evento.type == ALLEGRO_EVENT_VIDEO_FINISHED) {
             rodando = false;
             resultado = true;
+            al_show_mouse_cursor(display);
         }
     }
     

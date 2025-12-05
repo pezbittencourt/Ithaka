@@ -7,6 +7,7 @@
 #include "fases/Poseidon/poseidon.h"
 #include "fases/Olimpo/olimpo.h"
 #include "fases/Submundo/submundo.h"
+#include "./dialogo/dialogo.h"
 
 void init_fase(Fase* fase, int total_cenarios)
 {

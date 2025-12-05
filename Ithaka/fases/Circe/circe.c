@@ -227,6 +227,8 @@ bool carregar_cenarios_circe(Fase* fase) {
         fprintf(stderr, "Erro ao carregar fundo do cenário 2\n");
         return false;
     }
+    fase->cenarios[1].dialogo_caminho = "./dialogo/source/dialogoHermesOdisseuFundoCirce2.txt";
+    fase->cenarios[1].dialogo_completo = false;
 
     // Cenário 3: Com duas sobreposições (frente e efeito)
     printf("Inicializando cenário 3...\n");
@@ -247,6 +249,8 @@ bool carregar_cenarios_circe(Fase* fase) {
         fprintf(stderr, "Erro ao carregar fundo do cenário 4\n");
         return false;
     }
+    fase->cenarios[3].dialogo_caminho = "./dialogo/source/dialogoCirceOdisseuPreLutaFundoCirce4.txt";
+    fase->cenarios[3].dialogo_completo = false;
 
     return true;
 }

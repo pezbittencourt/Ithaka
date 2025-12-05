@@ -35,17 +35,6 @@ int exibir_mapa_inicial(ALLEGRO_DISPLAY* display, int mapas_disponiveis) {
             .cor_destaque = al_map_rgba(150, 150, 150, 100)
         },
         {
-            .x = 485 * escala_x,
-            .y = 626 * escala_y,
-            .largura = 165 * escala_x,
-            .altura = 140 * escala_y,
-            .fase_id = MAPA_FASE_POLIFEMO,
-            .nome = "POLIFEMO",
-            .mouse_sobre = false,
-            .cor_normal = al_map_rgba(255, 165, 0, 150),
-            .cor_destaque = al_map_rgba(255, 200, 0, 100)
-        },
-        {
             .x = 270 * escala_x,
             .y = 307 * escala_y,
             .largura = 109 * escala_x,

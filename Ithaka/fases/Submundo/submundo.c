@@ -18,6 +18,8 @@ bool carregar_cenarios_submundo(Fase* fase)
         fprintf(stderr, "❌ Erro ao carregar fundo do cenário 1\n");
         return false;
     }
+    fase->cenarios[0].dialogo_caminho = "./dialogo/source/dialogoTiresiasOdisseuFundoSubmundo.txt";
+    fase->cenarios[0].dialogo_completo = false;
 
     return true;
 }

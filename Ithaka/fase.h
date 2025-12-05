@@ -4,15 +4,18 @@
 #include <allegro5/allegro.h>
 #include "personagem.h"
 
-typedef struct {
+
+typedef struct Cenario {
     ALLEGRO_BITMAP* fundo;
     ALLEGRO_BITMAP** sobreposicoes;
     Personagem* personagens;
+    char* dialogo_caminho;
+    bool dialogo_completo;
     int total_personagens;
     int total_sobreposicoes;
 } Cenario;
 
-typedef struct {
+typedef struct Fase {
     Cenario* cenarios;
     ALLEGRO_BITMAP** sprites;
     int total_cenarios, cenario_atual, total_sprites;

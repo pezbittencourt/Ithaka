@@ -23,6 +23,8 @@ bool carregar_cenarios_olimpo(Fase* fase)
 
     init_cenario(&fase->cenarios[0], 0, 0);
     fase->cenarios[0].fundo = al_load_bitmap("./imagensJogo/cenarios/Olimpo/fundoOlimpo.png");
+    fase->cenarios[0].dialogo_caminho = "./dialogo/source/dialogoAtenaZeusFundoOlimpo.txt";
+    fase->cenarios[0].dialogo_completo = false;
 
     if (!fase->cenarios[0].fundo) {
         fprintf(stderr, "Erro ao carregar fundo do cenário Olimpo\n");

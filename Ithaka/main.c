@@ -17,6 +17,7 @@
 #include "Circe/circe.h"
 #include "Poseidon/poseidon.h"
 #include "util.h"
+#include "dialogo/dialogo.h"
 
 typedef enum {
     TELA_MENU,
@@ -139,7 +140,7 @@ int main(void) {
     const int ALTURA_SPRITE = 250, LARGURA_SPRITE = 250;
     int ALTURA_PERSONAGEM = deixarProporcional(ALTURA_SPRITE + 60, ALTURA_TELA, ALTURA_TELA_ORIGINAL);
     int LARGURA_PERSONAGEM = deixarProporcional(LARGURA_SPRITE + 25, LARGURA_TELA, LARGURA_TELA_ORIGINAL);
-    int mapas_disponiveis = 4;
+    int mapas_disponiveis = 2;
     int sleep_turno = 0;
 
     ALLEGRO_DISPLAY* tela_jogo = criar_tela_cheia(tela);
@@ -450,7 +451,7 @@ int main(void) {
         .x = (escolha_mapa == MAPA_FASE_CIRCE) ? (LARGURA_TELA / 4.2) : (LARGURA_TELA / 30),
         .y = (escolha_mapa == MAPA_FASE_ITACA) ? deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL)
         : deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
-        .vida = 14,
+        .vida = 5,
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
         .olhando_direita = true,
@@ -477,7 +478,7 @@ int main(void) {
     Personagem circe = {
         .x = LARGURA_TELA - (LARGURA_TELA / 3),
         .y = deixarProporcional(750, ALTURA_TELA, ALTURA_TELA_ORIGINAL),
-        .vida = 3,
+        .vida = 8,
         .largura = LARGURA_PERSONAGEM,
         .altura = ALTURA_PERSONAGEM,
         .olhando_direita = false,
@@ -776,8 +777,21 @@ int main(void) {
         bool mouse_right = false;
         al_wait_for_event(fila_eventos, &evento);
         if (escolha_mapa == MAPA_VOLTAR_MENU) {
+            destruir_cenarios(fase);
+            destruir_sprites(fase);
+            free_fase(fase);
             escolha_mapa = exibir_mapa_inicial(tela_jogo, mapas_disponiveis);
-
+            if (escolha_mapa != MAPA_SAIR) {
+                if (!carregar_cenario(fase, escolha_mapa)) {
+                    printf("Erro ao carregar cenários.\n");
+                    al_destroy_display(tela_jogo);
+                    return -1;
+                }
+            }
+        }
+        else if (escolha_mapa == MAPA_SAIR) {
+            jogo_rodando = menu_inicial(tela_jogo, false);
+            escolha_mapa = MAPA_VOLTAR_MENU;
         }
 
         if (evento.type == ALLEGRO_EVENT_DISPLAY_CLOSE) {
@@ -910,6 +924,19 @@ int main(void) {
                 }
             }
 
+            if (fase->cenarios != NULL) {
+                Cenario cenario = fase->cenarios[fase->cenario_atual];
+                if (cenario.dialogo_caminho != NULL && !cenario.dialogo_completo) {
+                    ArrayTextBox textos = { .tamanho = 0 };
+                    carregar_dialogo(cenario.dialogo_caminho, &textos);
+                    desenhar_dialogo(tela_jogo, cenario, textos);
+                    fase->cenarios[fase->cenario_atual].dialogo_completo = true;
+                }
+                if (escolha_mapa == MAPA_FASE_SUBMUNDO || escolha_mapa == MAPA_FASE_ITACA) {
+                    escolha_mapa = MAPA_VOLTAR_MENU;
+                    mapas_disponiveis++;
+                }
+            }
             //-----------------------------------
 
             if (!odisseu.desembainhando && !odisseu.atacando && !odisseu.guardando_espada) {
@@ -1037,6 +1064,7 @@ int main(void) {
                     }
                     odisseu.contador_animacao = 0;
                 }
+                break;
                
             case 5: // puxa arco
                 odisseu.contador_animacao++;
@@ -1204,6 +1232,14 @@ int main(void) {
                             
                             circe.contador_animacao = 0;
                         }
+                    }
+                    else {
+                        Cenario cenario = fase->cenarios[fase->cenario_atual];
+                        ArrayTextBox textos = { .tamanho = 0 };
+                        carregar_dialogo("./dialogo/source/dialogoCirceOdisseuPosLutaFundoCirce4.txt", &textos);
+                        desenhar_dialogo(tela_jogo, cenario, textos);
+                        escolha_mapa = MAPA_VOLTAR_MENU;
+                        mapas_disponiveis++;
                     }
                 }
 
@@ -2171,7 +2207,7 @@ int main(void) {
                     al_draw_text(fonte_quiz, al_map_rgb(200, 200, 200),
                         LARGURA_TELA / 2, ALTURA_TELA / 2 + 80,
                         ALLEGRO_ALIGN_CENTER, "Pressione ESC para voltar");
-
+                    mapas_disponiveis++;
                 }
             }
 
@@ -2609,7 +2645,7 @@ int main(void) {
                 }
             }
 
-            if (escolha_mapa == MAPA_FASE_POSEIDON && !player_ganha) {
+            if (escolha_mapa == MAPA_FASE_POSEIDON) {
                 al_get_mouse_state(&estado_mouse);
                 draw_battleship(fase,
                     fonte_quiz,
@@ -2645,6 +2681,10 @@ int main(void) {
                             &com_ganha,
                             tela
                         );
+                        if (player_ganha) {
+                            escolha_mapa = MAPA_VOLTAR_MENU;
+                            mapas_disponiveis++;
+                        }
                     }
                     else {
                         sleep_turno--;

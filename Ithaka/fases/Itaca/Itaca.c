@@ -34,6 +34,8 @@ bool carregar_cenarios_itaca(Fase* fase)
         fprintf(stderr, "❌ Erro ao carregar fundo do cenário 3\n");
         return false;
     }
+    fase->cenarios[2].dialogo_caminho = "./dialogo/source/dialogoPenelopeOdisseuFundoItaca3.txt";
+    fase->cenarios[2].dialogo_completo = false;
 
 
     return true;
