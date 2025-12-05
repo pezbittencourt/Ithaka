@@ -26,6 +26,7 @@ bool carregar_cenarios_itaca(Fase* fase)
         fprintf(stderr, "❌ Erro ao carregar fundo do cenário 2\n");
         return false;
     }
+    
 
     printf("Inicializando cenário 3...\n");
     init_cenario(&fase->cenarios[2], 0, 0);
@@ -36,6 +37,8 @@ bool carregar_cenarios_itaca(Fase* fase)
     }
     fase->cenarios[2].dialogo_caminho = "./dialogo/source/dialogoPenelopeOdisseuFundoItaca3.txt";
     fase->cenarios[2].dialogo_completo = false;
+    fase->cenarios[0].dialogo_caminho = NULL;
+    fase->cenarios[1].dialogo_caminho = NULL;
 
 
     return true;

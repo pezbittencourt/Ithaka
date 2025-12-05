@@ -937,17 +937,17 @@ int main(void) {
                 Cenario cenario = fase->cenarios[fase->cenario_atual];
                 if (cenario.dialogo_caminho != NULL && !cenario.dialogo_completo) {
                     ArrayTextBox textos = { .tamanho = 0 };
-                    al_pause_event_queue(fila_eventos, true);
+                    al_pause_event_queue(fila_eventos, true); 
                     carregar_dialogo(cenario.dialogo_caminho, &textos);
                     desenhar_dialogo(tela_jogo, cenario, textos);
                     fase->cenarios[fase->cenario_atual].dialogo_completo = true;
                     al_pause_event_queue(fila_eventos, false);
-                }
-                if (escolha_mapa == MAPA_FASE_SUBMUNDO || escolha_mapa == MAPA_FASE_ITACA) {
+                }else if ((escolha_mapa == MAPA_FASE_SUBMUNDO || escolha_mapa == MAPA_FASE_ITACA) && cenario.dialogo_completo && cenario.dialogo_caminho != NULL) {
                     escolha_mapa = MAPA_VOLTAR_MENU;
                     mapas_disponiveis++;
                 }
             }
+            printf("escolha mapa : %d\n mapas_disponiveis: %d\n", escolha_mapa, mapas_disponiveis);
             //-----------------------------------
 
             if (!odisseu.desembainhando && !odisseu.atacando && !odisseu.guardando_espada) {
