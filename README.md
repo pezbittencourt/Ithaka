@@ -64,7 +64,6 @@ Finalizado.
 ---
 
 ## Autor
-
-Pedro Zeferino Bittencourt
-Nycolly Weiss
-Maria Clara Bessa
+</br> Pedro Zeferino Bittencourt 
+</br>Nycolly Weiss
+</br>Maria Clara Bessa
